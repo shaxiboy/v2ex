@@ -1,12 +1,10 @@
 package com.hjx.v2ex.network;
 
-import com.hjx.v2ex.entity.Node;
-import com.hjx.v2ex.entity.Topic;
+import com.hjx.v2ex.entity.NodeOld;
+import com.hjx.v2ex.entity.TopicOld;
 
 import java.io.IOException;
 import java.lang.annotation.Annotation;
-import java.lang.reflect.Array;
-import java.lang.reflect.ParameterizedType;
 import java.lang.reflect.Type;
 import java.util.Arrays;
 
@@ -39,12 +37,12 @@ public class HTMLConverterFactory extends Converter.Factory {
 
         @Override
         public T convert(ResponseBody responseBody) throws IOException {
-            if(type == Node.class) {
+            if(type == NodeOld.class) {
                 throw new IOException();
             }
-            Topic topic = new Topic();
+            TopicOld topic = new TopicOld();
             topic.setContent("test");
-            return (T) Arrays.asList(new Topic[] {topic});
+            return (T) Arrays.asList(new TopicOld[] {topic});
         }
 
     }

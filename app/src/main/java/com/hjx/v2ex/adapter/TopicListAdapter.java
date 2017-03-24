@@ -11,7 +11,7 @@ import android.widget.TextView;
 
 import com.bumptech.glide.Glide;
 import com.hjx.v2ex.R;
-import com.hjx.v2ex.entity.Topic;
+import com.hjx.v2ex.entity.TopicOld;
 import com.hjx.v2ex.ui.TopicDetailsActivity;
 import com.hjx.v2ex.util.V2EXUtil;
 import com.jauker.widget.BadgeView;
@@ -30,14 +30,14 @@ import de.hdodenhof.circleimageview.CircleImageView;
 public class TopicListAdapter extends Adapter {
 
 
-    private List<Topic> topics = new ArrayList<>();
+    private List<TopicOld> topics = new ArrayList<>();
     private Context context;
 
     public TopicListAdapter(Context context) {
         this.context = context;
     }
 
-    public void setTopics(List<Topic> topics) {
+    public void setTopics(List<TopicOld> topics) {
         this.topics = topics;
         this.notifyDataSetChanged();
     }
@@ -85,7 +85,7 @@ public class TopicListAdapter extends Adapter {
             });
         }
 
-        protected void bind(Topic topic) {
+        protected void bind(TopicOld topic) {
             Glide.with(context).load(topic.getMember().getAvatarMini()).into(imageView);
             topicTV.setText(topic.getTitle());
             node.setText(topic.getNode().getTitle());

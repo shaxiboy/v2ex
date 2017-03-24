@@ -8,9 +8,9 @@ import android.support.v7.widget.Toolbar;
 
 import com.hjx.v2ex.R;
 import com.hjx.v2ex.adapter.TopicAdapter;
-import com.hjx.v2ex.entity.Reply;
-import com.hjx.v2ex.entity.Topic;
-import com.hjx.v2ex.network.V2EXServiceSingleton;
+import com.hjx.v2ex.entity.ReplyOld;
+import com.hjx.v2ex.entity.TopicOld;
+import com.hjx.v2ex.network.RetrofitSingleton;
 import com.hjx.v2ex.util.LogUtil;
 
 import java.util.List;
@@ -49,32 +49,32 @@ public class TopicDetailsActivity extends AppCompatActivity {
     }
 
     private void loadTopicDetails() {
-        V2EXServiceSingleton.getInstance().getTopic(topicId).enqueue(new Callback<List<Topic>>() {
-            @Override
-            public void onResponse(Call<List<Topic>> call, Response<List<Topic>> response) {
-                Topic topic = response.body().get(0);
-                topicAdapter.setTopic(topic);
-            }
-
-            @Override
-            public void onFailure(Call<List<Topic>> call, Throwable throwable) {
-                LogUtil.d("onFailure");
-            }
-        });
+//        RetrofitSingleton.getInstance().getTopic(topicId).enqueue(new Callback<List<TopicOld>>() {
+//            @Override
+//            public void onResponse(Call<List<TopicOld>> call, Response<List<TopicOld>> response) {
+//                TopicOld topic = response.body().get(0);
+//                topicAdapter.setTopic(topic);
+//            }
+//
+//            @Override
+//            public void onFailure(Call<List<TopicOld>> call, Throwable throwable) {
+//                LogUtil.d("onFailure");
+//            }
+//        });
     }
 
     private void loadReplies() {
-        V2EXServiceSingleton.getInstance().getReplies(topicId, 1, 20).enqueue(new Callback<List<Reply>>() {
-            @Override
-            public void onResponse(Call<List<Reply>> call, Response<List<Reply>> response) {
-                topicAdapter.addReplies(response.body());
-            }
-
-            @Override
-            public void onFailure(Call<List<Reply>> call, Throwable throwable) {
-                LogUtil.d("onFailure");
-            }
-        });
+//        RetrofitSingleton.getInstance().getReplies(topicId, 1, 20).enqueue(new Callback<List<ReplyOld>>() {
+//            @Override
+//            public void onResponse(Call<List<ReplyOld>> call, Response<List<ReplyOld>> response) {
+//                topicAdapter.addReplies(response.body());
+//            }
+//
+//            @Override
+//            public void onFailure(Call<List<ReplyOld>> call, Throwable throwable) {
+//                LogUtil.d("onFailure");
+//            }
+//        });
     }
 
 }

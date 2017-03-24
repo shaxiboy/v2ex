@@ -4,6 +4,8 @@ import android.app.Application;
 import android.content.Context;
 import android.os.Environment;
 
+import com.facebook.stetho.Stetho;
+
 /**
  * Created by shaxiboy on 2017/3/20 0020.
  */
@@ -16,6 +18,7 @@ public class App extends Application {
     @Override
     public void onCreate() {
         super.onCreate();
+        Stetho.initializeWithDefaults(this);
         context = getApplicationContext();
         if (getApplicationContext().getExternalCacheDir() != null && existSDCard()) {
             cacheDir = context.getExternalCacheDir().toString();

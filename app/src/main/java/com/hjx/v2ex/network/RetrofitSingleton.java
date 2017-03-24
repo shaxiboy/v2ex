@@ -1,5 +1,10 @@
 package com.hjx.v2ex.network;
 
+import com.facebook.stetho.okhttp3.StethoInterceptor;
+
+import java.net.InetSocketAddress;
+import java.net.Proxy;
+
 import okhttp3.OkHttpClient;
 import okhttp3.logging.HttpLoggingInterceptor;
 import retrofit2.Retrofit;
@@ -9,7 +14,7 @@ import retrofit2.converter.gson.GsonConverterFactory;
  * Created by shaxiboy on 2017/3/4 0004.
  */
 
-public class V2EXServiceSingleton {
+public class RetrofitSingleton {
 
     private static V2EXService mService;
 
@@ -19,6 +24,7 @@ public class V2EXServiceSingleton {
             interceptor.setLevel(HttpLoggingInterceptor.Level.BASIC);
             OkHttpClient client = new OkHttpClient.Builder()
                     .addInterceptor(interceptor)
+                    .addNetworkInterceptor(new StethoInterceptor())
                     .build();
             Retrofit retrofit = new Retrofit.Builder()
                     .client(client)

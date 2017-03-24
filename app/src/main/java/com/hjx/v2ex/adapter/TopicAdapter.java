@@ -1,7 +1,6 @@
 package com.hjx.v2ex.adapter;
 
 import android.content.Context;
-import android.content.Intent;
 import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -10,9 +9,8 @@ import android.widget.TextView;
 
 import com.bumptech.glide.Glide;
 import com.hjx.v2ex.R;
-import com.hjx.v2ex.entity.Reply;
-import com.hjx.v2ex.entity.Topic;
-import com.hjx.v2ex.ui.TopicDetailsActivity;
+import com.hjx.v2ex.entity.ReplyOld;
+import com.hjx.v2ex.entity.TopicOld;
 import com.hjx.v2ex.util.V2EXUtil;
 import com.jauker.widget.BadgeView;
 
@@ -22,8 +20,6 @@ import java.util.List;
 import butterknife.BindView;
 import butterknife.ButterKnife;
 import de.hdodenhof.circleimageview.CircleImageView;
-
-import static android.view.View.Y;
 
 /**
  * Created by shaxiboy on 2017/3/12 0012.
@@ -35,8 +31,8 @@ public class TopicAdapter extends RecyclerView.Adapter {
     public static final int VIEW_TYPE_HEADER = -1;
     public static final int VIEW_TYPE_FOOTER = -2;
 
-    private Topic topic;
-    private List<Reply> replies = new ArrayList<>();
+    private TopicOld topic;
+    private List<ReplyOld> replies = new ArrayList<>();
     private Context context;
     private boolean canLoadMore;
 
@@ -44,18 +40,18 @@ public class TopicAdapter extends RecyclerView.Adapter {
         this.context = context;
     }
 
-    public void setTopic(Topic topic) {
+    public void setTopic(TopicOld topic) {
         this.topic = topic;
         this.notifyItemChanged(0);
     }
 
-    public void addReplies(List<Reply> replies) {
+    public void addReplies(List<ReplyOld> replies) {
         int position = this.replies.size() + 1;
         this.replies.addAll(replies);
         this.notifyItemRangeChanged(position, replies.size());
     }
 
-    public List<Reply> getReplies() {
+    public List<ReplyOld> getReplies() {
         return replies;
     }
 
@@ -123,7 +119,7 @@ public class TopicAdapter extends RecyclerView.Adapter {
             ButterKnife.bind(this, itemView);
         }
 
-        protected void bind(Topic topic) {
+        protected void bind(TopicOld topic) {
             Glide.with(context).load(topic.getMember().getAvatarMini()).into(photo);
             author.setText(topic.getMember().getUsername());
             node.setText(topic.getNode().getTitle());
@@ -152,7 +148,7 @@ public class TopicAdapter extends RecyclerView.Adapter {
             ButterKnife.bind(this, itemView);
         }
 
-        protected void bind(Reply reply) {
+        protected void bind(ReplyOld reply) {
             Glide.with(context).load(reply.getMember().getAvatarMini()).into(photo);
             author.setText(reply.getMember().getUsername());
             time.setText(V2EXUtil.parseTime(reply.getCreated()));
