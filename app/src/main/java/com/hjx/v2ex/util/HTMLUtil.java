@@ -10,7 +10,7 @@ import com.hjx.v2ex.entity.NodePlane;
 import com.hjx.v2ex.entity.Reply;
 import com.hjx.v2ex.entity.Topic;
 import com.hjx.v2ex.entity.V2EX;
-import com.hjx.v2ex.network.V2EXService;
+import com.hjx.v2ex.network.RetrofitService;
 
 import org.jsoup.Jsoup;
 import org.jsoup.nodes.Document;
@@ -19,10 +19,10 @@ import org.jsoup.nodes.TextNode;
 import org.jsoup.select.Elements;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.regex.Pattern;
-
-import static android.R.string.no;
 
 /**
  * Created by shaxiboy on 2017/3/8 0008.
@@ -49,6 +49,18 @@ public class HTMLUtil {
         return topics;
     }
 
+    public static void parseAllTopicList(PageData<Topic> pageData, String html) {
+        List<Topic> topics = new ArrayList<>();
+        Element mainEle = Jsoup.parse(html).body().getElementById("Main");
+        for (Element element : mainEle.getElementsByClass("cell item")) {
+            topics.add(parseTopicItem(element));
+        }
+        pageData.setCurrentPageItems(topics);
+        Element summarizeEle = mainEle.getElementsByClass("header").first().getElementsByClass("fade").first();
+        pageData.setTotalItems(Integer.parseInt(summarizeEle.text().split("共")[1].split("个")[0].trim()));
+        pageData.setTotalPage((pageData.getTotalItems() + RetrofitService.PAGE_TOPICS_ITEM_NUM -1) / RetrofitService.PAGE_TOPICS_ITEM_NUM);
+    }
+
     public static void parseNodeTopicList(PageData<Topic> pageData, String html) {
         List<Topic> topics = new ArrayList<>();
         Element topicsEle = Jsoup.parse(html).body().getElementById("TopicsNode");
@@ -58,7 +70,7 @@ public class HTMLUtil {
         pageData.setCurrentPageItems(topics);
         Element summarizeEle = topicsEle.nextElementSibling().nextElementSibling();
         pageData.setTotalItems(Integer.parseInt(summarizeEle.text().split("共")[1].split("个")[0].trim()));
-        pageData.setTotalPage((pageData.getTotalItems() + V2EXService.PAGE_TOPICS_ITEM_NUM -1) / V2EXService.PAGE_TOPICS_ITEM_NUM);
+        pageData.setTotalPage((pageData.getTotalItems() + RetrofitService.PAGE_TOPICS_ITEM_NUM -1) / RetrofitService.PAGE_TOPICS_ITEM_NUM);
     }
 
     public static void parseMemberTopicList(PageData<Topic> pageData, String html) {
@@ -73,7 +85,7 @@ public class HTMLUtil {
         pageData.setCurrentPageItems(topics);
         Element summarizeEle = doc.getElementsByClass("header").first();
         pageData.setTotalItems(Integer.parseInt(summarizeEle.text().split("主题总数  ")[1].trim()));
-        pageData.setTotalPage((pageData.getTotalItems() + V2EXService.PAGE_TOPICS_ITEM_NUM -1) / V2EXService.PAGE_TOPICS_ITEM_NUM);
+        pageData.setTotalPage((pageData.getTotalItems() + RetrofitService.PAGE_TOPICS_ITEM_NUM -1) / RetrofitService.PAGE_TOPICS_ITEM_NUM);
     }
 
     public static Topic parseTopicItem(Element element) {
@@ -186,7 +198,7 @@ public class HTMLUtil {
         Document doc = Jsoup.parse(html);
         Element replyBox = doc.getElementById("Main").getElementsByClass("box").get(1);
         pageData.setTotalItems(Integer.parseInt(replyBox.getElementsByTag("div").get(0).getElementsByTag("span").first().text().split(" 回复 ")[0]));
-        pageData.setTotalPage((pageData.getTotalItems() + V2EXService.PAGE_TOPIC_REPLIES_ITEM_NUM - 1) / V2EXService.PAGE_TOPIC_REPLIES_ITEM_NUM);
+        pageData.setTotalPage((pageData.getTotalItems() + RetrofitService.PAGE_TOPIC_REPLIES_ITEM_NUM - 1) / RetrofitService.PAGE_TOPIC_REPLIES_ITEM_NUM);
         List<Reply> replies = new ArrayList<>();
         for(Element divEle : replyBox.getElementsByTag("div")) {
             if(divEle.attr("id") != null && divEle.attr("id").startsWith("r_")) {
@@ -272,5 +284,50 @@ public class HTMLUtil {
             }
         }
         return hottestNodes;
+    }
+
+    public static Map<String, String> parseSigninParams(String html) {
+        Map<String, String> signinParams = new HashMap<>();
+        Document doc = Jsoup.parse(html);
+        Element formEle = doc.select("form[action='/signin']").first();
+        for(Element inputEle : formEle.getElementsByTag("input")) {
+            if(inputEle.attr("type").equals("text")) {
+                signinParams.put(inputEle.attr("name"), "username");
+            } else if(inputEle.attr("type").equals("password")) {
+                signinParams.put(inputEle.attr("name"), "password");
+            } else if(inputEle.attr("type").equals("hidden")) {
+                signinParams.put(inputEle.attr("name"), inputEle.attr("value"));
+            }
+        }
+        return signinParams;
+    }
+
+    public static String parseSigninFailedMsg(String html) {
+        Element problemEle = Jsoup.parse(html).getElementsByClass("problem").first();
+        if(problemEle != null) {
+            return problemEle.getElementsByTag("li").first().text();
+        }
+        return null;
+    }
+
+    public static int parseSessionId(String html) {
+        Element topEle = Jsoup.parse(html).getElementById("Top");
+        if(topEle != null) {
+            for (Element aEle : topEle.getElementsByTag("a")) {
+                if (aEle.text().equals("登出")) {
+                    return Integer.parseInt(aEle.attr("onclick").split("once=")[1].split("'; }")[0]);
+                }
+            }
+        }
+        return -1;
+    }
+
+    public static String parseSignoutResultMsg(String html) {
+        Element buttonEle = Jsoup.parse(html).getElementById("Main").getElementsByTag("input").first();
+        if(buttonEle != null) {
+            return buttonEle.attr("value");
+        } else {
+            return "";
+        }
     }
 }

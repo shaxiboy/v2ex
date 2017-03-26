@@ -12,9 +12,6 @@ import android.view.ViewGroup;
 import com.hjx.v2ex.R;
 import com.hjx.v2ex.adapter.TopicListAdapter;
 import com.hjx.v2ex.network.RetrofitSingleton;
-import com.hjx.v2ex.util.HTMLUtil;
-
-import java.io.IOException;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
@@ -44,7 +41,7 @@ public class TopicListFragment extends Fragment {
         adapter = new TopicListAdapter(this.getContext());
         recyclerView.setAdapter(adapter);
         tab = getArguments().getString("tab");
-        RetrofitSingleton.getInstance().vistHomePage(tab).enqueue(new Callback<ResponseBody>() {
+        RetrofitSingleton.getInstance().homePage(tab).enqueue(new Callback<ResponseBody>() {
             @Override
             public void onResponse(Call<ResponseBody> call, Response<ResponseBody> response) {
 //                try {

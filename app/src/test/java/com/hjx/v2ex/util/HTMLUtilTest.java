@@ -1,8 +1,10 @@
 package com.hjx.v2ex.util;
 
 import com.hjx.v2ex.network.RetrofitSingleton;
-import com.hjx.v2ex.network.V2EXService;
+import com.hjx.v2ex.network.RetrofitService;
+import com.hjx.v2ex.network.V2EXapi;
 
+import org.junit.Before;
 import org.junit.Test;
 
 import java.io.IOException;
@@ -18,13 +20,25 @@ import retrofit2.Call;
 
 public class HTMLUtilTest {
 
+    int sessionId;
+
+    public void login() {
+        sessionId = V2EXapi.login("shaxiboy", "ysl5129v2ex");
+    }
+
+    public void loginout() {
+        V2EXapi.loginout(sessionId);
+    }
+
     @Test
     public void test() {
+        login();
+
         try {
-            V2EXService service = RetrofitSingleton.getInstance();
-            Method serviceMethod = V2EXService.class.getDeclaredMethod("vistHomePage", String.class);
-            String html = ((ResponseBody) ((Call) serviceMethod.invoke(service, "tech")).execute().body()).string();
-            Method htmlParsedMethod = HTMLUtil.class.getMethod("parseNodeGuide", String.class);
+            RetrofitService service = RetrofitSingleton.getInstance();
+            Method serviceMethod = RetrofitService.class.getDeclaredMethod("signin");
+            String html = ((ResponseBody) ((Call) serviceMethod.invoke(service)).execute().body()).string();
+            Method htmlParsedMethod = HTMLUtil.class.getMethod("parseSigninParams", String.class);
             Object result = htmlParsedMethod.invoke(null, html);
             System.out.println(result);
         } catch (NoSuchMethodException e) {
@@ -36,6 +50,8 @@ public class HTMLUtilTest {
         } catch (IOException e) {
             e.printStackTrace();
         }
+
+        loginout();
     }
 
 }
