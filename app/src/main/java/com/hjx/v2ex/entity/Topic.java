@@ -14,6 +14,8 @@ public class Topic {
     private int replyNum;
     private int collectedNum;
     private int thanksNum;
+    private String collectHref;
+    private String thankToken;
     private Member member;
     private Node node;
     private String createdTime;
@@ -68,6 +70,22 @@ public class Topic {
         this.thanksNum = thanksNum;
     }
 
+    public String getCollectHref() {
+        return collectHref;
+    }
+
+    public void setCollectHref(String collectHref) {
+        this.collectHref = collectHref;
+    }
+
+    public String getThankToken() {
+        return thankToken;
+    }
+
+    public void setThankToken(String thankToken) {
+        this.thankToken = thankToken;
+    }
+
     public Member getMember() {
         return member;
     }
@@ -117,6 +135,8 @@ public class Topic {
                 ", replyNum=" + replyNum +
                 ", collectedNum=" + collectedNum +
                 ", thanksNum=" + thanksNum +
+                ", collectHref='" + collectHref + '\'' +
+                ", thankToken='" + thankToken + '\'' +
                 ", member=" + member +
                 ", node=" + node +
                 ", createdTime='" + createdTime + '\'' +

@@ -1,10 +1,13 @@
 package com.hjx.v2ex.network;
 
+import com.hjx.v2ex.entity.Member;
+import com.hjx.v2ex.entity.Node;
 import com.hjx.v2ex.entity.PageData;
 import com.hjx.v2ex.entity.Topic;
 import com.hjx.v2ex.util.HTMLUtil;
 
 import java.io.IOException;
+import java.util.List;
 import java.util.Map;
 
 /**
@@ -13,17 +16,10 @@ import java.util.Map;
 
 public class V2EXapi {
 
-    public static void getAllTopic(PageData<Topic> pageData) {
-        try {
-            HTMLUtil.parseAllTopicList(pageData, RetrofitSingleton.getInstance().allTopicsPage(pageData.getCurrentPage()).execute().body().string());
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
-    }
-
+    //登陆
     public static int login(String username, String password) {
         try {
-            String html = RetrofitSingleton.getInstance().signin().execute().body().string();
+            String html = RetrofitSingleton.getInstance().signinPage().execute().body().string();
             Map<String, String> signinParams = HTMLUtil.parseSigninParams(html);
             for(String key : signinParams.keySet()) {
                 if(signinParams.get(key).equals("username")) {
@@ -50,6 +46,41 @@ public class V2EXapi {
         return -1;
     }
 
+    //获取用户详细信息
+    public static Member getMemberDetails(String memberName) {
+        try {
+            Member member = HTMLUtil.parseMemberDetails(RetrofitSingleton.getInstance().memberDetailsPage(memberName).execute().body().string());
+            member.setUsername(memberName);
+            return member;
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+        return null;
+    }
+
+    //关注用户、取消关注
+    public static void followMember(Member member) {
+        if(member.getNoticeHref() != null) {
+            try {
+                System.out.println(member.getNoticeHref());
+                RetrofitSingleton.getInstance().doGet(member.getNoticeHref()).execute();
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+        }
+    }
+
+    //我关注的人
+    public static List<Member> getMyFollowingMembers() {
+        try {
+            return HTMLUtil.parseMyFollowingMembers(RetrofitSingleton.getInstance().myFollowingMembersPage(1).execute().body().string());
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+        return null;
+    }
+
+    //登出
     public static void loginout(int sessionId) {
         try {
             String html = RetrofitSingleton.getInstance().signout(sessionId).execute().body().string();
@@ -62,6 +93,111 @@ public class V2EXapi {
 //                LogUtil.d("signin failed: " + errorMsg);
                 System.out.println("signout failed");
             }
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+    }
+
+    //获取tab页的主题列表
+    public static List<Topic> getTopicsFromTab(String tab) {
+        try {
+            return HTMLUtil.parseTopicsFromTabPage(RetrofitSingleton.getInstance().homePage(tab).execute().body().string());
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+        return null;
+    }
+
+    //获取全部主题的某一页数据
+    public static void getAllTopics(PageData<Topic> pageData) {
+        try {
+            HTMLUtil.parseAllTopics(pageData, RetrofitSingleton.getInstance().allTopicsPage(pageData.getCurrentPage()).execute().body().string());
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+    }
+
+    //我关注的人的最新主题
+    public static void getMyFollowingMembersTopics(PageData<Topic> pageData) {
+        try {
+            HTMLUtil.parseMemberTopics(pageData, RetrofitSingleton.getInstance().myFollowingMembersPage(pageData.getCurrentPage()).execute().body().string());
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+    }
+
+    //获取主题详情
+    public static Topic getTopicDetails(int topicId) {
+        try {
+            Topic topic = HTMLUtil.parseTopicDetails(RetrofitSingleton.getInstance().topicDetailsPage(topicId, 1).execute().body().string());
+            topic.setId(topicId);
+            return topic;
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+        return null;
+    }
+
+    //感谢主题
+    public static void thankTopic(Topic topic) {
+        if(topic.getThankToken() != null) {
+            try {
+                RetrofitSingleton.getInstance().thankTopic(topic.getId(), topic.getThankToken()).execute();
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+        }
+    }
+
+    //收藏主题、取消收藏主题
+    public static void followTopic(Topic topic) {
+        if(topic.getCollectHref() != null) {
+            try {
+                System.out.println(topic.getCollectHref());
+                RetrofitSingleton.getInstance().doGet(topic.getCollectHref()).execute();
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+        }
+    }
+
+    //获取节点详细信息
+    public static Node getNodeDetails(String nodeName) {
+        try {
+            Node node = HTMLUtil.parseNodeDetails(RetrofitSingleton.getInstance().nodeDetailsPage(nodeName, 1).execute().body().string());
+            node.setName(nodeName);
+            return node;
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+        return null;
+    }
+
+    //收藏节点、取消收藏节点
+    public static void followNode(Node node) {
+        if(node.getCollectHref() != null) {
+            try {
+                RetrofitSingleton.getInstance().doGet(node.getCollectHref()).execute();
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+        }
+    }
+
+    //获取收藏节点列表
+    public static List<Node> getMyFollowingNodes() {
+        try {
+            return HTMLUtil.parseMyFollowingNodes(RetrofitSingleton.getInstance().myFollowingNodesPage().execute().body().string());
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+        return null;
+    }
+
+    //获取收藏的主题列表
+    public static void getMyFollowingTopics(PageData<Topic> pageData) {
+        try {
+            HTMLUtil.parseMemberTopics(pageData, RetrofitSingleton.getInstance().myFollowingTopicsPage(pageData.getCurrentPage()).execute().body().string());
         } catch (IOException e) {
             e.printStackTrace();
         }

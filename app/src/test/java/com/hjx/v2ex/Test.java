@@ -8,6 +8,7 @@ public class Test {
 
     @org.junit.Test
     public void test() {
+        System.out.println(new String("     30  ").trim());
     }
 
 }

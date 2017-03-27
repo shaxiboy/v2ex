@@ -4,7 +4,6 @@ import com.hjx.v2ex.network.RetrofitSingleton;
 import com.hjx.v2ex.network.RetrofitService;
 import com.hjx.v2ex.network.V2EXapi;
 
-import org.junit.Before;
 import org.junit.Test;
 
 import java.io.IOException;

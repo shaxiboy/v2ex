@@ -45,7 +45,7 @@ public class TopicListFragment extends Fragment {
             @Override
             public void onResponse(Call<ResponseBody> call, Response<ResponseBody> response) {
 //                try {
-//                    adapter.setTopics(HTMLUtil.parseTopicList(response.body().string()));
+//                    adapter.setTopics(HTMLUtil.parseTopicsFromTabPage(response.body().string()));
 //                } catch (IOException e) {
 //                    e.printStackTrace();
 //                }

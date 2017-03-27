@@ -1,9 +1,5 @@
 package com.hjx.v2ex.entity;
 
-import com.google.gson.annotations.SerializedName;
-
-import static android.R.attr.id;
-
 /**
  * Created by shaxiboy on 2017/3/3 0003.
  */
@@ -13,10 +9,7 @@ public class Member {
     private String username;
     private String photo;
     private String joinTime;
-    private String todayRanking;
-    private String location;
-    private String website;
-    private String github;
+    private String noticeHref;
 
     public String getUsername() {
         return username;
@@ -42,36 +35,12 @@ public class Member {
         this.joinTime = joinTime;
     }
 
-    public String getTodayRanking() {
-        return todayRanking;
+    public String getNoticeHref() {
+        return noticeHref;
     }
 
-    public void setTodayRanking(String todayRanking) {
-        this.todayRanking = todayRanking;
-    }
-
-    public String getLocation() {
-        return location;
-    }
-
-    public void setLocation(String location) {
-        this.location = location;
-    }
-
-    public String getWebsite() {
-        return website;
-    }
-
-    public void setWebsite(String website) {
-        this.website = website;
-    }
-
-    public String getGithub() {
-        return github;
-    }
-
-    public void setGithub(String github) {
-        this.github = github;
+    public void setNoticeHref(String noticeHref) {
+        this.noticeHref = noticeHref;
     }
 
     @Override
@@ -80,10 +49,7 @@ public class Member {
                 "username='" + username + '\'' +
                 ", photo='" + photo + '\'' +
                 ", joinTime='" + joinTime + '\'' +
-                ", todayRanking='" + todayRanking + '\'' +
-                ", location='" + location + '\'' +
-                ", website='" + website + '\'' +
-                ", github='" + github + '\'' +
+                ", noticeHref='" + noticeHref + '\'' +
                 '}';
     }
 }

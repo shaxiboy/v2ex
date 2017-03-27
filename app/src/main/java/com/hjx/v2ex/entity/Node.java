@@ -1,5 +1,6 @@
 package com.hjx.v2ex.entity;
 
+import java.util.ArrayList;
 import java.util.List;
 
 /**
@@ -8,14 +9,24 @@ import java.util.List;
 
 public class Node {
 
+    private int id;
     private String name;
     private String title;
     private String desc;
     private String photo;
     private int topicNum;
+    private String collectHref;
     private Node parent;
-    private List<Node> children;
-    private List<Node> relatives;
+    private List<Node> children = new ArrayList<>();
+    private List<Node> relatives = new ArrayList<>();
+
+    public int getId() {
+        return id;
+    }
+
+    public void setId(int id) {
+        this.id = id;
+    }
 
     public String getName() {
         return name;
@@ -57,6 +68,14 @@ public class Node {
         this.topicNum = topicNum;
     }
 
+    public String getCollectHref() {
+        return collectHref;
+    }
+
+    public void setCollectHref(String collectHref) {
+        this.collectHref = collectHref;
+    }
+
     public Node getParent() {
         return parent;
     }
@@ -69,26 +88,20 @@ public class Node {
         return children;
     }
 
-    public void setChildren(List<Node> children) {
-        this.children = children;
-    }
-
     public List<Node> getRelatives() {
         return relatives;
-    }
-
-    public void setRelatives(List<Node> relatives) {
-        this.relatives = relatives;
     }
 
     @Override
     public String toString() {
         return "Node{" +
-                "name='" + name + '\'' +
+                "id=" + id +
+                ", name='" + name + '\'' +
                 ", title='" + title + '\'' +
                 ", desc='" + desc + '\'' +
                 ", photo='" + photo + '\'' +
                 ", topicNum=" + topicNum +
+                ", collectHref='" + collectHref + '\'' +
                 ", parent=" + parent +
                 ", children=" + children +
                 ", relatives=" + relatives +

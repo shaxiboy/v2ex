@@ -20,11 +20,11 @@ public class RetrofitServiceTest {
         RetrofitService service = RetrofitSingleton.getInstance();
         Method serviceMethod = null;
         try {
-            serviceMethod =RetrofitService.class.getDeclaredMethod("topicPage", int.class, int.class);
+            serviceMethod =RetrofitService.class.getDeclaredMethod("topicDetailsPage", int.class, int.class);
             String html = ((ResponseBody) ((Call) serviceMethod.invoke(service, 349594, 1)).execute().body()).string();
             System.out.println(html);
 
-            serviceMethod =RetrofitService.class.getDeclaredMethod("topicPage", int.class, int.class);
+            serviceMethod =RetrofitService.class.getDeclaredMethod("topicDetailsPage", int.class, int.class);
             html = ((ResponseBody) ((Call) serviceMethod.invoke(service, 349594, 2)).execute().body()).string();
             System.out.println(html);
         } catch (NoSuchMethodException e) {

@@ -7,8 +7,6 @@ import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
 
-import static org.junit.Assert.*;
-
 /**
  * Created by shaxiboy on 2017/3/26 0026.
  */
@@ -30,16 +28,16 @@ public class V2EXapiTest {
 
     @Test
     public void test() throws Exception{
-        getAllTopic();
+        V2EXapi.getMyFollowingMembers();
     }
 
-    public void getAllTopic() throws Exception {
-        if(sessionId > 0) {
+    public void getPageData() throws Exception {
+//        if(sessionId > 0) {
             PageData<Topic> pageData = new PageData<>();
-            pageData.setCurrentPage(300);
-            V2EXapi.getAllTopic(pageData);
+            pageData.setCurrentPage(2);
+            V2EXapi.getMyFollowingTopics(pageData);
             System.out.println();
-        }
+//        }
     }
 
 }
