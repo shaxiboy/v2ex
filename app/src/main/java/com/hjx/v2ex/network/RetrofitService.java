@@ -41,44 +41,31 @@ public interface RetrofitService {
 
     //全部主题列表页
     @GET("recent")
-    Call<ResponseBody> allTopicsPage(@Query("p") int page);
-
-    //会员的主题列表页
-    @GET("member/{member}/topics")
-    Call<ResponseBody> memberTopicsPage(@Path("member") String memberName, @Query("p") int page);
-
-    //我收藏的主题页面
-    @GET("my/topics")
-    Call<ResponseBody> myFollowingTopicsPage(@Query("p") int page);
+    Call<ResponseBody> allTopicsPage(@Query("p") Integer page);
 
     //主题详情页
     @GET("t/{id}")
-    Call<ResponseBody> topicDetailsPage(@Path("id") int topicID, @Query("p") int page);
-
-    //感谢主题
-    @POST("thank/topic/{id}")
-    @FormUrlEncoded
-    Call<ResponseBody> thankTopic(@Path("id") int topicID, @Field("t") String token);
+    Call<ResponseBody> topicDetailsPage(@Path("id") int topicID, @Query("p") Integer page);
 
     //全部节点页面
     @GET("planes")
     Call<ResponseBody> allNodesPage();
 
-    //我收藏的节点页面
-    @GET("my/nodes")
-    Call<ResponseBody> myFollowingNodesPage();
-
     //节点详情页
     @GET("go/{node}")
-    Call<ResponseBody> nodeDetailsPage(@Path("node") String nodeName, @Query("p") int page);
+    Call<ResponseBody> nodeDetailsPage(@Path("node") String nodeName, @Query("p") Integer page);
 
     //会员详情页
     @GET("member/{membername}")
     Call<ResponseBody> memberDetailsPage(@Path("membername") String memberName);
 
-    //我关注的人页面
-    @GET("my/following")
-    Call<ResponseBody> myFollowingMembersPage(@Query("p") int page);
+    //会员发表的主题列表页
+    @GET("member/{membername}/topics")
+    Call<ResponseBody> memberTopicsPage(@Path("membername") String memberName, @Query("p") Integer page);
+
+    //会员发表的主题回复列表页
+    @GET("member/{membername}/replies")
+    Call<ResponseBody> memberTopicRepliesPage(@Path("membername") String memberName, @Query("p") Integer page);
 
     //登陆页面
     @GET("signin")
@@ -98,5 +85,22 @@ public interface RetrofitService {
     })
     @GET("signout")
     Call<ResponseBody> signout(@Query("once") int sessionId);
+
+    //我收藏的主题列表页面
+    @GET("my/topics")
+    Call<ResponseBody> myFollowingTopicsPage(@Query("p") Integer page);
+
+    //我关注的人页面
+    @GET("my/following")
+    Call<ResponseBody> myFollowingMembersPage(@Query("p") Integer page);
+
+    //我收藏的节点页面
+    @GET("my/nodes")
+    Call<ResponseBody> myFollowingNodesPage();
+
+    //感谢主题
+    @POST("thank/topic/{id}")
+    @FormUrlEncoded
+    Call<ResponseBody> thankTopic(@Path("id") int topicID, @Field("t") String token);
 
 }

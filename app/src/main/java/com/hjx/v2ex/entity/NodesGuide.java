@@ -8,7 +8,7 @@ import java.util.Map;
  * Created by shaxiboy on 2017/3/24 0024.
  */
 
-public class NodeGuide {
+public class NodesGuide {
 
     private Map<String, List<Node>> nodeSections = new LinkedHashMap<>();
 
@@ -22,7 +22,7 @@ public class NodeGuide {
 
     @Override
     public String toString() {
-        return "NodeGuide{" +
+        return "NodesGuide{" +
                 "nodeSections=" + nodeSections +
                 '}';
     }

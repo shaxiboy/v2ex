@@ -8,7 +8,7 @@ import java.util.Map;
  * Created by shaxiboy on 2017/3/22 0022.
  */
 
-public class NodePlane {
+public class NodesPlane {
 
     private int nodeCount;
     private Map<String, List<Node>> nodeSections = new LinkedHashMap<>();

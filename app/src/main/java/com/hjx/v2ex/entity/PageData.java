@@ -1,5 +1,6 @@
 package com.hjx.v2ex.entity;
 
+import java.util.ArrayList;
 import java.util.List;
 
 /**
@@ -11,7 +12,7 @@ public class PageData<T> {
     private int currentPage;
     private int totalPage;
     private int totalItems;
-    private List<T> currentPageItems;
+    private List<T> currentPageItems = new ArrayList<>();
 
     public int getCurrentPage() {
         return currentPage;
@@ -39,10 +40,6 @@ public class PageData<T> {
 
     public List<T> getCurrentPageItems() {
         return currentPageItems;
-    }
-
-    public void setCurrentPageItems(List<T> currentPageItems) {
-        this.currentPageItems = currentPageItems;
     }
 
     @Override

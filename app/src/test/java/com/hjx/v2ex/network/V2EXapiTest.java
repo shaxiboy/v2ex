@@ -31,13 +31,4 @@ public class V2EXapiTest {
         V2EXapi.getMyFollowingMembers();
     }
 
-    public void getPageData() throws Exception {
-//        if(sessionId > 0) {
-            PageData<Topic> pageData = new PageData<>();
-            pageData.setCurrentPage(2);
-            V2EXapi.getMyFollowingTopics(pageData);
-            System.out.println();
-//        }
-    }
-
 }
