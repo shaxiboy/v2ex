@@ -2,6 +2,7 @@ package com.hjx.v2ex.util;
 
 import android.text.TextUtils;
 
+import com.hjx.v2ex.entity.HomePage;
 import com.hjx.v2ex.entity.Member;
 import com.hjx.v2ex.entity.Node;
 import com.hjx.v2ex.entity.NodesGuide;
@@ -9,7 +10,9 @@ import com.hjx.v2ex.entity.NodesPlane;
 import com.hjx.v2ex.entity.PageData;
 import com.hjx.v2ex.entity.Reply;
 import com.hjx.v2ex.entity.Topic;
+import com.hjx.v2ex.entity.TopicPage;
 import com.hjx.v2ex.entity.V2EX;
+import com.hjx.v2ex.entity.V2EXMoreInfo;
 import com.hjx.v2ex.network.RetrofitService;
 
 import org.jsoup.Jsoup;
@@ -30,14 +33,23 @@ import java.util.regex.Pattern;
 
 public class HTMLUtil {
 
-    public static V2EX parseV2EX(String html) {
+    public static V2EX parseV2EX(Document doc) {
         V2EX v = new V2EX();
-        Element box = Jsoup.parse(html).getElementById("Rightbar").getElementsByClass("box").get(5);
-        Element cell = box.getElementsByClass("cell").get(1);
-        v.setMembers(Integer.parseInt(cell.getElementsByTag("td").get(1).text()));
-        v.setTopics(Integer.parseInt(cell.getElementsByTag("td").get(3).text()));
-        v.setReplies(Integer.parseInt(cell.getElementsByTag("td").get(5).text()));
+        for(Element boxEle : doc.getElementById("Rightbar").getElementsByClass("box")) {
+            if(boxEle.text().contains("社区运行状况")) {
+                Element cell = boxEle.getElementsByClass("cell").get(1);
+                v.setMembers(Integer.parseInt(cell.getElementsByTag("td").get(1).text()));
+                v.setTopics(Integer.parseInt(cell.getElementsByTag("td").get(3).text()));
+                v.setReplies(Integer.parseInt(cell.getElementsByTag("td").get(5).text()));
+            }
+        }
         return v;
+    }
+
+    public static V2EXMoreInfo parseV2EXMoreInfo(String html) {
+        V2EXMoreInfo moreInfo = new V2EXMoreInfo();
+        moreInfo.setMoreInfo(Jsoup.parse(html).getElementById("Main").getElementsByClass("page").first().text());
+        return moreInfo;
     }
 
     public static List<Topic> parseTopicsFromTabPage(String html) {
@@ -49,6 +61,21 @@ public class HTMLUtil {
         return topics;
     }
 
+    public static HomePage parseHomePage(String html) {
+        HomePage homePage = new HomePage();
+        List<Topic> topics = new ArrayList<>();
+        Document document = Jsoup.parse(html);
+        Elements elements = document.body().getElementsByClass("cell item");
+        for (Element element : elements) {
+            topics.add(parseTopicItemFromList(element));
+        }
+        homePage.setTopics(topics);
+        homePage.setV2ex(parseV2EX(document));
+        homePage.setHottestNodes(parseHottestNodes(document));
+        homePage.setNodesGuide(parseNodesGuide(document));
+        return homePage;
+    }
+
     public static PageData<Topic> parseAllTopics(String html) {
         PageData<Topic> pageData = new PageData<>();
         Element mainEle = Jsoup.parse(html).body().getElementById("Main");
@@ -57,7 +84,11 @@ public class HTMLUtil {
         }
         Element summarizeEle = mainEle.getElementsByClass("header").first().getElementsByClass("fade").first();
         pageData.setTotalItems(Integer.parseInt(summarizeEle.text().split("共")[1].split("个")[0].trim()));
-        pageData.setCurrentPage(Integer.parseInt(mainEle.getElementsByClass("header").first().nextElementSibling().getElementsByTag("input").first().attr("value")));
+        pageData.setCurrentPage(1);
+        Element inputEle = mainEle.getElementsByClass("header").first().nextElementSibling().getElementsByTag("input").first();
+        if(inputEle != null) {
+            pageData.setCurrentPage(Integer.parseInt(inputEle.attr("value")));
+        }
         pageData.setTotalPage((pageData.getTotalItems() + RetrofitService.PAGE_TOPICS_ITEM_NUM - 1) / RetrofitService.PAGE_TOPICS_ITEM_NUM);
         return pageData;
     }
@@ -70,7 +101,11 @@ public class HTMLUtil {
         }
         Element summarizeEle = topicsEle.nextElementSibling().nextElementSibling();
         pageData.setTotalItems(Integer.parseInt(summarizeEle.text().split("共")[1].split("个")[0].trim()));
-        pageData.setCurrentPage(Integer.parseInt(topicsEle.previousElementSibling().getElementsByTag("input").first().attr("value")));
+        pageData.setCurrentPage(1);
+        Element inputEle = topicsEle.previousElementSibling().getElementsByTag("input").first();
+        if(inputEle != null) {
+            pageData.setCurrentPage(Integer.parseInt(inputEle.attr("value")));
+        }
         pageData.setTotalPage((pageData.getTotalItems() + RetrofitService.PAGE_TOPICS_ITEM_NUM - 1) / RetrofitService.PAGE_TOPICS_ITEM_NUM);
         return pageData;
     }
@@ -127,6 +162,13 @@ public class HTMLUtil {
         return topic;
     }
 
+    public static TopicPage parseTopicPage(String html) {
+        TopicPage topicPage = new TopicPage();
+        topicPage.setTopic(parseTopicDetails(html));
+        topicPage.setReplies(parseTopicReplies(html));
+        return topicPage;
+    }
+
     public static Topic parseTopicDetails(String html) {
         Topic topic = new Topic();
         Document doc = Jsoup.parse(html);
@@ -147,7 +189,11 @@ public class HTMLUtil {
         topic.setTitle(headerEle.getElementsByTag("h1").first().text());
         topic.setCreatedTime(headerEle.getElementsByTag("small").first().text().split(" · ")[1]);
 
-        topic.setContent(doc.getElementsByClass("topic_content").first().html());
+
+        Element contentEle = doc.getElementsByClass("topic_content").first();
+        if(contentEle != null) {
+            topic.setContent(contentEle.text());
+        }
         List<Topic.PS> psList = new ArrayList<>();
         for (Element psEle : doc.getElementsByClass("subtle")) {
             psList.add(parseTopicPS(psEle));
@@ -198,8 +244,16 @@ public class HTMLUtil {
         PageData<Reply> pageData = new PageData<>();
         Document doc = Jsoup.parse(html);
         Element replyBox = doc.getElementById("Main").getElementsByClass("box").get(1);
-        pageData.setTotalItems(Integer.parseInt(replyBox.getElementsByTag("div").get(0).getElementsByTag("span").first().text().split(" 回复 ")[0]));
-        pageData.setCurrentPage(Integer.parseInt(replyBox.getElementsByClass("cell").get(1).getElementsByTag("input").first().attr("value")));
+        String replyNumInfo = replyBox.getElementsByTag("div").get(0).getElementsByTag("span").first().text();
+        if(replyNumInfo.equals("目前尚无回复")) {
+            return pageData;
+        }
+        pageData.setTotalItems(Integer.parseInt(replyNumInfo.split(" 回复 ")[0]));
+        pageData.setCurrentPage(1);
+        Element inputEle = replyBox.getElementsByClass("cell").get(1).getElementsByTag("input").first();
+        if(inputEle != null) {
+            pageData.setCurrentPage(Integer.parseInt(inputEle.attr("value")));
+        }
         pageData.setTotalPage((pageData.getTotalItems() + RetrofitService.PAGE_TOPIC_REPLIES_ITEM_NUM - 1) / RetrofitService.PAGE_TOPIC_REPLIES_ITEM_NUM);
         for (Element divEle : replyBox.getElementsByTag("div")) {
             if (divEle.attr("id") != null && divEle.attr("id").startsWith("r_")) {
@@ -223,7 +277,7 @@ public class HTMLUtil {
             timeInfo = timeInfo.split(" via ")[0];
         }
         reply.setReplyTime(timeInfo);
-        reply.setContent(mainTD.getElementsByClass("reply_content").first().html());
+        reply.setContent(mainTD.getElementsByClass("reply_content").first().text());
         return reply;
     }
 
@@ -251,7 +305,11 @@ public class HTMLUtil {
         if (!pageData.getCurrentPageItems().isEmpty()) {
             Element summarizeEle = doc.getElementsByClass("header").first();
             pageData.setTotalItems(Integer.parseInt(summarizeEle.text().split("主题总数  ")[1].trim()));
-            pageData.setCurrentPage(Integer.parseInt(summarizeEle.nextElementSibling().getElementsByTag("input").first().attr("value")));
+            pageData.setCurrentPage(1);
+            Element inputEle = summarizeEle.nextElementSibling().getElementsByTag("input").first();
+            if(inputEle != null) {
+                pageData.setCurrentPage(Integer.parseInt(inputEle.attr("value")));
+            }
             pageData.setTotalPage((pageData.getTotalItems() + RetrofitService.PAGE_TOPICS_ITEM_NUM - 1) / RetrofitService.PAGE_TOPICS_ITEM_NUM);
         }
         return pageData;
@@ -293,7 +351,7 @@ public class HTMLUtil {
         return pageData;
     }
 
-    public static NodesPlane parseAllNodes(String html) {
+    public static NodesPlane parseNodesPlane(String html) {
         NodesPlane nodesPlane = new NodesPlane();
         Document doc = Jsoup.parse(html);
         String text = doc.getElementsByTag("h2").first().text();
@@ -319,9 +377,8 @@ public class HTMLUtil {
         return nodesPlane;
     }
 
-    public static NodesGuide parseNodesGuide(String html) {
+    public static NodesGuide parseNodesGuide(Document doc) {
         NodesGuide nodesGuide = new NodesGuide();
-        Document doc = Jsoup.parse(html);
         Element boxEle = doc.getElementById("Main").getElementsByClass("box").get(1);
         for (Element div : boxEle.children()) {
             Elements tds = div.getElementsByTag("td");
@@ -339,9 +396,9 @@ public class HTMLUtil {
         return nodesGuide;
     }
 
-    public static List<Node> parseHottestNodes(String html) {
+    public static List<Node> parseHottestNodes(Document doc) {
         List<Node> hottestNodes = new ArrayList<>();
-        Element boxEle = Jsoup.parse(html).getElementById("Rightbar").getElementsByClass("box").get(3);
+        Element boxEle = doc.getElementById("Rightbar").getElementsByClass("box").get(3);
         if (boxEle.getElementsByClass("cell").first().text().equals("最热节点")) {
             for (Element nodeEle : boxEle.getElementsByClass("cell").get(1).getElementsByTag("a")) {
                 Node node = new Node();

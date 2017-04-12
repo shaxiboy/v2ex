@@ -10,7 +10,7 @@ public class Topic {
 
     private int id;
     private String title;
-    private String content;
+    private String content = "";
     private int replyNum;
     private int collectedNum;
     private int thanksNum;

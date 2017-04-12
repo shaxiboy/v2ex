@@ -1,10 +1,7 @@
 package com.hjx.v2ex;
 
 import android.app.Application;
-import android.content.Context;
 import android.os.Environment;
-
-import com.facebook.stetho.Stetho;
 
 /**
  * Created by shaxiboy on 2017/3/20 0020.
@@ -12,18 +9,15 @@ import com.facebook.stetho.Stetho;
 
 public class App extends Application {
 
-    public static Context context;
     public static String cacheDir;
 
     @Override
     public void onCreate() {
         super.onCreate();
-        Stetho.initializeWithDefaults(this);
-        context = getApplicationContext();
         if (getApplicationContext().getExternalCacheDir() != null && existSDCard()) {
-            cacheDir = context.getExternalCacheDir().toString();
+            cacheDir = getApplicationContext().getExternalCacheDir().toString();
         } else {
-            cacheDir = context.getCacheDir().toString();
+            cacheDir = getApplicationContext().getCacheDir().toString();
         }
     }
 

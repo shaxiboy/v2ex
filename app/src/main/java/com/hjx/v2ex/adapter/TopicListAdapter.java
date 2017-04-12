@@ -11,9 +11,8 @@ import android.widget.TextView;
 
 import com.bumptech.glide.Glide;
 import com.hjx.v2ex.R;
-import com.hjx.v2ex.entity.TopicOld;
+import com.hjx.v2ex.entity.Topic;
 import com.hjx.v2ex.ui.TopicDetailsActivity;
-import com.hjx.v2ex.util.V2EXUtil;
 import com.jauker.widget.BadgeView;
 
 import java.util.ArrayList;
@@ -30,14 +29,14 @@ import de.hdodenhof.circleimageview.CircleImageView;
 public class TopicListAdapter extends Adapter {
 
 
-    private List<TopicOld> topics = new ArrayList<>();
+    private List<Topic> topics = new ArrayList<>();
     private Context context;
 
     public TopicListAdapter(Context context) {
         this.context = context;
     }
 
-    public void setTopics(List<TopicOld> topics) {
+    public void setTopics(List<Topic> topics) {
         this.topics = topics;
         this.notifyDataSetChanged();
     }
@@ -85,15 +84,13 @@ public class TopicListAdapter extends Adapter {
             });
         }
 
-        protected void bind(TopicOld topic) {
-            Glide.with(context).load(topic.getMember().getAvatarMini()).into(imageView);
+        protected void bind(Topic topic) {
+            Glide.with(context).load(topic.getMember().getPhoto()).into(imageView);
             topicTV.setText(topic.getTitle());
             node.setText(topic.getNode().getTitle());
             author.setText(topic.getMember().getUsername());
-            if (topic.getLastModifiedS() != null) {
-                time.setText(V2EXUtil.parseTime(topic.getLastModifiedS()));
-            }
-            reply.setBadgeCount(topic.getReplies());
+            time.setText(topic.getLastRepliedTime());
+            reply.setBadgeCount(topic.getReplyNum());
         }
     }
 }

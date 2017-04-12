@@ -22,20 +22,20 @@ public class V2EXapi {
 
     //获取V2EX网站相关信息
     public static V2EX getV2EX() {
-        try {
-            V2EX v2ex = HTMLUtil.parseV2EX(RetrofitSingleton.getInstance().homePage(null).execute().body().string());
-            v2ex.setNodes(getAllNodes().getNodeCount());
-            return v2ex;
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
+//        try {
+//            V2EX v2ex = HTMLUtil.parseV2EX(RetrofitSingleton.getInstance().homePageOld(null).execute().body().string());
+//            v2ex.setNodes(getAllNodes().getNodeCount());
+//            return v2ex;
+//        } catch (IOException e) {
+//            e.printStackTrace();
+//        }
         return null;
     }
 
     //获取tab页的主题
     public static List<Topic> getTopicsFromTab(String tab) {
         try {
-            return HTMLUtil.parseTopicsFromTabPage(RetrofitSingleton.getInstance().homePage(tab).execute().body().string());
+            return HTMLUtil.parseTopicsFromTabPage(RetrofitSingleton.getInstance().homePageOld(tab).execute().body().string());
         } catch (IOException e) {
             e.printStackTrace();
         }
@@ -55,7 +55,7 @@ public class V2EXapi {
     //获取主题详情
     public static Topic getTopicDetails(int topicId) {
         try {
-            Topic topic = HTMLUtil.parseTopicDetails(RetrofitSingleton.getInstance().topicDetailsPage(topicId, null).execute().body().string());
+            Topic topic = HTMLUtil.parseTopicDetails(RetrofitSingleton.getInstance().topicDetailsPageOld(topicId, null).execute().body().string());
             topic.setId(topicId);
             return topic;
         } catch (IOException e) {
@@ -67,7 +67,7 @@ public class V2EXapi {
     //获取主题回复列表
     public static PageData<Reply> getTopicReplies(int topicId, int page) {
         try {
-            return HTMLUtil.parseTopicReplies(RetrofitSingleton.getInstance().topicDetailsPage(topicId, page).execute().body().string());
+            return HTMLUtil.parseTopicReplies(RetrofitSingleton.getInstance().topicDetailsPageOld(topicId, page).execute().body().string());
         } catch (IOException e) {
             e.printStackTrace();
         }
@@ -108,31 +108,31 @@ public class V2EXapi {
 
     //获取最热节点
     public static List<Node> getHottestNodes() {
-        try {
-            return HTMLUtil.parseHottestNodes(RetrofitSingleton.getInstance().homePage(null).execute().body().string());
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
+//        try {
+//            return HTMLUtil.parseHottestNodes(RetrofitSingleton.getInstance().homePageOld(null).execute().body().string());
+//        } catch (IOException e) {
+//            e.printStackTrace();
+//        }
         return null;
     }
 
     //获取节点导航信息
     public static NodesGuide getNodesGuide() {
-        try {
-            return HTMLUtil.parseNodesGuide(RetrofitSingleton.getInstance().homePage(null).execute().body().string());
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
+//        try {
+//            return HTMLUtil.parseNodesGuide(RetrofitSingleton.getInstance().homePageOld(null).execute().body().string());
+//        } catch (IOException e) {
+//            e.printStackTrace();
+//        }
         return null;
     }
 
     //获取所有节点
     public static NodesPlane getAllNodes() {
-        try {
-            return HTMLUtil.parseAllNodes(RetrofitSingleton.getInstance().allNodesPage().execute().body().string());
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
+//        try {
+//            return HTMLUtil.parseNodesPlane(RetrofitSingleton.getInstance().allNodesPage().execute().body().string());
+//        } catch (IOException e) {
+//            e.printStackTrace();
+//        }
         return null;
     }
 

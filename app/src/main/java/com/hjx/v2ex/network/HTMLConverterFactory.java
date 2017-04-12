@@ -1,12 +1,12 @@
 package com.hjx.v2ex.network;
 
-import com.hjx.v2ex.entity.NodeOld;
-import com.hjx.v2ex.entity.TopicOld;
+import com.hjx.v2ex.util.HTMLUtil;
 
 import java.io.IOException;
 import java.lang.annotation.Annotation;
+import java.lang.reflect.InvocationTargetException;
+import java.lang.reflect.Method;
 import java.lang.reflect.Type;
-import java.util.Arrays;
 
 import okhttp3.ResponseBody;
 import retrofit2.Converter;
@@ -37,12 +37,18 @@ public class HTMLConverterFactory extends Converter.Factory {
 
         @Override
         public T convert(ResponseBody responseBody) throws IOException {
-            if(type == NodeOld.class) {
-                throw new IOException();
+            String convertMethodName = "parse" + ((Class) type).getSimpleName();
+            try {
+                Method convertMethod = HTMLUtil.class.getMethod(convertMethodName, String.class);
+                return (T) convertMethod.invoke(null, responseBody.string());
+            } catch (NoSuchMethodException e) {
+                e.printStackTrace();
+            } catch (InvocationTargetException e) {
+                e.printStackTrace();
+            } catch (IllegalAccessException e) {
+                e.printStackTrace();
             }
-            TopicOld topic = new TopicOld();
-            topic.setContent("test");
-            return (T) Arrays.asList(new TopicOld[] {topic});
+            return null;
         }
 
     }

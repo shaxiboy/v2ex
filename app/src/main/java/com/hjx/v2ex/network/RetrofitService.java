@@ -1,11 +1,10 @@
 package com.hjx.v2ex.network;
 
-import com.hjx.v2ex.entity.MemberOld;
-import com.hjx.v2ex.entity.NodeOld;
-import com.hjx.v2ex.entity.ReplyOld;
-import com.hjx.v2ex.entity.TopicOld;
+import com.hjx.v2ex.entity.HomePage;
+import com.hjx.v2ex.entity.NodesPlane;
+import com.hjx.v2ex.entity.TopicPage;
+import com.hjx.v2ex.entity.V2EXMoreInfo;
 
-import java.util.List;
 import java.util.Map;
 
 import okhttp3.ResponseBody;
@@ -35,9 +34,17 @@ public interface RetrofitService {
     @GET
     Call<ResponseBody> doGet(@Url String url);
 
+    //关于页面
+    @GET("about")
+    Call<V2EXMoreInfo> aboutPage();
+
     //tab标签对应的主页
     @GET(".")
-    Call<ResponseBody> homePage(@Query("tab") String tab);
+    Call<ResponseBody> homePageOld(@Query("tab") String tab);
+
+    //tab标签对应的主页
+    @GET(".")
+    Call<HomePage> homePage(@Query("tab") String tab);
 
     //全部主题列表页
     @GET("recent")
@@ -45,11 +52,15 @@ public interface RetrofitService {
 
     //主题详情页
     @GET("t/{id}")
-    Call<ResponseBody> topicDetailsPage(@Path("id") int topicID, @Query("p") Integer page);
+    Call<ResponseBody> topicDetailsPageOld(@Path("id") int topicID, @Query("p") Integer page);
+
+    //主题详情页
+    @GET("t/{id}")
+    Call<TopicPage> topicPage(@Path("id") int topicID, @Query("p") Integer page);
 
     //全部节点页面
     @GET("planes")
-    Call<ResponseBody> allNodesPage();
+    Call<NodesPlane> allNodesPage();
 
     //节点详情页
     @GET("go/{node}")

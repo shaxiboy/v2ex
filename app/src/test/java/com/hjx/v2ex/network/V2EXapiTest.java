@@ -7,6 +7,8 @@ import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
 
+import static com.hjx.v2ex.network.V2EXapi.getMyFollowingMembers;
+
 /**
  * Created by shaxiboy on 2017/3/26 0026.
  */
@@ -28,7 +30,8 @@ public class V2EXapiTest {
 
     @Test
     public void test() throws Exception{
-        V2EXapi.getMyFollowingMembers();
+        Object result = V2EXapi.getTopicReplies(350989, 1);
+        System.out.println(result);
     }
 
 }

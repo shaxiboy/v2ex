@@ -9,9 +9,9 @@ import android.widget.TextView;
 
 import com.bumptech.glide.Glide;
 import com.hjx.v2ex.R;
-import com.hjx.v2ex.entity.ReplyOld;
-import com.hjx.v2ex.entity.TopicOld;
-import com.hjx.v2ex.util.V2EXUtil;
+import com.hjx.v2ex.entity.PageData;
+import com.hjx.v2ex.entity.Reply;
+import com.hjx.v2ex.entity.Topic;
 import com.jauker.widget.BadgeView;
 
 import java.util.ArrayList;
@@ -31,32 +31,43 @@ public class TopicAdapter extends RecyclerView.Adapter {
     public static final int VIEW_TYPE_HEADER = -1;
     public static final int VIEW_TYPE_FOOTER = -2;
 
-    private TopicOld topic;
-    private List<ReplyOld> replies = new ArrayList<>();
     private Context context;
+    private OnScrollToBottomListener scrollListener;
+    private Topic topic;
+    private List<Reply> replies = new ArrayList<>();
+    private PageData<Reply> pageData;
     private boolean canLoadMore;
+    private boolean onLoadingMore;
 
-    public TopicAdapter(Context context) {
+    public TopicAdapter(Context context, OnScrollToBottomListener scrollListener) {
         this.context = context;
+        this.scrollListener = scrollListener;
     }
 
-    public void setTopic(TopicOld topic) {
+    public void setTopic(Topic topic) {
         this.topic = topic;
-        this.notifyItemChanged(0);
+        notifyDataSetChanged();
     }
 
-    public void addReplies(List<ReplyOld> replies) {
-        int position = this.replies.size() + 1;
-        this.replies.addAll(replies);
-        this.notifyItemRangeChanged(position, replies.size());
-    }
-
-    public List<ReplyOld> getReplies() {
-        return replies;
-    }
-
-    public void setCanLoadMore(boolean canLoadMore) {
-        this.canLoadMore = canLoadMore;
+    public void setPageData(PageData<Reply> pageData) {
+        this.pageData = pageData;
+        onLoadingMore = false;
+        if(pageData.getCurrentPage() == 1) {
+            replies.clear();
+        }
+        int position = replies.size();
+        List<Reply> currentPageItems = pageData.getCurrentPageItems();
+        replies.addAll(currentPageItems);
+        if(pageData.getCurrentPage() < pageData.getTotalPage()) {
+            canLoadMore = true;
+        } else {
+            canLoadMore = false;
+        }
+        if(topic != null) {
+            topic.setReplyNum(pageData.getTotalItems());
+            notifyItemChanged(0);
+            notifyItemRangeChanged(position, currentPageItems.size());
+        }
     }
 
     @Override
@@ -78,21 +89,33 @@ public class TopicAdapter extends RecyclerView.Adapter {
                 ((TopicDetailsViewHolder) holder).bind(topic);
                 break;
             case VIEW_TYPE_NORMAL:
-                ((TopicReplyViewHolder) holder).bind(replies.get(position - 1));
+                ((TopicReplyViewHolder) holder).bind(this.replies.get(position - 1));
                 break;
+        }
+        if(position == replies.size() && canLoadMore) {
+            onLoadingMore = true;
+            notifyItemChanged(position + 1);
+            scrollListener.onLoadMore();
         }
     }
 
     @Override
     public int getItemCount() {
-        return replies.size();
+        if(topic != null) {
+            if(!onLoadingMore) {
+                return replies.size() + 1;
+            } else {
+                return replies.size() + 2;
+            }
+        }
+        return 0;
     }
 
     @Override
     public int getItemViewType(int position) {
         if(position == 0)
             return VIEW_TYPE_HEADER;
-        if(position == getItemCount() - 1)
+        if(onLoadingMore && (position == getItemCount() - 1))
             return VIEW_TYPE_FOOTER;
         return VIEW_TYPE_NORMAL;
     }
@@ -119,12 +142,12 @@ public class TopicAdapter extends RecyclerView.Adapter {
             ButterKnife.bind(this, itemView);
         }
 
-        protected void bind(TopicOld topic) {
-            Glide.with(context).load(topic.getMember().getAvatarMini()).into(photo);
+        protected void bind(Topic topic) {
+            Glide.with(context).load(topic.getMember().getPhoto()).into(photo);
             author.setText(topic.getMember().getUsername());
             node.setText(topic.getNode().getTitle());
-            time.setText(V2EXUtil.parseTime(topic.getCreated()));
-            replyNum.setBadgeCount(topic.getReplies());
+            time.setText(topic.getCreatedTime());
+            replyNum.setBadgeCount(topic.getReplyNum());
             title.setText(topic.getTitle());
             content.setText(topic.getContent());
         }
@@ -148,12 +171,12 @@ public class TopicAdapter extends RecyclerView.Adapter {
             ButterKnife.bind(this, itemView);
         }
 
-        protected void bind(ReplyOld reply) {
-            Glide.with(context).load(reply.getMember().getAvatarMini()).into(photo);
+        protected void bind(Reply reply) {
+            Glide.with(context).load(reply.getMember().getPhoto()).into(photo);
             author.setText(reply.getMember().getUsername());
-            time.setText(V2EXUtil.parseTime(reply.getCreated()));
+            time.setText(reply.getReplyTime());
             content.setText(reply.getContent());
-            floor.setText(getAdapterPosition() + 1 + "楼");
+            floor.setText(getAdapterPosition() + "楼");
         }
     }
 
