@@ -1,10 +1,13 @@
 package com.hjx.v2ex.adapter;
 
 import android.content.Context;
+import android.content.Intent;
+import android.support.constraint.ConstraintLayout;
 import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.LinearLayout;
 import android.widget.TextView;
 
 import com.bumptech.glide.Glide;
@@ -12,6 +15,7 @@ import com.hjx.v2ex.R;
 import com.hjx.v2ex.entity.PageData;
 import com.hjx.v2ex.entity.Reply;
 import com.hjx.v2ex.entity.Topic;
+import com.hjx.v2ex.ui.MemberDetailsActivity;
 import com.jauker.widget.BadgeView;
 
 import java.util.ArrayList;
@@ -31,7 +35,6 @@ public class TopicAdapter extends RecyclerView.Adapter {
     public static final int VIEW_TYPE_HEADER = -1;
     public static final int VIEW_TYPE_FOOTER = -2;
 
-    private Context context;
     private OnScrollToBottomListener scrollListener;
     private Topic topic;
     private List<Reply> replies = new ArrayList<>();
@@ -39,8 +42,7 @@ public class TopicAdapter extends RecyclerView.Adapter {
     private boolean canLoadMore;
     private boolean onLoadingMore;
 
-    public TopicAdapter(Context context, OnScrollToBottomListener scrollListener) {
-        this.context = context;
+    public TopicAdapter(OnScrollToBottomListener scrollListener) {
         this.scrollListener = scrollListener;
     }
 
@@ -74,11 +76,11 @@ public class TopicAdapter extends RecyclerView.Adapter {
     public RecyclerView.ViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
         switch (viewType) {
             case VIEW_TYPE_HEADER:
-                return new TopicDetailsViewHolder(LayoutInflater.from(context).inflate(R.layout.recycler_view_header_topic_detail, parent, false));
+                return new TopicDetailsViewHolder(LayoutInflater.from(parent.getContext()).inflate(R.layout.recycler_header_topic_details, parent, false));
             case VIEW_TYPE_FOOTER:
-                return new RecyclerViewFooterViewHolder(LayoutInflater.from(context).inflate(R.layout.recycler_view_footer, parent, false));
+                return new RecyclerViewFooterViewHolder(LayoutInflater.from(parent.getContext()).inflate(R.layout.recycler_footer_data_load_status, parent, false));
             default:
-                return new TopicReplyViewHolder(LayoutInflater.from(context).inflate(R.layout.reply_item, parent, false));
+                return new TopicReplyViewHolder(LayoutInflater.from(parent.getContext()).inflate(R.layout.recycler_item_reply, parent, false));
         }
     }
 
@@ -122,6 +124,10 @@ public class TopicAdapter extends RecyclerView.Adapter {
 
     class TopicDetailsViewHolder extends RecyclerView.ViewHolder {
 
+        private Context context;
+
+        @BindView(R.id.photo_container)
+        LinearLayout photoContainer;
         @BindView(R.id.photo)
         CircleImageView photo;
         @BindView(R.id.author)
@@ -140,9 +146,18 @@ public class TopicAdapter extends RecyclerView.Adapter {
         public TopicDetailsViewHolder(View itemView) {
             super(itemView);
             ButterKnife.bind(this, itemView);
+            context = itemView.getContext();
+            photoContainer.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View view) {
+                    Intent intent = new Intent(context, MemberDetailsActivity.class);
+                    intent.putExtra("member", topic.getMember().getUsername());
+                    context.startActivity(intent);
+                }
+            });
         }
 
-        protected void bind(Topic topic) {
+        protected void bind(final Topic topic) {
             Glide.with(context).load(topic.getMember().getPhoto()).into(photo);
             author.setText(topic.getMember().getUsername());
             node.setText(topic.getNode().getTitle());
@@ -154,6 +169,8 @@ public class TopicAdapter extends RecyclerView.Adapter {
     }
 
     class TopicReplyViewHolder extends RecyclerView.ViewHolder {
+
+        private Context context;
 
         @BindView(R.id.photo)
         CircleImageView photo;
@@ -169,10 +186,19 @@ public class TopicAdapter extends RecyclerView.Adapter {
         public TopicReplyViewHolder(View itemView) {
             super(itemView);
             ButterKnife.bind(this, itemView);
+            context = itemView.getContext();
         }
 
-        protected void bind(Reply reply) {
+        protected void bind(final Reply reply) {
             Glide.with(context).load(reply.getMember().getPhoto()).into(photo);
+            photo.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View view) {
+                    Intent intent = new Intent(context, MemberDetailsActivity.class);
+                    intent.putExtra("member", reply.getMember().getUsername());
+                    context.startActivity(intent);
+                }
+            });
             author.setText(reply.getMember().getUsername());
             time.setText(reply.getReplyTime());
             content.setText(reply.getContent());

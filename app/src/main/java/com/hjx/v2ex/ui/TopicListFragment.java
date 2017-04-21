@@ -38,10 +38,10 @@ public class TopicListFragment extends Fragment implements SwipeRefreshLayout.On
     private boolean isVisibleToUser;
     private Unbinder unbinder;
 
-    @BindView(R.id.recyclerView)
-    RecyclerView recyclerView;
     @BindView(R.id.swipeRefreshLayout)
     SwipeRefreshLayout swipeRefreshLayout;
+    @BindView(R.id.recycler_view)
+    RecyclerView recyclerView;
 
     public static Fragment newInstance(String tab) {
         TopicListFragment topicListFragment = new TopicListFragment();
@@ -60,10 +60,10 @@ public class TopicListFragment extends Fragment implements SwipeRefreshLayout.On
     @Nullable
     @Override
     public View onCreateView(LayoutInflater inflater, @Nullable ViewGroup container, Bundle savedInstanceState) {
-        View root = inflater.inflate(R.layout.topic_list, container, false);
+        View root = inflater.inflate(R.layout.fragment_topic_list, container, false);
         unbinder = ButterKnife.bind(this, root);
         recyclerView.setLayoutManager(new LinearLayoutManager(getContext()));
-        adapter = new TopicListAdapter(getContext());
+        adapter = new TopicListAdapter();
         recyclerView.setAdapter(adapter);
         swipeRefreshLayout.setOnRefreshListener(this);
         hasCreateView = true;

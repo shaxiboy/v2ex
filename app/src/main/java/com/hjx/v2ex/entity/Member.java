@@ -1,15 +1,20 @@
 package com.hjx.v2ex.entity;
 
+import java.io.Serializable;
+import java.util.ArrayList;
+import java.util.List;
+
 /**
  * Created by shaxiboy on 2017/3/3 0003.
  */
 
-public class Member {
+public class Member implements Serializable{
 
     private String username;
     private String photo;
-    private String joinTime;
+    private String basicInfo;
     private String noticeHref;
+    private List<MemberMoreInfo> moreInfos = new ArrayList<>();
 
     public String getUsername() {
         return username;
@@ -27,12 +32,12 @@ public class Member {
         this.photo = photo;
     }
 
-    public String getJoinTime() {
-        return joinTime;
+    public String getBasicInfo() {
+        return basicInfo;
     }
 
-    public void setJoinTime(String joinTime) {
-        this.joinTime = joinTime;
+    public void setBasicInfo(String basicInfo) {
+        this.basicInfo = basicInfo;
     }
 
     public String getNoticeHref() {
@@ -43,13 +48,22 @@ public class Member {
         this.noticeHref = noticeHref;
     }
 
+    public List<MemberMoreInfo> getMoreInfos() {
+        return moreInfos;
+    }
+
+    public void setMoreInfos(List<MemberMoreInfo> moreInfos) {
+        this.moreInfos = moreInfos;
+    }
+
     @Override
     public String toString() {
         return "Member{" +
                 "username='" + username + '\'' +
                 ", photo='" + photo + '\'' +
-                ", joinTime='" + joinTime + '\'' +
+                ", basicInfo='" + basicInfo + '\'' +
                 ", noticeHref='" + noticeHref + '\'' +
+                ", moreInfos=" + moreInfos +
                 '}';
     }
 }

@@ -1,6 +1,8 @@
 package com.hjx.v2ex.entity;
 
+import java.util.LinkedHashMap;
 import java.util.List;
+import java.util.Map;
 
 /**
  * Created by shaxiboy on 2017/3/31 0031.
@@ -11,7 +13,7 @@ public class HomePage {
     private V2EX v2ex;
     private List<Topic> topics;
     private List<Node> hottestNodes;
-    private NodesGuide nodesGuide;
+    private Map<String, List<Node>> nodeGuide;
 
     public List<Topic> getTopics() {
         return topics;
@@ -37,11 +39,11 @@ public class HomePage {
         this.hottestNodes = hottestNodes;
     }
 
-    public NodesGuide getNodesGuide() {
-        return nodesGuide;
+    public Map<String, List<Node>> getNodeGuide() {
+        return nodeGuide;
     }
 
-    public void setNodesGuide(NodesGuide nodesGuide) {
-        this.nodesGuide = nodesGuide;
+    public void setNodeGuide(Map<String, List<Node>> nodeGuide) {
+        this.nodeGuide = nodeGuide;
     }
 }

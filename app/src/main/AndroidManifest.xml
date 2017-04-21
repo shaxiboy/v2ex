@@ -34,8 +34,13 @@
                 android:value="com.hjx.v2ex.MainActivity" />
         </activity>
         <activity android:name=".TestActivity" />
-        <activity android:name=".ui.AboutActivity"
-            android:label="@string/title_activity_about"></activity>
+        <activity
+            android:name=".ui.AboutActivity"
+            android:label="@string/title_activity_about" />
+        <activity android:name=".ui.NodeDetailsActivity" />
+        <activity android:name=".ui.MemberDetailsActivity"
+            android:label="会员详情"
+            android:exported="true"></activity>
     </application>
 
 </manifest>

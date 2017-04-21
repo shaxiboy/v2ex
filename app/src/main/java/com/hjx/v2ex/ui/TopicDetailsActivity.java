@@ -15,14 +15,10 @@ import com.hjx.v2ex.entity.Reply;
 import com.hjx.v2ex.entity.Topic;
 import com.hjx.v2ex.entity.TopicPage;
 import com.hjx.v2ex.network.RetrofitSingleton;
-import com.hjx.v2ex.util.HTMLUtil;
 import com.hjx.v2ex.util.LogUtil;
-
-import java.io.IOException;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
-import okhttp3.ResponseBody;
 import retrofit2.Call;
 import retrofit2.Callback;
 import retrofit2.Response;
@@ -35,7 +31,7 @@ public class TopicDetailsActivity extends AppCompatActivity implements OnScrollT
 
     @BindView(R.id.toolbar)
     Toolbar toolbar;
-    @BindView(R.id.recyclerView)
+    @BindView(R.id.recycler_view)
     RecyclerView recyclerView;
     @BindView(R.id.swipeRefreshLayout)
     SwipeRefreshLayout swipeRefreshLayout;
@@ -51,7 +47,7 @@ public class TopicDetailsActivity extends AppCompatActivity implements OnScrollT
         swipeRefreshLayout.setRefreshing(true);
 
         recyclerView.setLayoutManager(new LinearLayoutManager(this));
-        topicAdapter = new TopicAdapter(this, this);
+        topicAdapter = new TopicAdapter(this);
         recyclerView.setAdapter(topicAdapter);
 
         topicId = getIntent().getIntExtra("topicId", -1);

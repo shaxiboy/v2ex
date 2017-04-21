@@ -1,5 +1,6 @@
 package com.hjx.v2ex.entity;
 
+import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -7,7 +8,7 @@ import java.util.List;
  * Created by shaxiboy on 2017/3/2 0002.
  */
 
-public class Node {
+public class Node implements Serializable{
 
     private int id;
     private String name;
@@ -106,5 +107,21 @@ public class Node {
                 ", children=" + children +
                 ", relatives=" + relatives +
                 '}';
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+
+        Node node = (Node) o;
+
+        return name.equals(node.name);
+
+    }
+
+    @Override
+    public int hashCode() {
+        return name.hashCode();
     }
 }

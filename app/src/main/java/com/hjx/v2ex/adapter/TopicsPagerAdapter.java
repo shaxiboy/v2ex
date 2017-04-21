@@ -10,12 +10,12 @@ import com.hjx.v2ex.ui.TopicListFragment;
  * Created by shaxiboy on 2017/3/6 0006.
  */
 
-public class TopicTabsAdapter extends FragmentStatePagerAdapter {
+public class TopicsPagerAdapter extends FragmentStatePagerAdapter {
 
     private String[] tabs = new String[] {"tech", "creative", "play", "apple", "jobs", "deals", "city", "qna", "hot", "all", "r2", "nodes", "member"};
     private String[] tabnames = new String[] {"技术", "创意", "好玩", "Apple", "酷工作", "交易", "城市", "问与答", "最热", "全部", "R2", "节点", "关注"};
 
-    public TopicTabsAdapter(FragmentManager fm) {
+    public TopicsPagerAdapter(FragmentManager fm) {
         super(fm);
     }
 

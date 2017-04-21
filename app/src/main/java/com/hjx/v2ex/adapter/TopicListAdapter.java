@@ -2,6 +2,7 @@ package com.hjx.v2ex.adapter;
 
 import android.content.Context;
 import android.content.Intent;
+import android.support.constraint.ConstraintLayout;
 import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.RecyclerView.Adapter;
 import android.view.LayoutInflater;
@@ -12,6 +13,7 @@ import android.widget.TextView;
 import com.bumptech.glide.Glide;
 import com.hjx.v2ex.R;
 import com.hjx.v2ex.entity.Topic;
+import com.hjx.v2ex.ui.MemberDetailsActivity;
 import com.hjx.v2ex.ui.TopicDetailsActivity;
 import com.jauker.widget.BadgeView;
 
@@ -28,13 +30,7 @@ import de.hdodenhof.circleimageview.CircleImageView;
 
 public class TopicListAdapter extends Adapter {
 
-
     private List<Topic> topics = new ArrayList<>();
-    private Context context;
-
-    public TopicListAdapter(Context context) {
-        this.context = context;
-    }
 
     public void setTopics(List<Topic> topics) {
         this.topics = topics;
@@ -43,7 +39,7 @@ public class TopicListAdapter extends Adapter {
 
     @Override
     public RecyclerView.ViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
-        return new TopicViewHolder(LayoutInflater.from(context).inflate(R.layout.topic_item, parent, false));
+        return new TopicViewHolder(LayoutInflater.from(parent.getContext()).inflate(R.layout.recycler_item_topic, parent, false));
     }
 
     @Override
@@ -57,6 +53,8 @@ public class TopicListAdapter extends Adapter {
     }
 
     class TopicViewHolder extends RecyclerView.ViewHolder {
+
+        private Context context;
 
         @BindView(R.id.photo)
         CircleImageView imageView;
@@ -74,7 +72,17 @@ public class TopicListAdapter extends Adapter {
         public TopicViewHolder(View itemView) {
             super(itemView);
             ButterKnife.bind(this, itemView);
-            itemView.setOnClickListener(new View.OnClickListener() {
+            context = itemView.getContext();
+            imageView.setOnClickListener(new View.OnClickListener() {
+
+                @Override
+                public void onClick(View view) {
+                    Intent intent = new Intent(context, MemberDetailsActivity.class);
+                    intent.putExtra("member", topics.get(getAdapterPosition()).getMember().getUsername());
+                    context.startActivity(intent);
+                }
+            });
+            topicTV.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View view) {
                     Intent intent = new Intent(context, TopicDetailsActivity.class);

@@ -1,6 +1,10 @@
 package com.hjx.v2ex.network;
 
 import com.hjx.v2ex.entity.HomePage;
+import com.hjx.v2ex.entity.Member;
+import com.hjx.v2ex.entity.MemberTopicRepliesPage;
+import com.hjx.v2ex.entity.MemberTopicsPage;
+import com.hjx.v2ex.entity.NodePage;
 import com.hjx.v2ex.entity.NodesPlane;
 import com.hjx.v2ex.entity.TopicPage;
 import com.hjx.v2ex.entity.V2EXMoreInfo;
@@ -64,19 +68,19 @@ public interface RetrofitService {
 
     //节点详情页
     @GET("go/{node}")
-    Call<ResponseBody> nodeDetailsPage(@Path("node") String nodeName, @Query("p") Integer page);
+    Call<NodePage> nodeDetailsPage(@Path("node") String nodeName, @Query("p") Integer page);
 
     //会员详情页
     @GET("member/{membername}")
-    Call<ResponseBody> memberDetailsPage(@Path("membername") String memberName);
+    Call<Member> memberDetailsPage(@Path("membername") String memberName);
 
     //会员发表的主题列表页
     @GET("member/{membername}/topics")
-    Call<ResponseBody> memberTopicsPage(@Path("membername") String memberName, @Query("p") Integer page);
+    Call<MemberTopicsPage> memberTopicsPage(@Path("membername") String memberName, @Query("p") Integer page);
 
     //会员发表的主题回复列表页
     @GET("member/{membername}/replies")
-    Call<ResponseBody> memberTopicRepliesPage(@Path("membername") String memberName, @Query("p") Integer page);
+    Call<MemberTopicRepliesPage> memberTopicRepliesPage(@Path("membername") String memberName, @Query("p") Integer page);
 
     //登陆页面
     @GET("signin")

@@ -2,7 +2,6 @@ package com.hjx.v2ex.network;
 
 import com.hjx.v2ex.entity.Member;
 import com.hjx.v2ex.entity.Node;
-import com.hjx.v2ex.entity.NodesGuide;
 import com.hjx.v2ex.entity.NodesPlane;
 import com.hjx.v2ex.entity.PageData;
 import com.hjx.v2ex.entity.Reply;
@@ -76,33 +75,33 @@ public class V2EXapi {
 
     //获取用户详细信息
     public static Member getMemberDetails(String memberName) {
-        try {
-            Member member = HTMLUtil.parseMemberDetails(RetrofitSingleton.getInstance().memberDetailsPage(memberName).execute().body().string());
-            member.setUsername(memberName);
-            return member;
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
+//        try {
+//            Member member = HTMLUtil.parseMember(RetrofitSingleton.getInstance().memberDetailsPage(memberName).execute().body().string());
+//            member.setUsername(memberName);
+//            return member;
+//        } catch (IOException e) {
+//            e.printStackTrace();
+//        }
         return null;
     }
 
     //获取用户发表的主题列表
     public static PageData<Topic> getMemberTopics(String memberName, int page) {
-        try {
-            return HTMLUtil.parseMemberTopics(RetrofitSingleton.getInstance().memberTopicsPage(memberName, page).execute().body().string());
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
+//        try {
+//            return HTMLUtil.parseMemberTopics(RetrofitSingleton.getInstance().memberTopicsPage(memberName, page).execute().body().string());
+//        } catch (IOException e) {
+//            e.printStackTrace();
+//        }
         return null;
     }
 
     //获取用户发表的回复列表
     public static PageData<Map<Reply, Topic>> getMemberTopicReplies(String memberName, int page) {
-        try {
-            return HTMLUtil.parseMemberTopicReplies(RetrofitSingleton.getInstance().memberTopicRepliesPage(memberName, page).execute().body().string());
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
+//        try {
+//            return HTMLUtil.parseMemberTopicReplies(RetrofitSingleton.getInstance().memberTopicRepliesPage(memberName, page).execute().body().string());
+//        } catch (IOException e) {
+//            e.printStackTrace();
+//        }
         return null;
     }
 
@@ -117,14 +116,14 @@ public class V2EXapi {
     }
 
     //获取节点导航信息
-    public static NodesGuide getNodesGuide() {
+//    public static NodesGuide getNodesGuide() {
 //        try {
 //            return HTMLUtil.parseNodesGuide(RetrofitSingleton.getInstance().homePageOld(null).execute().body().string());
 //        } catch (IOException e) {
 //            e.printStackTrace();
 //        }
-        return null;
-    }
+//        return null;
+//    }
 
     //获取所有节点
     public static NodesPlane getAllNodes() {
@@ -138,23 +137,23 @@ public class V2EXapi {
 
     //获取节点详细信息
     public static Node getNodeDetails(String nodeName) {
-        try {
-            Node node = HTMLUtil.parseNodeDetails(RetrofitSingleton.getInstance().nodeDetailsPage(nodeName, 1).execute().body().string());
-            node.setName(nodeName);
-            return node;
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
+//        try {
+//            Node node = HTMLUtil.parseNodeDetails(RetrofitSingleton.getInstance().nodeDetailsPage(nodeName, 1).execute().body().string());
+//            node.setName(nodeName);
+//            return node;
+//        } catch (IOException e) {
+//            e.printStackTrace();
+//        }
         return null;
     }
 
     //获取节点下的主题列表
     public static PageData<Topic> getNodeTopics(String nodeName, int page) {
-        try {
-            return HTMLUtil.parseNodeTopics(RetrofitSingleton.getInstance().nodeDetailsPage(nodeName, page).execute().body().string());
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
+//        try {
+//            return HTMLUtil.parseNodeTopics(RetrofitSingleton.getInstance().nodeDetailsPage(nodeName, page).execute().body().string());
+//        } catch (IOException e) {
+//            e.printStackTrace();
+//        }
         return null;
     }
 
@@ -230,11 +229,11 @@ public class V2EXapi {
 
     //我关注的人的最新主题
     public static PageData<Topic> getMyFollowingMembersTopics(int page) {
-        try {
-            return HTMLUtil.parseMemberTopics(RetrofitSingleton.getInstance().myFollowingMembersPage(page).execute().body().string());
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
+//        try {
+//            return HTMLUtil.parseMemberTopics(RetrofitSingleton.getInstance().myFollowingMembersPage(page).execute().body().string());
+//        } catch (IOException e) {
+//            e.printStackTrace();
+//        }
         return null;
     }
 
@@ -263,11 +262,11 @@ public class V2EXapi {
 
     //获取收藏的主题
     public static PageData<Topic> getMyFollowingTopics(int page) {
-        try {
-            return HTMLUtil.parseMemberTopics(RetrofitSingleton.getInstance().myFollowingTopicsPage(page).execute().body().string());
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
+//        try {
+//            return HTMLUtil.parseMemberTopics(RetrofitSingleton.getInstance().myFollowingTopicsPage(page).execute().body().string());
+//        } catch (IOException e) {
+//            e.printStackTrace();
+//        }
         return null;
     }
 

@@ -9,4 +9,7 @@
     <string name="title_activity_topic_details">主题详情</string>
     <string name="title_activity_about">关于V2EX</string>
     <string name="title_activity_settings">设置</string>
+
+    <!-- TODO: Remove or change this placeholder text -->
+    <string name="hello_blank_fragment">Hello blank fragment</string>
 </resources>
