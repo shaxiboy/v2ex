@@ -4,7 +4,8 @@
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
-    android:layout_height="wrap_content">
+    android:layout_height="wrap_content"
+    android:layout_marginBottom="8dp">
 
     <ImageView
         android:id="@+id/photo"
@@ -55,14 +56,9 @@
         android:id="@+id/line1"
         android:layout_width="0dp"
         android:layout_height="1dp"
-        android:layout_marginEnd="8dp"
-        android:layout_marginLeft="8dp"
-        android:layout_marginRight="8dp"
-        android:layout_marginStart="8dp"
         android:background="#ffe4e4e4"
         app:layout_constraintLeft_toLeftOf="parent"
         app:layout_constraintRight_toRightOf="parent"
-        app:layout_constraintHorizontal_bias="0.0"
         android:layout_marginTop="8dp"
         app:layout_constraintTop_toBottomOf="@+id/desc" />
 
@@ -72,16 +68,16 @@
         android:orientation="vertical"
         android:layout_marginTop="8dp"
         app:layout_constraintTop_toBottomOf="@+id/line1"
-        android:layout_marginLeft="8dp"
         app:layout_constraintLeft_toLeftOf="parent"
-        android:layout_marginRight="8dp"
         app:layout_constraintRight_toRightOf="parent">
 
         <LinearLayout
             android:id="@+id/parent_node"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:orientation="horizontal">
+            android:orientation="horizontal"
+            android:layout_marginLeft="8dp"
+            android:layout_marginRight="8dp">
 
             <TextView
                 android:id="@+id/textView1"
@@ -101,7 +97,9 @@
             android:id="@+id/child_node"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:orientation="horizontal">
+            android:orientation="horizontal"
+            android:layout_marginLeft="8dp"
+            android:layout_marginRight="8dp">
 
             <TextView
                 android:id="@+id/textView2"
@@ -121,7 +119,9 @@
             android:id="@+id/relative_node"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:orientation="horizontal">
+            android:orientation="horizontal"
+            android:layout_marginLeft="8dp"
+            android:layout_marginRight="8dp">
 
             <TextView
                 android:id="@+id/textView3"

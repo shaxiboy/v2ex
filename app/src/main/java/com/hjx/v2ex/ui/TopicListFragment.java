@@ -1,49 +1,43 @@
 package com.hjx.v2ex.ui;
 
 import android.os.Bundle;
-import android.support.annotation.Nullable;
-import android.support.v4.app.Fragment;
 import android.support.v4.widget.SwipeRefreshLayout;
-import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
-import android.view.LayoutInflater;
-import android.view.View;
-import android.view.ViewGroup;
 
 import com.hjx.v2ex.R;
-import com.hjx.v2ex.adapter.TopicListAdapter;
-import com.hjx.v2ex.entity.HomePage;
+import com.hjx.v2ex.bean.HomePage;
+import com.hjx.v2ex.bean.Topic;
+import com.hjx.v2ex.flexibleitem.TopicFlexibleItem;
 import com.hjx.v2ex.network.RetrofitSingleton;
 
+import java.util.ArrayList;
+
 import butterknife.BindView;
-import butterknife.ButterKnife;
-import butterknife.Unbinder;
+import eu.davidea.flexibleadapter.FlexibleAdapter;
+import eu.davidea.flexibleadapter.common.SmoothScrollLinearLayoutManager;
 import retrofit2.Call;
 import retrofit2.Callback;
 import retrofit2.Response;
-
-import static butterknife.ButterKnife.bind;
 
 /**
  * Created by shaxiboy on 2017/3/6 0006.
  */
 
-public class TopicListFragment extends Fragment implements SwipeRefreshLayout.OnRefreshListener {
+public class TopicListFragment extends DataLoadingBaseFragment implements SwipeRefreshLayout.OnRefreshListener {
 
 
     private String tab;
-    private TopicListAdapter adapter;
+    private FlexibleAdapter<TopicFlexibleItem> adapter;
     private boolean hasCreateView;
     private boolean hasLoadData;
     private boolean isVisibleToUser;
-    private Unbinder unbinder;
 
-    @BindView(R.id.swipeRefreshLayout)
+    @BindView(R.id.swipe_refresh_layout)
     SwipeRefreshLayout swipeRefreshLayout;
     @BindView(R.id.recycler_view)
     RecyclerView recyclerView;
 
-    public static Fragment newInstance(String tab) {
+    public static TopicListFragment newInstance(String tab) {
         TopicListFragment topicListFragment = new TopicListFragment();
         Bundle bundle = new Bundle();
         bundle.putString("tab", tab);
@@ -52,25 +46,25 @@ public class TopicListFragment extends Fragment implements SwipeRefreshLayout.On
     }
 
     @Override
-    public void onCreate(@Nullable Bundle savedInstanceState) {
-        super.onCreate(savedInstanceState);
-        tab = getArguments().getString("tab");
+    public int getContentRes() {
+        return R.layout.fragment_topic_list;
     }
 
-    @Nullable
     @Override
-    public View onCreateView(LayoutInflater inflater, @Nullable ViewGroup container, Bundle savedInstanceState) {
-        View root = inflater.inflate(R.layout.fragment_topic_list, container, false);
-        unbinder = ButterKnife.bind(this, root);
-        recyclerView.setLayoutManager(new LinearLayoutManager(getContext()));
-        adapter = new TopicListAdapter();
+    protected void initView() {
+        tab = getArguments().getString("tab");
+        adapter = new FlexibleAdapter<>(new ArrayList<TopicFlexibleItem>());
         recyclerView.setAdapter(adapter);
+        recyclerView.setLayoutManager(new SmoothScrollLinearLayoutManager(getContext()));
         swipeRefreshLayout.setOnRefreshListener(this);
         hasCreateView = true;
+    }
+
+    @Override
+    protected void loadData() {
         if (isVisibleToUser) {
             loadTopics();
         }
-        return root;
     }
 
     //数据懒加载
@@ -84,33 +78,32 @@ public class TopicListFragment extends Fragment implements SwipeRefreshLayout.On
     }
 
     @Override
-    public void onDestroyView() {
-        super.onDestroyView();
-        unbinder.unbind();
-    }
-
-    @Override
     public void onRefresh() {
         loadTopics();
     }
 
     //需实现数据的懒加载
     public void loadTopics() {
-        swipeRefreshLayout.setRefreshing(true);
         RetrofitSingleton.getInstance().homePage(tab).enqueue(new Callback<HomePage>() {
             @Override
             public void onResponse(Call<HomePage> call, Response<HomePage> response) {
                 swipeRefreshLayout.setRefreshing(false);
                 HomePage homePage = response.body();
                 if (homePage != null) {
-                    adapter.setTopics(homePage.getTopics());
+                    for(Topic topic : homePage.getTopics()) {
+                        adapter.addItem(new TopicFlexibleItem(topic, TopicFlexibleItem.TopicItemType.FULL, null));
+                    }
+                    successLoadingData();
                     hasLoadData = true;
+                } else {
+                    errorLoadingData();
                 }
             }
 
             @Override
             public void onFailure(Call<HomePage> call, Throwable throwable) {
                 swipeRefreshLayout.setRefreshing(false);
+                errorLoadingData();
                 throwable.printStackTrace();
             }
         });

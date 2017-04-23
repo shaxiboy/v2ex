@@ -1,19 +1,15 @@
-package com.hjx.v2ex.entity;
+package com.hjx.v2ex.flexibleitem;
 
 import android.content.Context;
-import android.content.Intent;
-import android.support.constraint.ConstraintLayout;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.TextView;
 
-import com.bumptech.glide.Glide;
 import com.hjx.v2ex.R;
-import com.hjx.v2ex.ui.MemberDetailsActivity;
-import com.hjx.v2ex.ui.NodeDetailsActivity;
-import com.hjx.v2ex.ui.TopicDetailsActivity;
-import com.jauker.widget.BadgeView;
+import com.hjx.v2ex.bean.Reply;
+import com.hjx.v2ex.bean.Topic;
+import com.hjx.v2ex.ui.DataLoadingBaseActivity;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -21,9 +17,7 @@ import java.util.Map;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
-import de.hdodenhof.circleimageview.CircleImageView;
 import eu.davidea.flexibleadapter.FlexibleAdapter;
-import eu.davidea.flexibleadapter.items.AbstractFlexibleItem;
 import eu.davidea.flexibleadapter.items.AbstractSectionableItem;
 import eu.davidea.flexibleadapter.items.IHeader;
 import eu.davidea.viewholders.FlexibleViewHolder;
@@ -61,9 +55,7 @@ public class MemberReplyFlexibleItem extends AbstractSectionableItem<MemberReply
         holder.node.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                Intent intent = new Intent(context, NodeDetailsActivity.class);
-                intent.putExtra("node", topic.getNode());
-                context.startActivity(intent);
+                DataLoadingBaseActivity.gotoNodeDetailsActivity(view.getContext(), topic.getNode().getName());
             }
         });
         holder.time.setText(reply.getReplyTime());
@@ -71,9 +63,7 @@ public class MemberReplyFlexibleItem extends AbstractSectionableItem<MemberReply
         holder.topic.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                Intent intent = new Intent(context, TopicDetailsActivity.class);
-                intent.putExtra("topicId", topic.getId());
-                context.startActivity(intent);
+                DataLoadingBaseActivity.gotoTopicDetailsActivity(view.getContext(), topic.getId());
             }
         });
         holder.reply.setText(reply.getContent());

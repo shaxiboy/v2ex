@@ -1,4 +1,4 @@
-package com.hjx.v2ex.entity;
+package com.hjx.v2ex.flexibleitem;
 
 import android.view.LayoutInflater;
 import android.view.View;
@@ -6,6 +6,8 @@ import android.view.ViewGroup;
 import android.widget.TextView;
 
 import com.hjx.v2ex.R;
+import com.hjx.v2ex.bean.Node;
+import com.hjx.v2ex.ui.DataLoadingBaseActivity;
 
 import java.util.List;
 
@@ -20,6 +22,7 @@ import eu.davidea.viewholders.FlexibleViewHolder;
  */
 
 public class NodeFlexibleItem extends AbstractSectionableItem<NodeFlexibleItem.NodeViewHolder, IHeader> implements IFilterable {
+
     private Node node;
 
     public NodeFlexibleItem(Node node, IHeader header) {
@@ -44,6 +47,12 @@ public class NodeFlexibleItem extends AbstractSectionableItem<NodeFlexibleItem.N
     @Override
     public void bindViewHolder(FlexibleAdapter adapter, NodeViewHolder holder, int position, List payloads) {
         holder.nodeTitle.setText(node.getTitle());
+        holder.nodeTitle.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                DataLoadingBaseActivity.gotoMemberDetailsActivity(view.getContext(), node.getName());
+            }
+        });
     }
 
     @Override

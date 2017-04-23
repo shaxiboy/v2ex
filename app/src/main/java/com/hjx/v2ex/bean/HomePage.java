@@ -1,6 +1,5 @@
-package com.hjx.v2ex.entity;
+package com.hjx.v2ex.bean;
 
-import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 

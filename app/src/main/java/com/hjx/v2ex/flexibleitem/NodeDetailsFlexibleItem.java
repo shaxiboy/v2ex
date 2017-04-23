@@ -1,7 +1,7 @@
-package com.hjx.v2ex.entity;
+package com.hjx.v2ex.flexibleitem;
 
 import android.content.Context;
-import android.content.Intent;
+import android.graphics.Color;
 import android.support.v7.widget.CardView;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -12,7 +12,8 @@ import android.widget.TextView;
 
 import com.bumptech.glide.Glide;
 import com.hjx.v2ex.R;
-import com.hjx.v2ex.ui.NodeDetailsActivity;
+import com.hjx.v2ex.bean.Node;
+import com.hjx.v2ex.ui.DataLoadingBaseActivity;
 import com.jauker.widget.BadgeView;
 
 import org.apmem.tools.layouts.FlowLayout;
@@ -76,20 +77,26 @@ public class NodeDetailsFlexibleItem extends AbstractFlexibleItem<NodeDetailsFle
             if (node.getParent() == null) {
                 holder.parentNode.setVisibility(View.GONE);
             } else {
-                holder.parentNodeContainer.addView(getNodeComponent(context, node.getParent()));
+                if(holder.parentNodeContainer.getChildCount() == 0) {
+                    holder.parentNodeContainer.addView(getNodeComponent(context, node.getParent()));
+                }
             }
             if (node.getChildren().isEmpty()) {
                 holder.childNode.setVisibility(View.GONE);
             } else {
-                for (Node child : node.getChildren()) {
-                    holder.childNodeContainer.addView(getNodeComponent(context, child));
+                if(holder.childNodeContainer.getChildCount() == 0) {
+                    for (Node child : node.getChildren()) {
+                        holder.childNodeContainer.addView(getNodeComponent(context, child));
+                    }
                 }
             }
             if (node.getRelatives().isEmpty()) {
                 holder.relativeNode.setVisibility(View.GONE);
             } else {
-                for (Node relative : node.getRelatives()) {
-                    holder.relativeNodeContainer.addView(getNodeComponent(context, relative));
+                if(holder.relativeNodeContainer.getChildCount() == 0) {
+                    for (Node relative : node.getRelatives()) {
+                        holder.relativeNodeContainer.addView(getNodeComponent(context, relative));
+                    }
                 }
             }
         }
@@ -100,15 +107,14 @@ public class NodeDetailsFlexibleItem extends AbstractFlexibleItem<NodeDetailsFle
         cardViewLP.setMargins(8, 8, 8, 8);
         CardView cardView = new CardView(context);
         TextView textView = new TextView(context);
+        textView.setTextColor(Color.parseColor("#4CAF50"));
         textView.setText(node.getTitle());
         textView.setLayoutParams(cardViewLP);
         cardView.addView(textView);
         cardView.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                Intent intent = new Intent(context, NodeDetailsActivity.class);
-                intent.putExtra("node", node);
-                context.startActivity(intent);
+                DataLoadingBaseActivity.gotoNodeDetailsActivity(view.getContext(), node.getName());
             }
         });
         FlowLayout.LayoutParams flowLayoutLP = new FlowLayout.LayoutParams(ViewGroup.LayoutParams.WRAP_CONTENT, ViewGroup.LayoutParams.WRAP_CONTENT);

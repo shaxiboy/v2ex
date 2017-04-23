@@ -1,8 +1,5 @@
-package com.hjx.v2ex.entity;
+package com.hjx.v2ex.flexibleitem;
 
-import android.content.Context;
-import android.content.Intent;
-import android.support.constraint.ConstraintLayout;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -11,9 +8,8 @@ import android.widget.TextView;
 
 import com.bumptech.glide.Glide;
 import com.hjx.v2ex.R;
-import com.hjx.v2ex.ui.MemberDetailsActivity;
-import com.hjx.v2ex.ui.NodeDetailsActivity;
-import com.hjx.v2ex.ui.TopicDetailsActivity;
+import com.hjx.v2ex.bean.Topic;
+import com.hjx.v2ex.ui.DataLoadingBaseActivity;
 import com.jauker.widget.BadgeView;
 
 import java.util.List;
@@ -22,7 +18,6 @@ import butterknife.BindView;
 import butterknife.ButterKnife;
 import de.hdodenhof.circleimageview.CircleImageView;
 import eu.davidea.flexibleadapter.FlexibleAdapter;
-import eu.davidea.flexibleadapter.items.AbstractFlexibleItem;
 import eu.davidea.flexibleadapter.items.AbstractSectionableItem;
 import eu.davidea.flexibleadapter.items.IHeader;
 import eu.davidea.viewholders.FlexibleViewHolder;
@@ -65,9 +60,7 @@ public class TopicFlexibleItem extends AbstractSectionableItem<TopicFlexibleItem
             holder.photoContainer.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View view) {
-                    Intent intent = new Intent(view.getContext(), MemberDetailsActivity.class);
-                    intent.putExtra("member", TopicFlexibleItem.this.topic.getMember().getUsername());
-                    view.getContext().startActivity(intent);
+                    DataLoadingBaseActivity.gotoMemberDetailsActivity(view.getContext(), TopicFlexibleItem.this.topic.getMember().getUsername());
                 }
             });
             holder.author.setText(topic.getMember().getUsername());
@@ -76,9 +69,7 @@ public class TopicFlexibleItem extends AbstractSectionableItem<TopicFlexibleItem
         holder.topic.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                Intent intent = new Intent(view.getContext(), TopicDetailsActivity.class);
-                intent.putExtra("topicId", TopicFlexibleItem.this.topic.getId());
-                view.getContext().startActivity(intent);
+                DataLoadingBaseActivity.gotoTopicDetailsActivity(view.getContext(), TopicFlexibleItem.this.topic.getId());
             }
         });
         if(topicType == TopicItemType.NODE) {
@@ -88,9 +79,7 @@ public class TopicFlexibleItem extends AbstractSectionableItem<TopicFlexibleItem
             holder.node.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View view) {
-                    Intent intent = new Intent(view.getContext(), NodeDetailsActivity.class);
-                    intent.putExtra("node", TopicFlexibleItem.this.topic.getNode());
-                    view.getContext().startActivity(intent);
+                    DataLoadingBaseActivity.gotoNodeDetailsActivity(view.getContext(), TopicFlexibleItem.this.topic.getNode().getName());
                 }
             });
         }

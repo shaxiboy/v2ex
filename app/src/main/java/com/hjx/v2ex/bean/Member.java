@@ -1,4 +1,4 @@
-package com.hjx.v2ex.entity;
+package com.hjx.v2ex.bean;
 
 import java.io.Serializable;
 import java.util.ArrayList;

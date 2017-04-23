@@ -1,12 +1,12 @@
 package com.hjx.v2ex.network;
 
-import com.hjx.v2ex.entity.Member;
-import com.hjx.v2ex.entity.Node;
-import com.hjx.v2ex.entity.NodesPlane;
-import com.hjx.v2ex.entity.PageData;
-import com.hjx.v2ex.entity.Reply;
-import com.hjx.v2ex.entity.Topic;
-import com.hjx.v2ex.entity.V2EX;
+import com.hjx.v2ex.bean.Member;
+import com.hjx.v2ex.bean.Node;
+import com.hjx.v2ex.bean.NodesPlane;
+import com.hjx.v2ex.bean.PageData;
+import com.hjx.v2ex.bean.Reply;
+import com.hjx.v2ex.bean.Topic;
+import com.hjx.v2ex.bean.V2EX;
 import com.hjx.v2ex.util.HTMLUtil;
 
 import java.io.IOException;

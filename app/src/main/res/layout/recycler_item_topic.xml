@@ -39,7 +39,7 @@
                 android:layout_height="wrap_content"
                 android:layout_marginTop="4dp"
                 android:lines="1"
-                android:textAlignment="center"
+                android:gravity="center"
                 tools:text="author" />
         </LinearLayout>
 

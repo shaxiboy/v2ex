@@ -1,27 +1,20 @@
 package com.hjx.v2ex.ui;
 
 
-import android.content.Intent;
 import android.os.Bundle;
-import android.support.annotation.Nullable;
-import android.support.v4.app.Fragment;
-import android.support.v4.widget.SwipeRefreshLayout;
 import android.support.v7.widget.GridLayoutManager;
 import android.support.v7.widget.RecyclerView;
-import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
-import android.view.View;
-import android.view.ViewGroup;
 import android.widget.SearchView;
 
 import com.hjx.v2ex.R;
-import com.hjx.v2ex.entity.HomePage;
-import com.hjx.v2ex.entity.Node;
-import com.hjx.v2ex.entity.NodeCategoryFlexibleHeaderItem;
-import com.hjx.v2ex.entity.NodeFlexibleItem;
-import com.hjx.v2ex.entity.NodesPlane;
+import com.hjx.v2ex.bean.HomePage;
+import com.hjx.v2ex.bean.Node;
+import com.hjx.v2ex.flexibleitem.NodeCategoryFlexibleHeaderItem;
+import com.hjx.v2ex.flexibleitem.NodeFlexibleItem;
+import com.hjx.v2ex.bean.NodesPlane;
 import com.hjx.v2ex.network.RetrofitSingleton;
 
 import java.util.ArrayList;
@@ -29,8 +22,6 @@ import java.util.List;
 import java.util.Map;
 
 import butterknife.BindView;
-import butterknife.ButterKnife;
-import butterknife.Unbinder;
 import eu.davidea.flexibleadapter.FlexibleAdapter;
 import eu.davidea.flexibleadapter.common.SmoothScrollGridLayoutManager;
 import eu.davidea.flexibleadapter.items.AbstractFlexibleItem;
@@ -42,22 +33,19 @@ import retrofit2.Response;
  * Created by shaxiboy on 2017/4/12 0012.
  */
 
-public class NodeListFragment extends Fragment implements FlexibleAdapter.OnItemClickListener{
+public class NodeListFragment extends DataLoadingBaseFragment {
 
     private String tab;
-    private Unbinder unbinder;
     private boolean hasCreateView;
     private boolean hasLoadData;
     private boolean isVisibleToUser;
     private FlexibleAdapter<AbstractFlexibleItem> nodeListAdapter;
     private List<AbstractFlexibleItem> nodes = new ArrayList<>();
 
-    @BindView(R.id.swipeRefreshLayout)
-    SwipeRefreshLayout swipeRefreshLayout;
     @BindView(R.id.recycler_view)
     RecyclerView recyclerView;
 
-    public static Fragment newInstance(String tab) {
+    public static NodeListFragment newInstance(String tab) {
         NodeListFragment nodeListFragment = new NodeListFragment();
         Bundle bundle = new Bundle();
         bundle.putString("tab", tab);
@@ -65,27 +53,30 @@ public class NodeListFragment extends Fragment implements FlexibleAdapter.OnItem
         return nodeListFragment;
     }
 
-    @Nullable
     @Override
-    public View onCreateView(LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
+    public int getContentRes() {
+        return R.layout.fragment_node_list;
+    }
+
+    @Override
+    protected void initView() {
         tab = getArguments().getString("tab");
         setHasOptionsMenu(true);
-
-        View root = inflater.inflate(R.layout.fragment_node_list, container, false);
-        unbinder = ButterKnife.bind(this, root);
-        swipeRefreshLayout.setRefreshing(true);
-        nodeListAdapter = new FlexibleAdapter<>(nodes, this);
+        nodeListAdapter = new FlexibleAdapter<>(nodes);
         nodeListAdapter.setDisplayHeadersAtStartUp(true)
                 .expandItemsAtStartUp()
                 .setStickyHeaders(true);
-        recyclerView.setLayoutManager(createNewGridLayoutManager());
+        recyclerView.setLayoutManager(createLayoutManager());
         recyclerView.setAdapter(nodeListAdapter);
 
         hasCreateView = true;
+    }
+
+    @Override
+    protected void loadData() {
         if (isVisibleToUser) {
             loadNodes();
         }
-        return root;
     }
 
     @Override
@@ -124,19 +115,11 @@ public class NodeListFragment extends Fragment implements FlexibleAdapter.OnItem
         }
     }
 
-    @Override
-    public void onDestroyView() {
-        super.onDestroyView();
-        unbinder.unbind();
-    }
-
     private void loadNodes() {
         if (tab.equals("最热") || tab.equals("导航")) {
             RetrofitSingleton.getInstance().homePage(null).enqueue(new Callback<HomePage>() {
                 @Override
                 public void onResponse(Call<HomePage> call, Response<HomePage> response) {
-                    swipeRefreshLayout.setRefreshing(false);
-                    swipeRefreshLayout.setEnabled(false);
                     if (tab.equals("最热")) {
                         for (Node node : response.body().getHottestNodes()) {
                             nodes.add(new NodeFlexibleItem(node, null));
@@ -151,21 +134,21 @@ public class NodeListFragment extends Fragment implements FlexibleAdapter.OnItem
                             nodes.add(category);
                         }
                     }
+                    successLoadingData();
                     nodeListAdapter.updateDataSet(new ArrayList<>(nodes));
                     hasLoadData = true;
                 }
 
                 @Override
                 public void onFailure(Call<HomePage> call, Throwable throwable) {
-                    swipeRefreshLayout.setRefreshing(false);
+                    errorLoadingData();
+                    throwable.printStackTrace();
                 }
             });
         } else if (tab.equals("全部")) {
             RetrofitSingleton.getInstance().allNodesPage().enqueue(new Callback<NodesPlane>() {
                 @Override
                 public void onResponse(Call<NodesPlane> call, Response<NodesPlane> response) {
-                    swipeRefreshLayout.setRefreshing(false);
-                    swipeRefreshLayout.setEnabled(false);
                     Map<String, List<Node>> nodeSections = response.body().getNodeSections();
                     for (String categoryName : nodeSections.keySet()) {
                         NodeCategoryFlexibleHeaderItem category = new NodeCategoryFlexibleHeaderItem(categoryName);
@@ -174,45 +157,34 @@ public class NodeListFragment extends Fragment implements FlexibleAdapter.OnItem
                         }
                         nodes.add(category);
                     }
+                    successLoadingData();
                     nodeListAdapter.updateDataSet(new ArrayList<>(nodes));
                     hasLoadData = true;
                 }
 
                 @Override
                 public void onFailure(Call<NodesPlane> call, Throwable throwable) {
-                    swipeRefreshLayout.setRefreshing(false);
+                    errorLoadingData();
+                    throwable.printStackTrace();
                 }
             });
         }
     }
 
-    private GridLayoutManager createNewGridLayoutManager() {
-        GridLayoutManager gridLayoutManager = new SmoothScrollGridLayoutManager(getActivity(), 2);
-        gridLayoutManager.setSpanSizeLookup(new GridLayoutManager.SpanSizeLookup() {
+    private RecyclerView.LayoutManager createLayoutManager() {
+        GridLayoutManager layoutManager = new SmoothScrollGridLayoutManager(getActivity(), 3);
+        layoutManager.setSpanSizeLookup(new GridLayoutManager.SpanSizeLookup() {
             @Override
             public int getSpanSize(int position) {
                 switch (nodeListAdapter.getItemViewType(position)) {
                     case R.layout.recycler_item_header_simple:
-                        return 2;
+                        return 3;
                     default:
                         return 1;
                 }
             }
         });
-        return gridLayoutManager;
+        return layoutManager;
     }
 
-    @Override
-    public boolean onItemClick(int position) {
-        AbstractFlexibleItem item = nodeListAdapter.getItem(position);
-        if(item instanceof NodeFlexibleItem) {
-            Node node = ((NodeFlexibleItem) item).getNode();
-            Intent intent = new Intent(getContext(), NodeDetailsActivity.class);
-            intent.putExtra("node", node);
-            startActivity(intent);
-            return true;
-        } else {
-            return false;
-        }
-    }
 }

@@ -9,10 +9,8 @@
 
     <application
         android:name=".App"
-        android:allowBackup="true"
         android:icon="@mipmap/ic_launcher"
         android:label="@string/app_name"
-        android:supportsRtl="true"
         android:theme="@style/AppTheme">
         <activity
             android:name=".MainActivity"
@@ -25,22 +23,10 @@
             </intent-filter>
         </activity>
         <activity
-            android:name=".ui.TopicDetailsActivity"
-            android:label="@string/title_activity_topic_details"
-            android:parentActivityName=".MainActivity"
-            android:theme="@style/AppTheme.NoActionBar">
-            <meta-data
-                android:name="android.support.PARENT_ACTIVITY"
-                android:value="com.hjx.v2ex.MainActivity" />
-        </activity>
-        <activity android:name=".TestActivity" />
-        <activity
             android:name=".ui.AboutActivity"
             android:label="@string/title_activity_about" />
-        <activity android:name=".ui.NodeDetailsActivity" />
-        <activity android:name=".ui.MemberDetailsActivity"
-            android:label="会员详情"
-            android:exported="true"></activity>
+        <activity android:name=".TestActivity" />
+        <activity android:name=".ui.DataLoadingBaseActivity"></activity>
     </application>
 
 </manifest>

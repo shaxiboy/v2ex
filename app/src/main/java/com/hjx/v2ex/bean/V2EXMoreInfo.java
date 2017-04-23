@@ -1,4 +1,4 @@
-package com.hjx.v2ex.entity;
+package com.hjx.v2ex.bean;
 
 /**
  * Created by shaxiboy on 2017/4/9 0009.

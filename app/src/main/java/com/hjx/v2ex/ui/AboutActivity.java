@@ -9,10 +9,10 @@ import android.widget.ScrollView;
 import android.widget.TextView;
 
 import com.hjx.v2ex.R;
-import com.hjx.v2ex.entity.HomePage;
-import com.hjx.v2ex.entity.NodesPlane;
-import com.hjx.v2ex.entity.V2EX;
-import com.hjx.v2ex.entity.V2EXMoreInfo;
+import com.hjx.v2ex.bean.HomePage;
+import com.hjx.v2ex.bean.NodesPlane;
+import com.hjx.v2ex.bean.V2EX;
+import com.hjx.v2ex.bean.V2EXMoreInfo;
 import com.hjx.v2ex.network.RetrofitSingleton;
 
 import butterknife.BindView;

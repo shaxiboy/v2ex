@@ -1,6 +1,5 @@
-package com.hjx.v2ex.entity;
+package com.hjx.v2ex.flexibleitem;
 
-import android.support.v7.widget.StaggeredGridLayoutManager;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;

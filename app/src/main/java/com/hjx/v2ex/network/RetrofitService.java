@@ -1,13 +1,13 @@
 package com.hjx.v2ex.network;
 
-import com.hjx.v2ex.entity.HomePage;
-import com.hjx.v2ex.entity.Member;
-import com.hjx.v2ex.entity.MemberTopicRepliesPage;
-import com.hjx.v2ex.entity.MemberTopicsPage;
-import com.hjx.v2ex.entity.NodePage;
-import com.hjx.v2ex.entity.NodesPlane;
-import com.hjx.v2ex.entity.TopicPage;
-import com.hjx.v2ex.entity.V2EXMoreInfo;
+import com.hjx.v2ex.bean.HomePage;
+import com.hjx.v2ex.bean.Member;
+import com.hjx.v2ex.bean.MemberTopicRepliesPage;
+import com.hjx.v2ex.bean.MemberTopicsPage;
+import com.hjx.v2ex.bean.NodePage;
+import com.hjx.v2ex.bean.NodesPlane;
+import com.hjx.v2ex.bean.TopicPage;
+import com.hjx.v2ex.bean.V2EXMoreInfo;
 
 import java.util.Map;
 

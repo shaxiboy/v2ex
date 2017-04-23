@@ -1,8 +1,6 @@
 package com.hjx.v2ex.adapter;
 
 import android.content.Context;
-import android.content.Intent;
-import android.support.constraint.ConstraintLayout;
 import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.RecyclerView.Adapter;
 import android.view.LayoutInflater;
@@ -12,9 +10,8 @@ import android.widget.TextView;
 
 import com.bumptech.glide.Glide;
 import com.hjx.v2ex.R;
-import com.hjx.v2ex.entity.Topic;
-import com.hjx.v2ex.ui.MemberDetailsActivity;
-import com.hjx.v2ex.ui.TopicDetailsActivity;
+import com.hjx.v2ex.bean.Topic;
+import com.hjx.v2ex.ui.DataLoadingBaseActivity;
 import com.jauker.widget.BadgeView;
 
 import java.util.ArrayList;
@@ -77,17 +74,13 @@ public class TopicListAdapter extends Adapter {
 
                 @Override
                 public void onClick(View view) {
-                    Intent intent = new Intent(context, MemberDetailsActivity.class);
-                    intent.putExtra("member", topics.get(getAdapterPosition()).getMember().getUsername());
-                    context.startActivity(intent);
+                    DataLoadingBaseActivity.gotoMemberDetailsActivity(context, topics.get(getAdapterPosition()).getMember().getUsername());
                 }
             });
             topicTV.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View view) {
-                    Intent intent = new Intent(context, TopicDetailsActivity.class);
-                    intent.putExtra("topicId", topics.get(getAdapterPosition()).getId());
-                    context.startActivity(intent);
+                    DataLoadingBaseActivity.gotoTopicDetailsActivity(view.getContext(), topics.get(getAdapterPosition()).getId());
                 }
             });
         }

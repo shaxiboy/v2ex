@@ -1,24 +1,18 @@
-package com.hjx.v2ex.entity;
+package com.hjx.v2ex.flexibleitem;
 
-import android.content.Intent;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
-import android.widget.TextView;
 
 import com.hjx.v2ex.R;
-import com.hjx.v2ex.ui.MemberDetailsActivity;
-import com.hjx.v2ex.ui.TopicDetailsActivity;
+import com.hjx.v2ex.ui.DataLoadingBaseActivity;
 
 import java.util.List;
 
 import eu.davidea.flexibleadapter.FlexibleAdapter;
 import eu.davidea.flexibleadapter.items.AbstractFlexibleItem;
-import eu.davidea.flexibleadapter.items.AbstractHeaderItem;
 import eu.davidea.viewholders.FlexibleViewHolder;
-
-import static android.R.attr.button;
 
 /**
  * Created by shaxiboy on 2017/4/12 0012.
@@ -27,9 +21,9 @@ import static android.R.attr.button;
 public class ViewMoreFlexibleItem extends AbstractFlexibleItem<ViewMoreFlexibleItem.ViewMoreFlexibleViewHolder> {
 
     private String member;
-    private String type;
+    private ViewMoreType type;
 
-    public ViewMoreFlexibleItem(String member, String type) {
+    public ViewMoreFlexibleItem(String member, ViewMoreType type) {
         this.member = member;
         this.type = type;
     }
@@ -68,9 +62,11 @@ public class ViewMoreFlexibleItem extends AbstractFlexibleItem<ViewMoreFlexibleI
         holder.button.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                Intent intent = new Intent(view.getContext(), type.equals("topic") ? MemberDetailsActivity.class : MemberDetailsActivity.class);
-                intent.putExtra("member", member);
-                view.getContext().startActivity(intent);
+                if(type == ViewMoreType.TOPIC) {
+                    DataLoadingBaseActivity.gotoMemberTopicsActivity(view.getContext(), member);
+                } else if(type == ViewMoreType.REPLY) {
+                    DataLoadingBaseActivity.gotoMemberRepliesActivity(view.getContext(), member);
+                }
             }
         });
     }
@@ -83,5 +79,9 @@ public class ViewMoreFlexibleItem extends AbstractFlexibleItem<ViewMoreFlexibleI
             super(view, adapter);
             button = (Button) view.findViewById(R.id.button);
         }
+    }
+
+    public enum ViewMoreType {
+        TOPIC, REPLY
     }
 }

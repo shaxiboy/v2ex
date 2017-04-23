@@ -1,4 +1,6 @@
-package com.hjx.v2ex.entity;
+package com.hjx.v2ex.bean;
+
+import com.hjx.v2ex.bean.Member;
 
 /**
  * Created by shaxiboy on 2017/3/3 0003.

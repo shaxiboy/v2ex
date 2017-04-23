@@ -1,4 +1,4 @@
-package com.hjx.v2ex.entity;
+package com.hjx.v2ex.flexibleitem;
 
 import android.content.Context;
 import android.content.Intent;
@@ -7,10 +7,13 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageView;
+import android.widget.LinearLayout;
 import android.widget.TextView;
 
 import com.bumptech.glide.Glide;
 import com.hjx.v2ex.R;
+import com.hjx.v2ex.bean.Member;
+import com.hjx.v2ex.bean.MemberMoreInfo;
 
 import org.apmem.tools.layouts.FlowLayout;
 
@@ -53,10 +56,12 @@ public class MemberDetailsFlexibleItem extends AbstractFlexibleItem<MemberDetail
         String basicInfo = member.getBasicInfo();
         holder.basicInfo.setText(basicInfo.substring(basicInfo.indexOf("第")).replaceAll("，", "\n"));
         if (member.getMoreInfos().isEmpty()) {
-            holder.view2.setVisibility(View.GONE);
+            holder.linearLayout.setVisibility(View.GONE);
         } else {
-            for (MemberMoreInfo moreInfo : member.getMoreInfos()) {
-                holder.moreInfoContainer.addView(getMoreInfoComponent(context, moreInfo));
+            if(holder.moreInfoContainer.getChildCount() == 0) {
+                for (MemberMoreInfo moreInfo : member.getMoreInfos()) {
+                    holder.moreInfoContainer.addView(getMoreInfoComponent(context, moreInfo));
+                }
             }
         }
     }
@@ -103,10 +108,10 @@ public class MemberDetailsFlexibleItem extends AbstractFlexibleItem<MemberDetail
         TextView name;
         @BindView(R.id.basic_info)
         TextView basicInfo;
+        @BindView(R.id.linearlayout)
+        LinearLayout linearLayout;
         @BindView(R.id.more_info_container)
         FlowLayout moreInfoContainer;
-        @BindView(R.id.line2)
-        View view2;
 
         public MemberDetailsViewHolder(View view, FlexibleAdapter adapter) {
             super(view, adapter);

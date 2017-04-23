@@ -1,4 +1,4 @@
-package com.hjx.v2ex.entity;
+package com.hjx.v2ex.flexibleitem;
 
 import android.animation.Animator;
 import android.content.Context;

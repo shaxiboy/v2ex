@@ -1,8 +1,6 @@
 package com.hjx.v2ex.adapter;
 
 import android.content.Context;
-import android.content.Intent;
-import android.support.constraint.ConstraintLayout;
 import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -12,10 +10,9 @@ import android.widget.TextView;
 
 import com.bumptech.glide.Glide;
 import com.hjx.v2ex.R;
-import com.hjx.v2ex.entity.PageData;
-import com.hjx.v2ex.entity.Reply;
-import com.hjx.v2ex.entity.Topic;
-import com.hjx.v2ex.ui.MemberDetailsActivity;
+import com.hjx.v2ex.bean.PageData;
+import com.hjx.v2ex.bean.Reply;
+import com.hjx.v2ex.bean.Topic;
 import com.jauker.widget.BadgeView;
 
 import java.util.ArrayList;
@@ -24,6 +21,8 @@ import java.util.List;
 import butterknife.BindView;
 import butterknife.ButterKnife;
 import de.hdodenhof.circleimageview.CircleImageView;
+
+import static com.hjx.v2ex.ui.DataLoadingBaseActivity.gotoMemberDetailsActivity;
 
 /**
  * Created by shaxiboy on 2017/3/12 0012.
@@ -150,9 +149,7 @@ public class TopicAdapter extends RecyclerView.Adapter {
             photoContainer.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View view) {
-                    Intent intent = new Intent(context, MemberDetailsActivity.class);
-                    intent.putExtra("member", topic.getMember().getUsername());
-                    context.startActivity(intent);
+                    gotoMemberDetailsActivity(view.getContext(), topic.getMember().getUsername());
                 }
             });
         }
@@ -194,9 +191,7 @@ public class TopicAdapter extends RecyclerView.Adapter {
             photo.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View view) {
-                    Intent intent = new Intent(context, MemberDetailsActivity.class);
-                    intent.putExtra("member", reply.getMember().getUsername());
-                    context.startActivity(intent);
+                    gotoMemberDetailsActivity(context, reply.getMember().getUsername());
                 }
             });
             author.setText(reply.getMember().getUsername());

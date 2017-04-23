@@ -1,13 +1,8 @@
 package com.hjx.v2ex.network;
 
-import com.hjx.v2ex.entity.PageData;
-import com.hjx.v2ex.entity.Topic;
-
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
-
-import static com.hjx.v2ex.network.V2EXapi.getMyFollowingMembers;
 
 /**
  * Created by shaxiboy on 2017/3/26 0026.
