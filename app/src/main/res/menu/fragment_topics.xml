@@ -1,0 +1,12 @@
+<?xml version="1.0" encoding="utf-8"?>
+
+<menu xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:android="http://schemas.android.com/apk/res/android">
+
+    <item android:id="@+id/menu_topics_favorite"
+        android:icon="@drawable/ic_menu_unfavorite"
+        app:showAsAction="always"
+        android:visible="false"
+        android:title="收藏"
+        />
+</menu>

@@ -1,5 +1,11 @@
 package com.hjx.v2ex.network;
 
+import android.content.Context;
+
+import com.franmontiel.persistentcookiejar.ClearableCookieJar;
+import com.franmontiel.persistentcookiejar.PersistentCookieJar;
+import com.franmontiel.persistentcookiejar.cache.SetCookieCache;
+import com.franmontiel.persistentcookiejar.persistence.SharedPrefsCookiePersistor;
 import com.hjx.v2ex.AppConfig;
 
 import java.net.CookieHandler;
@@ -20,7 +26,7 @@ public class RetrofitSingleton {
 
     private static RetrofitService mService;
 
-    public static RetrofitService getInstance() {
+    public static RetrofitService getInstance(Context context) {
         if(mService == null) {
             HttpLoggingInterceptor interceptor = new HttpLoggingInterceptor();
             if(AppConfig.DEBUG) {
@@ -28,12 +34,15 @@ public class RetrofitSingleton {
             } else {
                 interceptor.setLevel(HttpLoggingInterceptor.Level.NONE);
             }
-            CookieManager manager = new CookieManager();
-            manager.setCookiePolicy(CookiePolicy.ACCEPT_ALL);
-            CookieHandler.setDefault(manager);
+            ClearableCookieJar cookieJar =
+                    new PersistentCookieJar(new SetCookieCache(), new SharedPrefsCookiePersistor(context));
+//            CookieManager manager = new CookieManager();
+//            manager.setCookiePolicy(CookiePolicy.ACCEPT_ALL);
+//            CookieHandler.setDefault(manager);
             OkHttpClient client = new OkHttpClient.Builder()
                     .addInterceptor(interceptor)
-                    .cookieJar(new JavaNetCookieJar(CookieHandler.getDefault()))
+                    .cookieJar(cookieJar)
+//                    .cookieJar(new JavaNetCookieJar(CookieHandler.getDefault()))
                     .build();
             Retrofit retrofit = new Retrofit.Builder()
                     .client(client)

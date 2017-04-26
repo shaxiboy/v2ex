@@ -33,22 +33,22 @@ public class HTMLUtilTest {
     public void test() {
         login();
 
-        try {
-            RetrofitService service = RetrofitSingleton.getInstance();
-            Method serviceMethod = RetrofitService.class.getDeclaredMethod("signin");
-            String html = ((ResponseBody) ((Call) serviceMethod.invoke(service)).execute().body()).string();
-            Method htmlParsedMethod = HTMLUtil.class.getMethod("parseSigninParams", String.class);
-            Object result = htmlParsedMethod.invoke(null, html);
-            System.out.println(result);
-        } catch (NoSuchMethodException e) {
-            e.printStackTrace();
-        } catch (InvocationTargetException e) {
-            e.printStackTrace();
-        } catch (IllegalAccessException e) {
-            e.printStackTrace();
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
+//        try {
+//            RetrofitService service = RetrofitSingleton.getInstance();
+//            Method serviceMethod = RetrofitService.class.getDeclaredMethod("signin");
+//            String html = ((ResponseBody) ((Call) serviceMethod.invoke(service)).execute().body()).string();
+//            Method htmlParsedMethod = HTMLUtil.class.getMethod("parseSigninParams", String.class);
+//            Object result = htmlParsedMethod.invoke(null, html);
+//            System.out.println(result);
+//        } catch (NoSuchMethodException e) {
+//            e.printStackTrace();
+//        } catch (InvocationTargetException e) {
+//            e.printStackTrace();
+//        } catch (IllegalAccessException e) {
+//            e.printStackTrace();
+//        } catch (IOException e) {
+//            e.printStackTrace();
+//        }
 
         loginout();
     }

@@ -45,7 +45,7 @@ public class AboutActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_about);
         ButterKnife.bind(this);
-        RetrofitSingleton.getInstance().homePage(null).enqueue(new Callback<HomePage>() {
+        RetrofitSingleton.getInstance(this).homePage(null).enqueue(new Callback<HomePage>() {
             @Override
             public void onResponse(Call<HomePage> call, Response<HomePage> response) {
                 progressBar.setVisibility(View.INVISIBLE);
@@ -61,7 +61,7 @@ public class AboutActivity extends AppCompatActivity {
             }
         });
 
-        RetrofitSingleton.getInstance().allNodesPage().enqueue(new Callback<NodesPlane>() {
+        RetrofitSingleton.getInstance(this).allNodesPage().enqueue(new Callback<NodesPlane>() {
             @Override
             public void onResponse(Call<NodesPlane> call, Response<NodesPlane> response) {
                 progressBar.setVisibility(View.INVISIBLE);
@@ -78,7 +78,7 @@ public class AboutActivity extends AppCompatActivity {
     public void showMore(View view) {
         constraintLayout.setVisibility(View.INVISIBLE);
         scrollView.setVisibility(View.VISIBLE);
-        RetrofitSingleton.getInstance().aboutPage().enqueue(new Callback<V2EXMoreInfo>() {
+        RetrofitSingleton.getInstance(this).aboutPage().enqueue(new Callback<V2EXMoreInfo>() {
             @Override
             public void onResponse(Call<V2EXMoreInfo> call, Response<V2EXMoreInfo> response) {
                 moreInfo.setText(response.body().getMoreInfo());

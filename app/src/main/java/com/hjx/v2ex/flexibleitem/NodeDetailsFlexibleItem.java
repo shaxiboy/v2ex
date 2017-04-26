@@ -73,30 +73,30 @@ public class NodeDetailsFlexibleItem extends AbstractFlexibleItem<NodeDetailsFle
         holder.topicNum.setBadgeCount(node.getTopicNum());
         if (node.getParent() == null && node.getChildren().isEmpty() && node.getRelatives().isEmpty()) {
             holder.view2.setVisibility(View.GONE);
+        }
+
+        if (node.getParent() == null) {
+            holder.parentNode.setVisibility(View.GONE);
         } else {
-            if (node.getParent() == null) {
-                holder.parentNode.setVisibility(View.GONE);
-            } else {
-                if(holder.parentNodeContainer.getChildCount() == 0) {
-                    holder.parentNodeContainer.addView(getNodeComponent(context, node.getParent()));
+            if (holder.parentNodeContainer.getChildCount() == 0) {
+                holder.parentNodeContainer.addView(getNodeComponent(context, node.getParent()));
+            }
+        }
+        if (node.getChildren().isEmpty()) {
+            holder.childNode.setVisibility(View.GONE);
+        } else {
+            if (holder.childNodeContainer.getChildCount() == 0) {
+                for (Node child : node.getChildren()) {
+                    holder.childNodeContainer.addView(getNodeComponent(context, child));
                 }
             }
-            if (node.getChildren().isEmpty()) {
-                holder.childNode.setVisibility(View.GONE);
-            } else {
-                if(holder.childNodeContainer.getChildCount() == 0) {
-                    for (Node child : node.getChildren()) {
-                        holder.childNodeContainer.addView(getNodeComponent(context, child));
-                    }
-                }
-            }
-            if (node.getRelatives().isEmpty()) {
-                holder.relativeNode.setVisibility(View.GONE);
-            } else {
-                if(holder.relativeNodeContainer.getChildCount() == 0) {
-                    for (Node relative : node.getRelatives()) {
-                        holder.relativeNodeContainer.addView(getNodeComponent(context, relative));
-                    }
+        }
+        if (node.getRelatives().isEmpty()) {
+            holder.relativeNode.setVisibility(View.GONE);
+        } else {
+            if (holder.relativeNodeContainer.getChildCount() == 0) {
+                for (Node relative : node.getRelatives()) {
+                    holder.relativeNodeContainer.addView(getNodeComponent(context, relative));
                 }
             }
         }

@@ -12,12 +12,12 @@ public class RetrofitServiceTest {
 
     @Test
     public void testHomePage() {
-        try {
-            Object result = RetrofitSingleton.getInstance().homePage("tech").execute().body();
-            System.out.println(result);
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
+//        try {
+//            Object result = RetrofitSingleton.getInstance().homePage("tech").execute().body();
+//            System.out.println(result);
+//        } catch (IOException e) {
+//            e.printStackTrace();
+//        }
     }
 
 }

@@ -34,6 +34,10 @@ public class TopicDetailsFlexibleItem extends AbstractFlexibleItem<TopicDetailsF
         this.topic = topic;
     }
 
+    public Topic getTopic() {
+        return topic;
+    }
+
     @Override
     public int getLayoutRes() {
         return R.layout.recycler_header_topic_details;
@@ -68,7 +72,14 @@ public class TopicDetailsFlexibleItem extends AbstractFlexibleItem<TopicDetailsF
             holder.content.setVisibility(View.GONE);
             holder.line2.setVisibility(View.GONE);
         } else {
-            holder.content.setText(topic.getContent());
+            String appends = "";
+            int i = 1;
+            if(topic.getPsList() != null && !topic.getPsList().isEmpty()) {
+                for(Topic.PS append : topic.getPsList()) {
+                    appends = appends + "\n\n第" + i++ + "条附言        " + append.getTime() + "\n" + append.getContent();
+                }
+            }
+            holder.content.setText(topic.getContent() + appends);
         }
     }
 

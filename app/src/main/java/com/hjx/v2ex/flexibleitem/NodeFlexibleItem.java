@@ -50,7 +50,7 @@ public class NodeFlexibleItem extends AbstractSectionableItem<NodeFlexibleItem.N
         holder.nodeTitle.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                DataLoadingBaseActivity.gotoMemberDetailsActivity(view.getContext(), node.getName());
+                DataLoadingBaseActivity.gotoNodeDetailsActivity(view.getContext(), node.getName());
             }
         });
     }

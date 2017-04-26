@@ -84,7 +84,7 @@ public class TopicListFragment extends DataLoadingBaseFragment implements SwipeR
 
     //需实现数据的懒加载
     public void loadTopics() {
-        RetrofitSingleton.getInstance().homePage(tab).enqueue(new Callback<HomePage>() {
+        RetrofitSingleton.getInstance(getContext()).homePage(tab).enqueue(new Callback<HomePage>() {
             @Override
             public void onResponse(Call<HomePage> call, Response<HomePage> response) {
                 swipeRefreshLayout.setRefreshing(false);

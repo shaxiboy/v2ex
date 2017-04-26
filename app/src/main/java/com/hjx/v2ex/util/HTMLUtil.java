@@ -2,6 +2,7 @@ package com.hjx.v2ex.util;
 
 import android.text.TextUtils;
 
+import com.hjx.v2ex.bean.FavoriteResult;
 import com.hjx.v2ex.bean.HomePage;
 import com.hjx.v2ex.bean.Member;
 import com.hjx.v2ex.bean.MemberMoreInfo;
@@ -12,6 +13,9 @@ import com.hjx.v2ex.bean.NodePage;
 import com.hjx.v2ex.bean.NodesPlane;
 import com.hjx.v2ex.bean.PageData;
 import com.hjx.v2ex.bean.Reply;
+import com.hjx.v2ex.bean.SigninParams;
+import com.hjx.v2ex.bean.SigninResult;
+import com.hjx.v2ex.bean.SignoutResult;
 import com.hjx.v2ex.bean.Topic;
 import com.hjx.v2ex.bean.TopicPage;
 import com.hjx.v2ex.bean.V2EX;
@@ -31,6 +35,8 @@ import java.util.List;
 import java.util.Map;
 import java.util.regex.Pattern;
 
+import static java.lang.Integer.parseInt;
+
 /**
  * Created by shaxiboy on 2017/3/8 0008.
  */
@@ -42,9 +48,9 @@ public class HTMLUtil {
         for(Element boxEle : doc.getElementById("Rightbar").getElementsByClass("box")) {
             if(boxEle.text().contains("社区运行状况")) {
                 Element cell = boxEle.getElementsByClass("cell").get(1);
-                v.setMembers(Integer.parseInt(cell.getElementsByTag("td").get(1).text()));
-                v.setTopics(Integer.parseInt(cell.getElementsByTag("td").get(3).text()));
-                v.setReplies(Integer.parseInt(cell.getElementsByTag("td").get(5).text()));
+                v.setMembers(parseInt(cell.getElementsByTag("td").get(1).text()));
+                v.setTopics(parseInt(cell.getElementsByTag("td").get(3).text()));
+                v.setReplies(parseInt(cell.getElementsByTag("td").get(5).text()));
             }
         }
         return v;
@@ -87,11 +93,11 @@ public class HTMLUtil {
             pageData.getCurrentPageItems().add(parseTopicItemFromList(element));
         }
         Element summarizeEle = mainEle.getElementsByClass("header").first().getElementsByClass("fade").first();
-        pageData.setTotalItems(Integer.parseInt(summarizeEle.text().split("共")[1].split("个")[0].trim()));
+        pageData.setTotalItems(parseInt(summarizeEle.text().split("共")[1].split("个")[0].trim()));
         pageData.setCurrentPage(1);
         Element inputEle = mainEle.getElementsByClass("header").first().nextElementSibling().getElementsByTag("input").first();
         if(inputEle != null) {
-            pageData.setCurrentPage(Integer.parseInt(inputEle.attr("value")));
+            pageData.setCurrentPage(parseInt(inputEle.attr("value")));
         }
         pageData.setTotalPage((pageData.getTotalItems() + RetrofitService.PAGE_TOPICS_ITEM_NUM - 1) / RetrofitService.PAGE_TOPICS_ITEM_NUM);
         return pageData;
@@ -103,15 +109,19 @@ public class HTMLUtil {
         for (Element element : topicsEle.children()) {
             pageData.getCurrentPageItems().add(parseTopicItemFromList(element));
         }
-        Element summarizeEle = topicsEle.nextElementSibling().nextElementSibling();
-        if(summarizeEle == null) {
-            summarizeEle = topicsEle.nextElementSibling();
-        }
-        pageData.setTotalItems(Integer.parseInt(summarizeEle.text().split("共")[1].split("个")[0].trim()));
+//        Element summarizeEle = topicsEle.nextElementSibling().nextElementSibling();
+//        if(summarizeEle == null) {
+//            summarizeEle = topicsEle.nextElementSibling();
+//        }
+        Element summarizeEle = topicsEle.lastElementSibling();
+        pageData.setTotalItems(parseInt(summarizeEle.text().split("共")[1].split("个")[0].trim()));
         pageData.setCurrentPage(1);
-        Element inputEle = topicsEle.previousElementSibling().getElementsByTag("input").first();
-        if(inputEle != null) {
-            pageData.setCurrentPage(Integer.parseInt(inputEle.attr("value")));
+        Element sibling = topicsEle.previousElementSibling();
+        if(sibling.attr("class").equals("cell")) {
+            Element inputEle = sibling.getElementsByTag("input").first();
+            if(inputEle != null) {
+                pageData.setCurrentPage(parseInt(inputEle.attr("value")));
+            }
         }
         pageData.setTotalPage((pageData.getTotalItems() + RetrofitService.PAGE_TOPICS_ITEM_NUM - 1) / RetrofitService.PAGE_TOPICS_ITEM_NUM);
         return pageData;
@@ -136,7 +146,7 @@ public class HTMLUtil {
         Element mainTD = tds.get(mainTDIndex);
         Element titleSpan = mainTD.getElementsByTag("span").first();
         Element titleA = titleSpan.getElementsByTag("a").first();
-        topic.setId(Integer.parseInt(titleA.attr("href").split("#")[0].split("/")[2]));
+        topic.setId(parseInt(titleA.attr("href").split("#")[0].split("/")[2]));
         topic.setTitle(titleA.text());
 
         Element bottomSpan = mainTD.getElementsByTag("span").get(1);
@@ -161,7 +171,7 @@ public class HTMLUtil {
         Element replyTD = tds.get(mainTDIndex + 1);
         String reply = replyTD.text();
         if (!TextUtils.isEmpty(reply)) {
-            topic.setReplyNum(Integer.parseInt(reply));
+            topic.setReplyNum(parseInt(reply));
         }
         topic.setMember(member);
         topic.setNode(node);
@@ -212,11 +222,11 @@ public class HTMLUtil {
             //登录以后才有
             for (Element aEle : topicButtons.getElementsByTag("a")) {
                 if (aEle.text().equals("加入收藏") || aEle.text().equals("取消收藏")) {
-                    topic.setCollectHref("https:" + aEle.attr("href"));
+                    topic.setFavoriteURL("https:" + aEle.attr("href"));
                 } else if (aEle.text().equals("感谢")) {
                     String thankInfo = aEle.attr("onclick").split("thankTopic")[1];
                     String topicId = Pattern.compile("[^0-9]").matcher(thankInfo.split("'")[0]).replaceAll("");
-                    topic.setId(Integer.parseInt(topicId));
+                    topic.setId(parseInt(topicId));
                     String thankToken = thankInfo.split("'")[1];
                     topic.setThankToken(thankToken);
                 }
@@ -224,7 +234,7 @@ public class HTMLUtil {
             String thanksInfoEle = topicButtons.getElementsByTag("div").first().text();
             Pattern pattern = Pattern.compile("[^0-9]");
             for (String info : thanksInfoEle.split("∙")) {
-                int num = Integer.parseInt(pattern.matcher(info).replaceAll(""));
+                int num = parseInt(pattern.matcher(info).replaceAll(""));
                 if (info.contains("人收藏")) {
                     topic.setCollectedNum(num);
                 } else if (info.contains("人感谢")) {
@@ -235,15 +245,28 @@ public class HTMLUtil {
 
         Element replyBox = doc.getElementById("Main").getElementsByClass("box").get(1);
         if (replyBox.children().size() > 1) {
-            topic.setReplyNum(Integer.parseInt(replyBox.getElementsByTag("div").get(0).getElementsByTag("span").first().text().split(" 回复 ")[0]));
+            topic.setReplyNum(parseInt(replyBox.getElementsByTag("div").get(0).getElementsByTag("span").first().text().split(" 回复 ")[0]));
         }
         return topic;
+    }
+
+    public static FavoriteResult parseFavoriteResult(String html) {
+        Document doc = Jsoup.parse(html);
+        Element topicButtons = doc.getElementsByClass("topic_buttons").first();
+        if (topicButtons != null) {
+            for (Element aEle : topicButtons.getElementsByTag("a")) {
+                if (aEle.text().equals("加入收藏") || aEle.text().equals("取消收藏")) {
+                    return new FavoriteResult("https:" + aEle.attr("href"));
+                }
+            }
+        }
+        return null;
     }
 
     private static Topic.PS parseTopicPS(Element psEle) {
         Topic.PS ps = new Topic.PS();
         ps.setTime(psEle.getElementsByTag("span").first().text().split("  ·  ")[1]);
-        ps.setContent(psEle.getElementsByClass("topic_content").first().html());
+        ps.setContent(psEle.getElementsByClass("topic_content").first().text());
         return ps;
     }
 
@@ -255,11 +278,11 @@ public class HTMLUtil {
         if(replyNumInfo.equals("目前尚无回复")) {
             return pageData;
         }
-        pageData.setTotalItems(Integer.parseInt(replyNumInfo.split(" 回复 ")[0]));
+        pageData.setTotalItems(parseInt(replyNumInfo.split(" 回复 ")[0]));
         pageData.setCurrentPage(1);
         Element inputEle = replyBox.getElementsByClass("cell").get(1).getElementsByTag("input").first();
         if(inputEle != null) {
-            pageData.setCurrentPage(Integer.parseInt(inputEle.attr("value")));
+            pageData.setCurrentPage(parseInt(inputEle.attr("value")));
         }
         pageData.setTotalPage((pageData.getTotalItems() + RetrofitService.PAGE_TOPIC_REPLIES_ITEM_NUM - 1) / RetrofitService.PAGE_TOPIC_REPLIES_ITEM_NUM);
         for (Element divEle : replyBox.getElementsByTag("div")) {
@@ -297,7 +320,7 @@ public class HTMLUtil {
         Element basicInfoBox = memberInfoBox.child(0);
         for(Element spanEle : basicInfoBox.getElementsByTag("span")) {
             String text = spanEle.text();
-            if(text.contains("加入于") && text.contains("今日活跃度排名")) {
+            if(text.contains("号会员") && text.contains("加入于")) {
                 member.setBasicInfo(text);
             }
         }
@@ -333,11 +356,11 @@ public class HTMLUtil {
         }
         if (!pageData.getCurrentPageItems().isEmpty()) {
             Element summarizeEle = doc.getElementsByClass("header").first();
-            pageData.setTotalItems(Integer.parseInt(summarizeEle.text().split("主题总数  ")[1].trim()));
+            pageData.setTotalItems(parseInt(summarizeEle.text().split("主题总数  ")[1].trim()));
             pageData.setCurrentPage(1);
             Element inputEle = summarizeEle.nextElementSibling().getElementsByTag("input").first();
             if(inputEle != null) {
-                pageData.setCurrentPage(Integer.parseInt(inputEle.attr("value")));
+                pageData.setCurrentPage(parseInt(inputEle.attr("value")));
             }
             pageData.setTotalPage((pageData.getTotalItems() + RetrofitService.PAGE_TOPICS_ITEM_NUM - 1) / RetrofitService.PAGE_TOPICS_ITEM_NUM);
         }
@@ -350,11 +373,11 @@ public class HTMLUtil {
         Element strongEle =  doc.getElementById("Main").getElementsByTag("strong").get(0);
         if(strongEle != null) {
             pageData.setCurrentPage(1);
-            pageData.setTotalItems(Integer.parseInt(strongEle.text()));
+            pageData.setTotalItems(parseInt(strongEle.text()));
             pageData.setTotalPage((pageData.getTotalItems() + RetrofitService.PAGE_TOPICS_ITEM_NUM - 1) / RetrofitService.PAGE_TOPICS_ITEM_NUM);
             Element inputEle = doc.getElementById("Main").getElementsByTag("input").first();
             if(inputEle != null) {
-                pageData.setCurrentPage(Integer.parseInt(inputEle.attr("value")));
+                pageData.setCurrentPage(parseInt(inputEle.attr("value")));
             }
             for (Element topicDiv : doc.getElementById("Main").getElementsByClass("dock_area")) {
                 Element nodeEle = topicDiv.getElementsByTag("a").get(1);
@@ -364,7 +387,7 @@ public class HTMLUtil {
 
                 Element topicEle = topicDiv.getElementsByTag("a").get(2);
                 Topic topic = new Topic();
-                topic.setId(Integer.parseInt(topicEle.attr("href").split("/")[2].split("#")[0]));
+                topic.setId(parseInt(topicEle.attr("href").split("/")[2].split("#")[0]));
                 topic.setTitle(topicEle.text());
                 topic.setNode(node);
 
@@ -384,7 +407,7 @@ public class HTMLUtil {
         NodesPlane nodesPlane = new NodesPlane();
         Document doc = Jsoup.parse(html);
         String text = doc.getElementsByTag("h2").first().text();
-        int num = Integer.parseInt(Pattern.compile("[^0-9]").matcher(text).replaceAll(""));
+        int num = parseInt(Pattern.compile("[^0-9]").matcher(text).replaceAll(""));
         nodesPlane.setNodeCount(num);
         Element main = doc.getElementById("Main");
         List<Node> nodes;
@@ -427,13 +450,15 @@ public class HTMLUtil {
 
     public static List<Node> parseHottestNodes(Document doc) {
         List<Node> hottestNodes = new ArrayList<>();
-        Element boxEle = doc.getElementById("Rightbar").getElementsByClass("box").get(3);
-        if (boxEle.getElementsByClass("cell").first().text().equals("最热节点")) {
-            for (Element nodeEle : boxEle.getElementsByClass("cell").get(1).getElementsByTag("a")) {
-                Node node = new Node();
-                node.setName(nodeEle.attr("href").split("/")[2]);
-                node.setTitle(nodeEle.text());
-                hottestNodes.add(node);
+        for(Element boxEle : doc.getElementById("Rightbar").getElementsByClass("box")) {
+            if (boxEle.text().contains("最热节点")) {
+                for (Element nodeEle : boxEle.getElementsByClass("cell").get(1).getElementsByTag("a")) {
+                    Node node = new Node();
+                    node.setName(nodeEle.attr("href").split("/")[2]);
+                    node.setTitle(nodeEle.text());
+                    hottestNodes.add(node);
+                }
+                break;
             }
         }
         return hottestNodes;
@@ -455,16 +480,17 @@ public class HTMLUtil {
         if (photoEle != null) {
             node.setPhoto("https:" + photoEle.attr("src"));
         }
-        node.setTopicNum(Integer.parseInt(headerEle.getElementsByTag("strong").first().text()));
+        node.setTopicNum(parseInt(headerEle.getElementsByTag("strong").first().text()));
         for (Element aEle : headerEle.getElementsByTag("a")) {
             if (aEle.text().equals("加入收藏") || aEle.text().equals("取消收藏")) {
-                node.setId(Integer.parseInt(aEle.attr("href").split("node/")[1].split("\\?once=")[0]));
+                node.setId(parseInt(aEle.attr("href").split("node/")[1].split("\\?once=")[0]));
                 node.setCollectHref("https:" + aEle.attr("href"));
             }
         }
         Elements spans = headerEle.getElementsByTag("span");
-        if (spans.size() >= 3) {
-            node.setDesc(spans.get(2).text());
+        String desc = spans.get(spans.size() - 1).text();
+        if (! desc.equals(" › ")) {
+            node.setDesc(desc);
         }
         for (Element strongEle : doc.getElementById("Rightbar").getElementsByTag("strong")) {
             if (strongEle.text().equals("父节点")) {
@@ -500,20 +526,47 @@ public class HTMLUtil {
         return node;
     }
 
-    public static Map<String, String> parseSigninParams(String html) {
-        Map<String, String> signinParams = new HashMap<>();
+    public static SigninParams parseSigninParams(String html) {
+        SigninParams signinParams = new SigninParams();
         Document doc = Jsoup.parse(html);
         Element formEle = doc.select("form[action='/signin']").first();
         for (Element inputEle : formEle.getElementsByTag("input")) {
             if (inputEle.attr("type").equals("text")) {
-                signinParams.put(inputEle.attr("name"), "username");
+                signinParams.setName(inputEle.attr("name"));
             } else if (inputEle.attr("type").equals("password")) {
-                signinParams.put(inputEle.attr("name"), "password");
+                signinParams.setPassword(inputEle.attr("name"));
             } else if (inputEle.attr("type").equals("hidden")) {
-                signinParams.put(inputEle.attr("name"), inputEle.attr("value"));
+                if(inputEle.attr("name").equals("once")) {
+                    signinParams.setOnce(inputEle.attr("value"));
+                }
             }
         }
         return signinParams;
+    }
+
+    public static SigninResult parseSigninResult(String html) {
+        SigninResult result = new SigninResult();
+        Document doc = Jsoup.parse(html);
+        int sessionId = -1;
+        Element topEle = doc.getElementById("Top");
+        if (topEle != null) {
+            for (Element aEle : topEle.getElementsByTag("a")) {
+                if (aEle.text().equals("登出")) {
+                    sessionId = Integer.parseInt(aEle.attr("onclick").split("once=")[1].split("'")[0]);
+                }
+            }
+        }
+        if(sessionId != -1) {
+            result.setSigin(true);
+            result.setSessionId(sessionId);
+            Element imgEle = doc.getElementById("Rightbar").getElementsByClass("box").first().getElementsByTag("img").first();
+            result.setPhoto("https:" + imgEle.attr("src"));
+            result.setName(imgEle.parent().attr("href").split("/")[2]);
+        } else {
+            result.setSigin(false);
+            result.setErrorMsg(parseSigninFailedMsg(html));
+        }
+        return result;
     }
 
     public static String parseSigninFailedMsg(String html) {
@@ -529,20 +582,24 @@ public class HTMLUtil {
         if (topEle != null) {
             for (Element aEle : topEle.getElementsByTag("a")) {
                 if (aEle.text().equals("登出")) {
-                    return Integer.parseInt(aEle.attr("onclick").split("once=")[1].split("'; }")[0]);
+                    return parseInt(aEle.attr("onclick").split("once=")[1].split("'; }")[0]);
                 }
             }
         }
         return -1;
     }
 
-    public static String parseSignoutResultMsg(String html) {
+    public static SignoutResult parseSignoutResult(String html) {
+        SignoutResult result = new SignoutResult();
         Element buttonEle = Jsoup.parse(html).getElementById("Main").getElementsByTag("input").first();
         if (buttonEle != null) {
-            return buttonEle.attr("value");
-        } else {
-            return "";
+            if(buttonEle.attr("value").equals("重新登录")) {
+                result.setSignout(true);
+            } else {
+                result.setSignout(false);
+            }
         }
+        return result;
     }
 
     public static List<Node> parseMyFollowingNodes(String html) {
@@ -553,7 +610,7 @@ public class HTMLUtil {
             collectedNode.setName(aEle.attr("href").split("/")[2]);
             collectedNode.setPhoto("https:" + aEle.getElementsByTag("img").first().attr("src"));
             collectedNode.setTitle(aEle.text().split(" ")[0]);
-            collectedNode.setTopicNum(Integer.parseInt(aEle.text().split(" ")[1]));
+            collectedNode.setTopicNum(parseInt(aEle.text().split(" ")[1]));
             collectedNodes.add(collectedNode);
         }
         return collectedNodes;

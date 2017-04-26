@@ -1,11 +1,15 @@
 package com.hjx.v2ex.network;
 
+import com.hjx.v2ex.bean.FavoriteResult;
 import com.hjx.v2ex.bean.HomePage;
 import com.hjx.v2ex.bean.Member;
 import com.hjx.v2ex.bean.MemberTopicRepliesPage;
 import com.hjx.v2ex.bean.MemberTopicsPage;
 import com.hjx.v2ex.bean.NodePage;
 import com.hjx.v2ex.bean.NodesPlane;
+import com.hjx.v2ex.bean.SigninParams;
+import com.hjx.v2ex.bean.SigninResult;
+import com.hjx.v2ex.bean.SignoutResult;
 import com.hjx.v2ex.bean.TopicPage;
 import com.hjx.v2ex.bean.V2EXMoreInfo;
 
@@ -17,6 +21,8 @@ import retrofit2.http.Field;
 import retrofit2.http.FieldMap;
 import retrofit2.http.FormUrlEncoded;
 import retrofit2.http.GET;
+import retrofit2.http.HEAD;
+import retrofit2.http.Header;
 import retrofit2.http.Headers;
 import retrofit2.http.POST;
 import retrofit2.http.Path;
@@ -84,7 +90,7 @@ public interface RetrofitService {
 
     //登陆页面
     @GET("signin")
-    Call<ResponseBody> signinPage();
+    Call<SigninParams> signin();
 
     //登陆
     @Headers({
@@ -92,14 +98,18 @@ public interface RetrofitService {
     })
     @POST("signin")
     @FormUrlEncoded
-    Call<ResponseBody> signin(@FieldMap Map<String, String> map);
+    Call<SigninResult> signin(@FieldMap Map<String, String> map);
 
     //登出
     @Headers({
-            "Referer: https://www.v2ex.com"
+            "referer: https://www.v2ex.com"
     })
     @GET("signout")
-    Call<ResponseBody> signout(@Query("once") int sessionId);
+    Call<SignoutResult> signout(@Query("once") int sessionId);
+
+    //收藏主题、取消收藏主题
+    @GET()
+    Call<FavoriteResult> favoriteTopic(@Url String url, @Header("referer") String referer);
 
     //我收藏的主题列表页面
     @GET("my/topics")

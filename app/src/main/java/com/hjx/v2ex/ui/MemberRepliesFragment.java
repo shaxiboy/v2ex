@@ -72,7 +72,7 @@ public class MemberRepliesFragment extends DataLoadingBaseFragment implements Sw
     }
 
     private void loadMemberReplies() {
-        RetrofitSingleton.getInstance().memberTopicRepliesPage(memberName, currentPage).enqueue(new Callback<MemberTopicRepliesPage>() {
+        RetrofitSingleton.getInstance(getContext()).memberTopicRepliesPage(memberName, currentPage).enqueue(new Callback<MemberTopicRepliesPage>() {
             @Override
             public void onResponse(Call<MemberTopicRepliesPage> call, Response<MemberTopicRepliesPage> response) {
                 swipeRefreshLayout.setRefreshing(false);

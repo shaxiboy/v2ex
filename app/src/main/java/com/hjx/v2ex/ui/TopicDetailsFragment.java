@@ -1,19 +1,27 @@
 package com.hjx.v2ex.ui;
 
 
+import android.app.ProgressDialog;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
 import android.support.v4.widget.SwipeRefreshLayout;
 import android.support.v7.widget.RecyclerView;
+import android.view.Menu;
+import android.view.MenuInflater;
+import android.view.MenuItem;
+import android.widget.Toast;
 
 import com.hjx.v2ex.R;
+import com.hjx.v2ex.bean.FavoriteResult;
 import com.hjx.v2ex.flexibleitem.ProgressItem;
 import com.hjx.v2ex.bean.Reply;
 import com.hjx.v2ex.flexibleitem.TopicDetailsFlexibleItem;
 import com.hjx.v2ex.bean.TopicPage;
 import com.hjx.v2ex.flexibleitem.TopicReplyFlexibleItem;
+import com.hjx.v2ex.network.RetrofitService;
 import com.hjx.v2ex.network.RetrofitSingleton;
 import com.hjx.v2ex.util.LogUtil;
+import com.hjx.v2ex.util.V2EXUtil;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -30,14 +38,15 @@ import retrofit2.Response;
  */
 public class TopicDetailsFragment extends DataLoadingBaseFragment implements SwipeRefreshLayout.OnRefreshListener, FlexibleAdapter.EndlessScrollListener {
 
-    private int topicId;
-    private FlexibleAdapter topicDetailsAdapter;
-    private int currentPage = 1;
-
     @BindView(R.id.swipe_refresh_layout)
     SwipeRefreshLayout swipeRefreshLayout;
     @BindView(R.id.recycler_view)
     RecyclerView recyclerView;
+
+    private int topicId;
+    private FlexibleAdapter topicDetailsAdapter;
+    private int currentPage = 1;
+    private Menu menu;
 
     public static TopicDetailsFragment newInstance(String topicId) {
         TopicDetailsFragment topicDetailsFragment = new TopicDetailsFragment();
@@ -54,6 +63,7 @@ public class TopicDetailsFragment extends DataLoadingBaseFragment implements Swi
 
     @Override
     protected void initView() {
+        setHasOptionsMenu(true);
         topicId = getArguments().getInt(DataLoadingBaseActivity.INTENT_EXTRA_ARGU_TOPIC);
         swipeRefreshLayout.setOnRefreshListener(this);
         topicDetailsAdapter = new FlexibleAdapter(new ArrayList());
@@ -67,13 +77,88 @@ public class TopicDetailsFragment extends DataLoadingBaseFragment implements Swi
     }
 
     @Override
+    public void onCreateOptionsMenu(Menu menu, MenuInflater inflater) {
+        inflater.inflate(R.menu.fragment_topics, menu);
+        this.menu = menu;
+        super.onCreateOptionsMenu(menu, inflater);
+    }
+
+    @Override
+    public void onPrepareOptionsMenu(Menu menu) {
+        super.onPrepareOptionsMenu(menu);
+        if(V2EXUtil.isLogin(getContext()) && !topicDetailsAdapter.isEmpty()) {
+            String favoriteURL = ((TopicDetailsFlexibleItem) topicDetailsAdapter.getScrollableHeaders().get(0)).getTopic().getFavoriteURL();
+            FavoriteTopicType type = getFavoriteTopicType(favoriteURL);
+            if(type != null) {
+                MenuItem favoriteItem = menu.findItem(R.id.menu_topics_favorite);
+                if(type == FavoriteTopicType.UNFAVORITE) {
+                    favoriteItem.setIcon(R.drawable.ic_menu_favorite);
+                } else if(type == FavoriteTopicType.FAVORITE){
+                    favoriteItem.setIcon(R.drawable.ic_menu_unfavorite);
+                }
+                favoriteItem.setVisible(true);
+            }
+        }
+    }
+
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
+        switch (item.getItemId()) {
+            case R.id.menu_topics_favorite:
+                favoriteTopic();
+                break;
+        }
+        return super.onOptionsItemSelected(item);
+    }
+
+    @Override
     public void onRefresh() {
         currentPage = 1;
         loadTopicDetails();
     }
 
+    private void favoriteTopic() {
+        String favoriteURL = ((TopicDetailsFlexibleItem) topicDetailsAdapter.getScrollableHeaders().get(0)).getTopic().getFavoriteURL();
+        final FavoriteTopicType type = getFavoriteTopicType(favoriteURL);
+        if(type != null) {
+            String referer = RetrofitService.BASE_URL + "t/" + topicId;
+            final ProgressDialog progressDialog = V2EXUtil.showProgressDialog(getContext(), "正在" + type);
+            RetrofitSingleton.getInstance(getContext()).favoriteTopic(favoriteURL, referer).enqueue(new Callback<FavoriteResult>() {
+                @Override
+                public void onResponse(Call<FavoriteResult> call, Response<FavoriteResult> response) {
+                    progressDialog.dismiss();
+                    FavoriteResult result = response.body();
+                    boolean success = true;
+                    if(result != null) {
+                        FavoriteTopicType newType = getFavoriteTopicType(result.getFavoriteURL());
+                        if(newType != null) {
+                            if(type == FavoriteTopicType.UNFAVORITE && newType == FavoriteTopicType.FAVORITE
+                                    || type == FavoriteTopicType.FAVORITE && newType == FavoriteTopicType.UNFAVORITE) {
+                                success = true;
+                            }
+                        }
+                    }
+                    if(success) {
+                        Toast.makeText(TopicDetailsFragment.this.getContext(), type + "操作成功", Toast.LENGTH_SHORT).show();
+                        ((TopicDetailsFlexibleItem) topicDetailsAdapter.getScrollableHeaders().get(0)).getTopic().setFavoriteURL(result.getFavoriteURL());
+                        getActivity().invalidateOptionsMenu();
+                    } else {
+                        Toast.makeText(TopicDetailsFragment.this.getContext(), type + "操作失败", Toast.LENGTH_SHORT).show();
+                    }
+                }
+
+                @Override
+                public void onFailure(Call<FavoriteResult> call, Throwable throwable) {
+                    progressDialog.dismiss();
+                    Toast.makeText(TopicDetailsFragment.this.getContext(), type + "操作失败", Toast.LENGTH_SHORT).show();
+                    throwable.printStackTrace();
+                }
+            });
+        }
+    }
+
     private void loadTopicDetails() {
-        RetrofitSingleton.getInstance().topicPage(topicId, currentPage).enqueue(new Callback<TopicPage>() {
+        RetrofitSingleton.getInstance(getContext()).topicPage(topicId, currentPage).enqueue(new Callback<TopicPage>() {
             @Override
             public void onResponse(Call<TopicPage> call, Response<TopicPage> response) {
                 swipeRefreshLayout.setRefreshing(false);
@@ -95,6 +180,7 @@ public class TopicDetailsFragment extends DataLoadingBaseFragment implements Swi
                                 topicDetailsAdapter.setEndlessScrollListener(TopicDetailsFragment.this, new ProgressItem())
                                         .setEndlessTargetCount(topicPage.getReplies().getTotalItems());
                             }
+                            getActivity().invalidateOptionsMenu();
                         } else {
                             errorLoadingData();
                             return;
@@ -133,4 +219,29 @@ public class TopicDetailsFragment extends DataLoadingBaseFragment implements Swi
     public void onLoadMore(int lastPosition, int currentPage) {
         loadTopicDetails();
     }
+
+    public FavoriteTopicType getFavoriteTopicType(String url) {
+        if(url != null) {
+            if(url.contains("unfavorite")) return FavoriteTopicType.UNFAVORITE;
+            if(url.contains("favorite")) return FavoriteTopicType.FAVORITE;
+        }
+        return null;
+    }
+
+    public enum FavoriteTopicType {
+
+        FAVORITE("收藏主题"), UNFAVORITE("取消收藏主题");
+
+        private String action;
+
+        FavoriteTopicType(String action) {
+            this.action = action;
+        }
+
+        @Override
+        public String toString() {
+            return action;
+        }
+    }
+
 }

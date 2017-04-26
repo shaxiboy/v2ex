@@ -73,7 +73,7 @@ public class NodeDetailsFragment extends DataLoadingBaseFragment implements Swip
 
 
     private void loadNodeDetails() {
-        RetrofitSingleton.getInstance().nodeDetailsPage(nodeName, currentPage).enqueue(new Callback<NodePage>() {
+        RetrofitSingleton.getInstance(getContext()).nodeDetailsPage(nodeName, currentPage).enqueue(new Callback<NodePage>() {
             @Override
             public void onResponse(Call<NodePage> call, Response<NodePage> response) {
                 swipeRefreshLayout.setRefreshing(false);

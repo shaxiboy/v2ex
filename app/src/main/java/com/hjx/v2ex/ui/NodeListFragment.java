@@ -117,7 +117,7 @@ public class NodeListFragment extends DataLoadingBaseFragment {
 
     private void loadNodes() {
         if (tab.equals("最热") || tab.equals("导航")) {
-            RetrofitSingleton.getInstance().homePage(null).enqueue(new Callback<HomePage>() {
+            RetrofitSingleton.getInstance(getContext()).homePage(null).enqueue(new Callback<HomePage>() {
                 @Override
                 public void onResponse(Call<HomePage> call, Response<HomePage> response) {
                     if (tab.equals("最热")) {
@@ -146,7 +146,7 @@ public class NodeListFragment extends DataLoadingBaseFragment {
                 }
             });
         } else if (tab.equals("全部")) {
-            RetrofitSingleton.getInstance().allNodesPage().enqueue(new Callback<NodesPlane>() {
+            RetrofitSingleton.getInstance(getContext()).allNodesPage().enqueue(new Callback<NodesPlane>() {
                 @Override
                 public void onResponse(Call<NodesPlane> call, Response<NodesPlane> response) {
                     Map<String, List<Node>> nodeSections = response.body().getNodeSections();

@@ -14,7 +14,7 @@ public class Topic {
     private int replyNum;
     private int collectedNum;
     private int thanksNum;
-    private String collectHref;
+    private String favoriteURL;
     private String thankToken;
     private Member member;
     private Node node;
@@ -70,12 +70,12 @@ public class Topic {
         this.thanksNum = thanksNum;
     }
 
-    public String getCollectHref() {
-        return collectHref;
+    public String getFavoriteURL() {
+        return favoriteURL;
     }
 
-    public void setCollectHref(String collectHref) {
-        this.collectHref = collectHref;
+    public void setFavoriteURL(String favoriteURL) {
+        this.favoriteURL = favoriteURL;
     }
 
     public String getThankToken() {
@@ -135,7 +135,7 @@ public class Topic {
                 ", replyNum=" + replyNum +
                 ", collectedNum=" + collectedNum +
                 ", thanksNum=" + thanksNum +
-                ", collectHref='" + collectHref + '\'' +
+                ", favoriteURL='" + favoriteURL + '\'' +
                 ", thankToken='" + thankToken + '\'' +
                 ", member=" + member +
                 ", node=" + node +

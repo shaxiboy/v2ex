@@ -70,7 +70,7 @@ public class MemberTopicsFragment extends DataLoadingBaseFragment implements Swi
     }
 
     private void loadMemberTopics() {
-        RetrofitSingleton.getInstance().memberTopicsPage(memberName, currentPage).enqueue(new Callback<MemberTopicsPage>() {
+        RetrofitSingleton.getInstance(getContext()).memberTopicsPage(memberName, currentPage).enqueue(new Callback<MemberTopicsPage>() {
             @Override
             public void onResponse(Call<MemberTopicsPage> call, Response<MemberTopicsPage> response) {
                 swipeRefreshLayout.setRefreshing(false);

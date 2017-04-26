@@ -87,7 +87,7 @@ public class MemberDetailsFragment extends DataLoadingBaseFragment implements Sw
     }
 
     private void loadMemberDetails() {
-        RetrofitSingleton.getInstance().memberDetailsPage(memberName).enqueue(new Callback<Member>() {
+        RetrofitSingleton.getInstance(getContext()).memberDetailsPage(memberName).enqueue(new Callback<Member>() {
             @Override
             public void onResponse(Call<Member> call, Response<Member> response) {
                 swipeRefreshLayout.setRefreshing(false);
@@ -117,7 +117,7 @@ public class MemberDetailsFragment extends DataLoadingBaseFragment implements Sw
     }
 
     private void loadMemberTopics() {
-        RetrofitSingleton.getInstance().memberTopicsPage(memberName, 1).enqueue(new Callback<MemberTopicsPage>() {
+        RetrofitSingleton.getInstance(getContext()).memberTopicsPage(memberName, 1).enqueue(new Callback<MemberTopicsPage>() {
             @Override
             public void onResponse(Call<MemberTopicsPage> call, Response<MemberTopicsPage> response) {
                 topics = response.body().getTopics().getCurrentPageItems();
@@ -154,7 +154,7 @@ public class MemberDetailsFragment extends DataLoadingBaseFragment implements Sw
     }
 
     private void loadMemberReplies() {
-        RetrofitSingleton.getInstance().memberTopicRepliesPage(memberName, 1).enqueue(new Callback<MemberTopicRepliesPage>() {
+        RetrofitSingleton.getInstance(getContext()).memberTopicRepliesPage(memberName, 1).enqueue(new Callback<MemberTopicRepliesPage>() {
             @Override
             public void onResponse(Call<MemberTopicRepliesPage> call, Response<MemberTopicRepliesPage> response) {
                 replies = response.body().getReplies().getCurrentPageItems();
