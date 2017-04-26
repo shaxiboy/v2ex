@@ -12,7 +12,7 @@ import android.view.MenuItem;
 import android.widget.Toast;
 
 import com.hjx.v2ex.R;
-import com.hjx.v2ex.bean.FavoriteResult;
+import com.hjx.v2ex.bean.TopicFavoriteResult;
 import com.hjx.v2ex.flexibleitem.ProgressItem;
 import com.hjx.v2ex.bean.Reply;
 import com.hjx.v2ex.flexibleitem.TopicDetailsFlexibleItem;
@@ -46,7 +46,6 @@ public class TopicDetailsFragment extends DataLoadingBaseFragment implements Swi
     private int topicId;
     private FlexibleAdapter topicDetailsAdapter;
     private int currentPage = 1;
-    private Menu menu;
 
     public static TopicDetailsFragment newInstance(String topicId) {
         TopicDetailsFragment topicDetailsFragment = new TopicDetailsFragment();
@@ -63,7 +62,6 @@ public class TopicDetailsFragment extends DataLoadingBaseFragment implements Swi
 
     @Override
     protected void initView() {
-        setHasOptionsMenu(true);
         topicId = getArguments().getInt(DataLoadingBaseActivity.INTENT_EXTRA_ARGU_TOPIC);
         swipeRefreshLayout.setOnRefreshListener(this);
         topicDetailsAdapter = new FlexibleAdapter(new ArrayList());
@@ -78,33 +76,36 @@ public class TopicDetailsFragment extends DataLoadingBaseFragment implements Swi
 
     @Override
     public void onCreateOptionsMenu(Menu menu, MenuInflater inflater) {
-        inflater.inflate(R.menu.fragment_topics, menu);
-        this.menu = menu;
+        inflater.inflate(R.menu.fragment_menu, menu);
         super.onCreateOptionsMenu(menu, inflater);
     }
 
     @Override
     public void onPrepareOptionsMenu(Menu menu) {
         super.onPrepareOptionsMenu(menu);
+        MenuItem favoriteItem = menu.findItem(R.id.menu_favorite);
         if(V2EXUtil.isLogin(getContext()) && !topicDetailsAdapter.isEmpty()) {
             String favoriteURL = ((TopicDetailsFlexibleItem) topicDetailsAdapter.getScrollableHeaders().get(0)).getTopic().getFavoriteURL();
             FavoriteTopicType type = getFavoriteTopicType(favoriteURL);
             if(type != null) {
-                MenuItem favoriteItem = menu.findItem(R.id.menu_topics_favorite);
                 if(type == FavoriteTopicType.UNFAVORITE) {
                     favoriteItem.setIcon(R.drawable.ic_menu_favorite);
                 } else if(type == FavoriteTopicType.FAVORITE){
                     favoriteItem.setIcon(R.drawable.ic_menu_unfavorite);
                 }
                 favoriteItem.setVisible(true);
+            } else {
+                favoriteItem.setVisible(false);
             }
+        } else {
+            favoriteItem.setVisible(false);
         }
     }
 
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
         switch (item.getItemId()) {
-            case R.id.menu_topics_favorite:
+            case R.id.menu_favorite:
                 favoriteTopic();
                 break;
         }
@@ -123,12 +124,12 @@ public class TopicDetailsFragment extends DataLoadingBaseFragment implements Swi
         if(type != null) {
             String referer = RetrofitService.BASE_URL + "t/" + topicId;
             final ProgressDialog progressDialog = V2EXUtil.showProgressDialog(getContext(), "正在" + type);
-            RetrofitSingleton.getInstance(getContext()).favoriteTopic(favoriteURL, referer).enqueue(new Callback<FavoriteResult>() {
+            RetrofitSingleton.getInstance(getContext()).favoriteTopic(favoriteURL, referer).enqueue(new Callback<TopicFavoriteResult>() {
                 @Override
-                public void onResponse(Call<FavoriteResult> call, Response<FavoriteResult> response) {
+                public void onResponse(Call<TopicFavoriteResult> call, Response<TopicFavoriteResult> response) {
                     progressDialog.dismiss();
-                    FavoriteResult result = response.body();
-                    boolean success = true;
+                    TopicFavoriteResult result = response.body();
+                    boolean success = false;
                     if(result != null) {
                         FavoriteTopicType newType = getFavoriteTopicType(result.getFavoriteURL());
                         if(newType != null) {
@@ -148,7 +149,7 @@ public class TopicDetailsFragment extends DataLoadingBaseFragment implements Swi
                 }
 
                 @Override
-                public void onFailure(Call<FavoriteResult> call, Throwable throwable) {
+                public void onFailure(Call<TopicFavoriteResult> call, Throwable throwable) {
                     progressDialog.dismiss();
                     Toast.makeText(TopicDetailsFragment.this.getContext(), type + "操作失败", Toast.LENGTH_SHORT).show();
                     throwable.printStackTrace();
@@ -170,9 +171,9 @@ public class TopicDetailsFragment extends DataLoadingBaseFragment implements Swi
                         topicReplies.add(new TopicReplyFlexibleItem(reply));
                     }
                     if (currentPage == 1) {
+                        topicDetailsAdapter.clear();
                         if (topicPage.getTopic() != null) {
                             successLoadingData();
-                            topicDetailsAdapter.clear();
                             topicDetailsAdapter.addScrollableHeader(new TopicDetailsFlexibleItem(topicPage.getTopic()));
                             topicDetailsAdapter.notifyDataSetChanged();
                             topicDetailsAdapter.addItems(topicDetailsAdapter.getItemCount(), topicReplies);
@@ -180,12 +181,10 @@ public class TopicDetailsFragment extends DataLoadingBaseFragment implements Swi
                                 topicDetailsAdapter.setEndlessScrollListener(TopicDetailsFragment.this, new ProgressItem())
                                         .setEndlessTargetCount(topicPage.getReplies().getTotalItems());
                             }
-                            getActivity().invalidateOptionsMenu();
                         } else {
                             errorLoadingData();
                             return;
                         }
-
                     } else {
                         topicDetailsAdapter.onLoadMoreComplete(topicReplies, 5000);
                     }
@@ -194,17 +193,21 @@ public class TopicDetailsFragment extends DataLoadingBaseFragment implements Swi
                     }
                 } else {
                     if (currentPage == 1) {
+                        topicDetailsAdapter.clear();
                         errorLoadingData();
                     }
                 }
+                getActivity().invalidateOptionsMenu();
             }
 
             @Override
             public void onFailure(Call<TopicPage> call, Throwable throwable) {
                 swipeRefreshLayout.setRefreshing(false);
                 if (currentPage == 1) {
+                    topicDetailsAdapter.clear();
                     errorLoadingData();
                 }
+                getActivity().invalidateOptionsMenu();
                 throwable.printStackTrace();
             }
         });

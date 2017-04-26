@@ -38,6 +38,10 @@ public class MemberDetailsFlexibleItem extends AbstractFlexibleItem<MemberDetail
         this.member = member;
     }
 
+    public Member getMember() {
+        return member;
+    }
+
     @Override
     public int getLayoutRes() {
         return R.layout.recycler_header_member_details;

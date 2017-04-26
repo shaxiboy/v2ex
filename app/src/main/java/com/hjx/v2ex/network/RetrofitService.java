@@ -1,6 +1,10 @@
 package com.hjx.v2ex.network;
 
-import com.hjx.v2ex.bean.FavoriteResult;
+import com.hjx.v2ex.bean.FavoriteMembers;
+import com.hjx.v2ex.bean.FavoriteNodes;
+import com.hjx.v2ex.bean.MemberFavoriteResult;
+import com.hjx.v2ex.bean.NodeFavoriteResult;
+import com.hjx.v2ex.bean.TopicFavoriteResult;
 import com.hjx.v2ex.bean.HomePage;
 import com.hjx.v2ex.bean.Member;
 import com.hjx.v2ex.bean.MemberTopicRepliesPage;
@@ -21,7 +25,6 @@ import retrofit2.http.Field;
 import retrofit2.http.FieldMap;
 import retrofit2.http.FormUrlEncoded;
 import retrofit2.http.GET;
-import retrofit2.http.HEAD;
 import retrofit2.http.Header;
 import retrofit2.http.Headers;
 import retrofit2.http.POST;
@@ -109,19 +112,31 @@ public interface RetrofitService {
 
     //收藏主题、取消收藏主题
     @GET()
-    Call<FavoriteResult> favoriteTopic(@Url String url, @Header("referer") String referer);
+    Call<TopicFavoriteResult> favoriteTopic(@Url String url, @Header("referer") String referer);
 
     //我收藏的主题列表页面
     @GET("my/topics")
-    Call<ResponseBody> myFollowingTopicsPage(@Query("p") Integer page);
+    Call<MemberTopicsPage> favoriteTopicsPage(@Query("p") Integer page);
 
-    //我关注的人页面
+    //关注会员、取消关注会员
+    @GET()
+    Call<MemberFavoriteResult> favoriteMember(@Url String url, @Header("referer") String referer);
+
+    //我关注的人
     @GET("my/following")
-    Call<ResponseBody> myFollowingMembersPage(@Query("p") Integer page);
+    Call<FavoriteMembers> favoriteMembersPage();
+
+    //我关注的人发表的主题
+    @GET("my/following")
+    Call<FavoriteMembers> favoriteMembersPage(@Query("p") Integer page);
+
+    //收藏节点、取消收藏节点
+    @GET()
+    Call<NodeFavoriteResult> favoriteNode(@Url String url, @Header("referer") String referer);
 
     //我收藏的节点页面
     @GET("my/nodes")
-    Call<ResponseBody> myFollowingNodesPage();
+    Call<FavoriteNodes> favoriteNodesPage();
 
     //感谢主题
     @POST("thank/topic/{id}")

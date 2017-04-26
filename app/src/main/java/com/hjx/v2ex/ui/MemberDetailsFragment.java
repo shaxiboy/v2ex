@@ -1,23 +1,32 @@
 package com.hjx.v2ex.ui;
 
 
+import android.app.ProgressDialog;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
 import android.support.v4.widget.SwipeRefreshLayout;
 import android.support.v7.widget.RecyclerView;
+import android.view.Menu;
+import android.view.MenuInflater;
+import android.view.MenuItem;
+import android.widget.Toast;
 
 import com.hjx.v2ex.R;
 import com.hjx.v2ex.bean.Member;
-import com.hjx.v2ex.flexibleitem.MemberDetailsFlexibleItem;
-import com.hjx.v2ex.flexibleitem.MemberReplyFlexibleItem;
 import com.hjx.v2ex.bean.MemberTopicRepliesPage;
 import com.hjx.v2ex.bean.MemberTopicsPage;
+import com.hjx.v2ex.bean.MemberFavoriteResult;
 import com.hjx.v2ex.bean.Reply;
-import com.hjx.v2ex.flexibleitem.SimpleFlexibleHeaderItem;
 import com.hjx.v2ex.bean.Topic;
+import com.hjx.v2ex.flexibleitem.MemberDetailsFlexibleItem;
+import com.hjx.v2ex.flexibleitem.MemberReplyFlexibleItem;
+import com.hjx.v2ex.flexibleitem.NodeDetailsFlexibleItem;
+import com.hjx.v2ex.flexibleitem.SimpleFlexibleHeaderItem;
 import com.hjx.v2ex.flexibleitem.TopicFlexibleItem;
 import com.hjx.v2ex.flexibleitem.ViewMoreFlexibleItem;
+import com.hjx.v2ex.network.RetrofitService;
 import com.hjx.v2ex.network.RetrofitSingleton;
+import com.hjx.v2ex.util.V2EXUtil;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -79,6 +88,84 @@ public class MemberDetailsFragment extends DataLoadingBaseFragment implements Sw
     }
 
     @Override
+    public void onCreateOptionsMenu(Menu menu, MenuInflater inflater) {
+        inflater.inflate(R.menu.fragment_menu, menu);
+        super.onCreateOptionsMenu(menu, inflater);
+    }
+
+    @Override
+    public void onPrepareOptionsMenu(Menu menu) {
+        super.onPrepareOptionsMenu(menu);
+        MenuItem favoriteItem = menu.findItem(R.id.menu_favorite);
+        if(V2EXUtil.isLogin(getContext()) && !memberDetailsAdapter.isEmpty()) {
+            String favoriteURL = ((MemberDetailsFlexibleItem) memberDetailsAdapter.getScrollableHeaders().get(0)).getMember().getFavoriteURL();
+            FavoriteMemberType type = getFavoriteMemberType(favoriteURL);
+            if(type != null) {
+                if(type == FavoriteMemberType.UNFAVORITE) {
+                    favoriteItem.setIcon(R.drawable.ic_menu_favorite);
+                } else if(type == FavoriteMemberType.FAVORITE){
+                    favoriteItem.setIcon(R.drawable.ic_menu_unfavorite);
+                }
+                favoriteItem.setVisible(true);
+            } else {
+                favoriteItem.setVisible(false);
+            }
+        } else {
+            favoriteItem.setVisible(false);
+        }
+    }
+
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
+        switch (item.getItemId()) {
+            case R.id.menu_favorite:
+                favoriteMember();
+                break;
+        }
+        return super.onOptionsItemSelected(item);
+    }
+
+    private void favoriteMember() {
+        String favoriteURL = ((MemberDetailsFlexibleItem) memberDetailsAdapter.getScrollableHeaders().get(0)).getMember().getFavoriteURL();
+        final FavoriteMemberType type = getFavoriteMemberType(favoriteURL);
+        if(type != null) {
+            String referer = RetrofitService.BASE_URL + "member/" + memberName;
+            final ProgressDialog progressDialog = V2EXUtil.showProgressDialog(getContext(), "正在" + type + memberName);
+            RetrofitSingleton.getInstance(getContext()).favoriteMember(favoriteURL, referer).enqueue(new Callback<MemberFavoriteResult>() {
+                @Override
+                public void onResponse(Call<MemberFavoriteResult> call, Response<MemberFavoriteResult> response) {
+                    progressDialog.dismiss();
+                    MemberFavoriteResult result = response.body();
+                    boolean success = false;
+                    if(result != null) {
+                        FavoriteMemberType newType = getFavoriteMemberType(result.getFavoriteURL());
+                        if(newType != null) {
+                            if(type == FavoriteMemberType.UNFAVORITE && newType == FavoriteMemberType.FAVORITE
+                                    || type == FavoriteMemberType.FAVORITE && newType == FavoriteMemberType.UNFAVORITE) {
+                                success = true;
+                            }
+                        }
+                    }
+                    if(success) {
+                        Toast.makeText(MemberDetailsFragment.this.getContext(), type + memberName + "操作成功", Toast.LENGTH_SHORT).show();
+                        ((MemberDetailsFlexibleItem) memberDetailsAdapter.getScrollableHeaders().get(0)).getMember().setFavoriteURL(result.getFavoriteURL());
+                        getActivity().invalidateOptionsMenu();
+                    } else {
+                        Toast.makeText(MemberDetailsFragment.this.getContext(), type + memberName + "操作失败", Toast.LENGTH_SHORT).show();
+                    }
+                }
+
+                @Override
+                public void onFailure(Call<MemberFavoriteResult> call, Throwable throwable) {
+                    progressDialog.dismiss();
+                    Toast.makeText(MemberDetailsFragment.this.getContext(), type + memberName + "操作失败", Toast.LENGTH_SHORT).show();
+                    throwable.printStackTrace();
+                }
+            });
+        }
+    }
+
+    @Override
     public void onRefresh() {
         member = null;
         topics = null;
@@ -92,8 +179,8 @@ public class MemberDetailsFragment extends DataLoadingBaseFragment implements Sw
             public void onResponse(Call<Member> call, Response<Member> response) {
                 swipeRefreshLayout.setRefreshing(false);
                 member = response.body();
+                memberDetailsAdapter.clear();
                 if(member != null) {
-                    memberDetailsAdapter.clear();
                     memberDetailsAdapter.addScrollableHeader(new MemberDetailsFlexibleItem(member));
                     if(topics != null) {
                         showMemberTopics();
@@ -105,12 +192,15 @@ public class MemberDetailsFragment extends DataLoadingBaseFragment implements Sw
                 } else {
                     errorLoadingData();
                 }
+                getActivity().invalidateOptionsMenu();
             }
 
             @Override
             public void onFailure(Call<Member> call, Throwable throwable) {
                 swipeRefreshLayout.setRefreshing(false);
+                memberDetailsAdapter.clear();
                 errorLoadingData();
+                getActivity().invalidateOptionsMenu();
                 throwable.printStackTrace();
             }
         });
@@ -187,6 +277,30 @@ public class MemberDetailsFragment extends DataLoadingBaseFragment implements Sw
             memberDetailsAdapter.addItems(memberDetailsAdapter.getItemCount(), replyFlexibleItems);
         } catch (Exception e) {
             e.printStackTrace();
+        }
+    }
+    
+    public FavoriteMemberType getFavoriteMemberType(String url) {
+        if(url != null) {
+            if(url.contains("unfollow")) return FavoriteMemberType.UNFAVORITE;
+            if(url.contains("follow")) return FavoriteMemberType.FAVORITE;
+        }
+        return null;
+    }
+
+    public enum FavoriteMemberType {
+
+        FAVORITE("关注"), UNFAVORITE("取消关注");
+
+        private String action;
+
+        FavoriteMemberType(String action) {
+            this.action = action;
+        }
+
+        @Override
+        public String toString() {
+            return action;
         }
     }
 }

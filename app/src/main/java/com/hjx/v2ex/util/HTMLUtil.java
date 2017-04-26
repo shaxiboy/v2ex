@@ -2,7 +2,11 @@ package com.hjx.v2ex.util;
 
 import android.text.TextUtils;
 
-import com.hjx.v2ex.bean.FavoriteResult;
+import com.hjx.v2ex.bean.FavoriteMembers;
+import com.hjx.v2ex.bean.FavoriteNodes;
+import com.hjx.v2ex.bean.MemberFavoriteResult;
+import com.hjx.v2ex.bean.NodeFavoriteResult;
+import com.hjx.v2ex.bean.TopicFavoriteResult;
 import com.hjx.v2ex.bean.HomePage;
 import com.hjx.v2ex.bean.Member;
 import com.hjx.v2ex.bean.MemberMoreInfo;
@@ -250,19 +254,6 @@ public class HTMLUtil {
         return topic;
     }
 
-    public static FavoriteResult parseFavoriteResult(String html) {
-        Document doc = Jsoup.parse(html);
-        Element topicButtons = doc.getElementsByClass("topic_buttons").first();
-        if (topicButtons != null) {
-            for (Element aEle : topicButtons.getElementsByTag("a")) {
-                if (aEle.text().equals("加入收藏") || aEle.text().equals("取消收藏")) {
-                    return new FavoriteResult("https:" + aEle.attr("href"));
-                }
-            }
-        }
-        return null;
-    }
-
     private static Topic.PS parseTopicPS(Element psEle) {
         Topic.PS ps = new Topic.PS();
         ps.setTime(psEle.getElementsByTag("span").first().text().split("  ·  ")[1]);
@@ -326,7 +317,7 @@ public class HTMLUtil {
         }
         for (Element inputEle : memberInfoBox.getElementsByTag("input")) {
             if (inputEle.attr("value").equals("加入特别关注") || inputEle.attr("value").equals("取消特别关注")) {
-                member.setNoticeHref(RetrofitService.BASE_URL + inputEle.attr("onclick").split("location.href")[1].split("'")[1]);
+                member.setFavoriteURL(RetrofitService.BASE_URL + inputEle.attr("onclick").split("location.href")[1].split("'")[1].substring(1));
             }
         }
         for(Element divEle : memberInfoBox.children()) {
@@ -484,7 +475,7 @@ public class HTMLUtil {
         for (Element aEle : headerEle.getElementsByTag("a")) {
             if (aEle.text().equals("加入收藏") || aEle.text().equals("取消收藏")) {
                 node.setId(parseInt(aEle.attr("href").split("node/")[1].split("\\?once=")[0]));
-                node.setCollectHref("https:" + aEle.attr("href"));
+                node.setFavoriteURL("https:" + aEle.attr("href"));
             }
         }
         Elements spans = headerEle.getElementsByTag("span");
@@ -592,42 +583,78 @@ public class HTMLUtil {
     public static SignoutResult parseSignoutResult(String html) {
         SignoutResult result = new SignoutResult();
         Element buttonEle = Jsoup.parse(html).getElementById("Main").getElementsByTag("input").first();
+        result.setSignout(true);
         if (buttonEle != null) {
-            if(buttonEle.attr("value").equals("重新登录")) {
-                result.setSignout(true);
-            } else {
+            if(buttonEle.attr("value").equals("Retry Sign Out")) {
                 result.setSignout(false);
+                result.setNewSessionId(Integer.parseInt(buttonEle.attr("onclick").split("once=")[1].split("'")[0]));
             }
         }
         return result;
     }
 
-    public static List<Node> parseMyFollowingNodes(String html) {
-        List<Node> collectedNodes = new ArrayList<>();
-        for (Element aEle : Jsoup.parse(html).getElementById("Main").getElementsByTag("a")) {
-            if (aEle.text().equals("V2EX")) continue;
-            Node collectedNode = new Node();
-            collectedNode.setName(aEle.attr("href").split("/")[2]);
-            collectedNode.setPhoto("https:" + aEle.getElementsByTag("img").first().attr("src"));
-            collectedNode.setTitle(aEle.text().split(" ")[0]);
-            collectedNode.setTopicNum(parseInt(aEle.text().split(" ")[1]));
-            collectedNodes.add(collectedNode);
+    public static TopicFavoriteResult parseTopicFavoriteResult(String html) {
+        Document doc = Jsoup.parse(html);
+        Element topicButtons = doc.getElementsByClass("topic_buttons").first();
+        if (topicButtons != null) {
+            for (Element aEle : topicButtons.getElementsByTag("a")) {
+                if (aEle.text().equals("加入收藏") || aEle.text().equals("取消收藏")) {
+                    return new TopicFavoriteResult("https:" + aEle.attr("href"));
+                }
+            }
         }
-        return collectedNodes;
+        return null;
     }
 
-    public static List<Member> parseMyFollowingMembers(String html) {
-        List<Member> followedMebers = new ArrayList<>();
+    public static NodeFavoriteResult parseNodeFavoriteResult(String html) {
+        Document doc = Jsoup.parse(html);
+        Element headerEle = doc.getElementById("Main").getElementsByClass("header").first();
+        for (Element aEle : headerEle.getElementsByTag("a")) {
+            if (aEle.text().equals("加入收藏") || aEle.text().equals("取消收藏")) {
+                return new NodeFavoriteResult("https:" + aEle.attr("href"));
+            }
+        }
+        return null;
+    }
+
+    public static MemberFavoriteResult parseMemberFavoriteResult(String html) {
+        Document doc = Jsoup.parse(html);
+        Element memberInfoBox = doc.getElementById("Main").getElementsByClass("box").first();
+        for (Element inputEle : memberInfoBox.getElementsByTag("input")) {
+            if (inputEle.attr("value").equals("加入特别关注") || inputEle.attr("value").equals("取消特别关注")) {
+                return new MemberFavoriteResult(RetrofitService.BASE_URL + inputEle.attr("onclick").split("location.href")[1].split("'")[1].substring(1));
+            }
+        }
+        return null;
+    }
+
+    public static FavoriteNodes parseFavoriteNodes(String html) {
+        FavoriteNodes favoriteNodes = new FavoriteNodes();
+        for (Element aEle : Jsoup.parse(html).getElementById("Main").getElementsByTag("a")) {
+            if (aEle.text().equals("V2EX")) continue;
+            Node favoriteNode = new Node();
+            favoriteNode.setName(aEle.attr("href").split("/")[2]);
+            favoriteNode.setPhoto("https:" + aEle.getElementsByTag("img").first().attr("src"));
+            favoriteNode.setTitle(aEle.text().split(" ")[0]);
+            favoriteNode.setTopicNum(parseInt(aEle.text().split(" ")[1]));
+            favoriteNodes.getFavoriteNodes().add(favoriteNode);
+        }
+        return favoriteNodes;
+    }
+
+    public static FavoriteMembers parseFavoriteMembers(String html) {
+        FavoriteMembers favoriteMembers = new FavoriteMembers();
         for (Element boxEle : Jsoup.parse(html).getElementById("Rightbar").getElementsByClass("box")) {
             if (boxEle.text().contains("我关注的人")) {
                 for(Element imgEle : boxEle.getElementsByTag("img")) {
                     Member member = new Member();
                     member.setPhoto("https:" + imgEle.attr("src"));
                     member.setUsername(imgEle.parent().attr("href").split("/")[2]);
-                    followedMebers.add(member);
+                    favoriteMembers.getFavoriteMembers().add(member);
                 }
             }
         }
-        return followedMebers;
+        return favoriteMembers;
     }
+
 }

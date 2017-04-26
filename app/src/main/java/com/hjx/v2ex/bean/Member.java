@@ -13,7 +13,7 @@ public class Member implements Serializable{
     private String username;
     private String photo;
     private String basicInfo;
-    private String noticeHref;
+    private String favoriteURL;
     private List<MemberMoreInfo> moreInfos = new ArrayList<>();
 
     public String getUsername() {
@@ -40,12 +40,12 @@ public class Member implements Serializable{
         this.basicInfo = basicInfo;
     }
 
-    public String getNoticeHref() {
-        return noticeHref;
+    public String getFavoriteURL() {
+        return favoriteURL;
     }
 
-    public void setNoticeHref(String noticeHref) {
-        this.noticeHref = noticeHref;
+    public void setFavoriteURL(String favoriteURL) {
+        this.favoriteURL = favoriteURL;
     }
 
     public List<MemberMoreInfo> getMoreInfos() {
@@ -62,7 +62,7 @@ public class Member implements Serializable{
                 "username='" + username + '\'' +
                 ", photo='" + photo + '\'' +
                 ", basicInfo='" + basicInfo + '\'' +
-                ", noticeHref='" + noticeHref + '\'' +
+                ", favoriteURL='" + favoriteURL + '\'' +
                 ", moreInfos=" + moreInfos +
                 '}';
     }

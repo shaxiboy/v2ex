@@ -7,6 +7,7 @@ package com.hjx.v2ex.bean;
 public class SignoutResult {
 
     private boolean signout = true;
+    private int newSessionId = -1;
 
     public boolean isSignout() {
         return signout;
@@ -14,5 +15,13 @@ public class SignoutResult {
 
     public void setSignout(boolean signout) {
         this.signout = signout;
+    }
+
+    public int getNewSessionId() {
+        return newSessionId;
+    }
+
+    public void setNewSessionId(int newSessionId) {
+        this.newSessionId = newSessionId;
     }
 }

@@ -9,7 +9,7 @@
     tools:openDrawer="start">
 
     <include
-        layout="@layout/activity_main_drawer_content"
+        layout="@layout/tab_viewpager_layout"
         android:layout_width="match_parent"
         android:layout_height="match_parent" />
 

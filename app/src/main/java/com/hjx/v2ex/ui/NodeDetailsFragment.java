@@ -1,18 +1,26 @@
 package com.hjx.v2ex.ui;
 
 
+import android.app.ProgressDialog;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
 import android.support.v4.widget.SwipeRefreshLayout;
 import android.support.v7.widget.RecyclerView;
+import android.view.Menu;
+import android.view.MenuInflater;
+import android.view.MenuItem;
+import android.widget.Toast;
 
 import com.hjx.v2ex.R;
-import com.hjx.v2ex.flexibleitem.NodeDetailsFlexibleItem;
+import com.hjx.v2ex.bean.NodeFavoriteResult;
 import com.hjx.v2ex.bean.NodePage;
-import com.hjx.v2ex.flexibleitem.ProgressItem;
 import com.hjx.v2ex.bean.Topic;
+import com.hjx.v2ex.flexibleitem.NodeDetailsFlexibleItem;
+import com.hjx.v2ex.flexibleitem.ProgressItem;
 import com.hjx.v2ex.flexibleitem.TopicFlexibleItem;
+import com.hjx.v2ex.network.RetrofitService;
 import com.hjx.v2ex.network.RetrofitSingleton;
+import com.hjx.v2ex.util.V2EXUtil;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -66,6 +74,84 @@ public class NodeDetailsFragment extends DataLoadingBaseFragment implements Swip
     }
 
     @Override
+    public void onCreateOptionsMenu(Menu menu, MenuInflater inflater) {
+        inflater.inflate(R.menu.fragment_menu, menu);
+        super.onCreateOptionsMenu(menu, inflater);
+    }
+
+    @Override
+    public void onPrepareOptionsMenu(Menu menu) {
+        super.onPrepareOptionsMenu(menu);
+        MenuItem favoriteItem = menu.findItem(R.id.menu_favorite);
+        if(V2EXUtil.isLogin(getContext()) && !nodeDetailsAdapter.isEmpty()) {
+            String favoriteURL = ((NodeDetailsFlexibleItem) nodeDetailsAdapter.getScrollableHeaders().get(0)).getNode().getFavoriteURL();
+            FavoriteNodeType type = getFavoriteNodeType(favoriteURL);
+            if(type != null) {
+                if(type == FavoriteNodeType.UNFAVORITE) {
+                    favoriteItem.setIcon(R.drawable.ic_menu_favorite);
+                } else if(type == FavoriteNodeType.FAVORITE){
+                    favoriteItem.setIcon(R.drawable.ic_menu_unfavorite);
+                }
+                favoriteItem.setVisible(true);
+            } else {
+                favoriteItem.setVisible(false);
+            }
+        } else {
+            favoriteItem.setVisible(false);
+        }
+    }
+
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
+        switch (item.getItemId()) {
+            case R.id.menu_favorite:
+                favoriteNode();
+                break;
+        }
+        return super.onOptionsItemSelected(item);
+    }
+
+    private void favoriteNode() {
+        String favoriteURL = ((NodeDetailsFlexibleItem) nodeDetailsAdapter.getScrollableHeaders().get(0)).getNode().getFavoriteURL();
+        final FavoriteNodeType type = getFavoriteNodeType(favoriteURL);
+        if(type != null) {
+            String referer = RetrofitService.BASE_URL + "go/" + nodeName;
+            final ProgressDialog progressDialog = V2EXUtil.showProgressDialog(getContext(), "正在" + type);
+            RetrofitSingleton.getInstance(getContext()).favoriteNode(favoriteURL, referer).enqueue(new Callback<NodeFavoriteResult>() {
+                @Override
+                public void onResponse(Call<NodeFavoriteResult> call, Response<NodeFavoriteResult> response) {
+                    progressDialog.dismiss();
+                    NodeFavoriteResult result = response.body();
+                    boolean success = false;
+                    if(result != null) {
+                        FavoriteNodeType newType = getFavoriteNodeType(result.getFavoriteURL());
+                        if(newType != null) {
+                            if(type == FavoriteNodeType.UNFAVORITE && newType == FavoriteNodeType.FAVORITE
+                                    || type == FavoriteNodeType.FAVORITE && newType == FavoriteNodeType.UNFAVORITE) {
+                                success = true;
+                            }
+                        }
+                    }
+                    if(success) {
+                        Toast.makeText(NodeDetailsFragment.this.getContext(), type + "操作成功", Toast.LENGTH_SHORT).show();
+                        ((NodeDetailsFlexibleItem) nodeDetailsAdapter.getScrollableHeaders().get(0)).getNode().setFavoriteURL(result.getFavoriteURL());
+                        getActivity().invalidateOptionsMenu();
+                    } else {
+                        Toast.makeText(NodeDetailsFragment.this.getContext(), type + "操作失败", Toast.LENGTH_SHORT).show();
+                    }
+                }
+
+                @Override
+                public void onFailure(Call<NodeFavoriteResult> call, Throwable throwable) {
+                    progressDialog.dismiss();
+                    Toast.makeText(NodeDetailsFragment.this.getContext(), type + "操作失败", Toast.LENGTH_SHORT).show();
+                    throwable.printStackTrace();
+                }
+            });
+        }
+    }
+
+    @Override
     public void onRefresh() {
         currentPage = 1;
         loadNodeDetails();
@@ -84,9 +170,9 @@ public class NodeDetailsFragment extends DataLoadingBaseFragment implements Swip
                         topics.add(new TopicFlexibleItem(topic, TopicFlexibleItem.TopicItemType.NODE, null));
                     }
                     if (currentPage == 1) {
+                        nodeDetailsAdapter.clear();
                         if(nodePage.getNode() != null) {
                             successLoadingData();
-                            nodeDetailsAdapter.clear();
                             nodeDetailsAdapter.addScrollableHeader(new NodeDetailsFlexibleItem(nodePage.getNode()));
                             nodeDetailsAdapter.notifyDataSetChanged();
                             nodeDetailsAdapter.addItems(nodeDetailsAdapter.getItemCount(), topics);
@@ -106,17 +192,21 @@ public class NodeDetailsFragment extends DataLoadingBaseFragment implements Swip
                     }
                 } else {
                     if (currentPage == 1) {
+                        nodeDetailsAdapter.clear();
                         errorLoadingData();
                     }
                 }
+                getActivity().invalidateOptionsMenu();
             }
 
             @Override
             public void onFailure(Call<NodePage> call, Throwable throwable) {
                 swipeRefreshLayout.setRefreshing(false);
                 if (currentPage == 1) {
+                    nodeDetailsAdapter.clear();
                     errorLoadingData();
                 }
+                getActivity().invalidateOptionsMenu();
                 throwable.printStackTrace();
             }
         });
@@ -130,5 +220,29 @@ public class NodeDetailsFragment extends DataLoadingBaseFragment implements Swip
     @Override
     public void onLoadMore(int lastPosition, int currentPage) {
         loadNodeDetails();
+    }
+
+    public FavoriteNodeType getFavoriteNodeType(String url) {
+        if(url != null) {
+            if(url.contains("unfavorite")) return FavoriteNodeType.UNFAVORITE;
+            if(url.contains("favorite")) return FavoriteNodeType.FAVORITE;
+        }
+        return null;
+    }
+
+    public enum FavoriteNodeType {
+
+        FAVORITE("收藏节点"), UNFAVORITE("取消收藏节点");
+
+        private String action;
+
+        FavoriteNodeType(String action) {
+            this.action = action;
+        }
+
+        @Override
+        public String toString() {
+            return action;
+        }
     }
 }

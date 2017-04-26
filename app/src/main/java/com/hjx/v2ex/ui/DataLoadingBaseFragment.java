@@ -37,6 +37,7 @@ public abstract class DataLoadingBaseFragment extends Fragment {
     @Override
     public final View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
+        setHasOptionsMenu(true);
         View root = inflater.inflate(R.layout.fragment_data_loading_base, container, false);
         contentLayout = (FrameLayout) root.findViewById(R.id.content_layout);
         contentLayout.addView(inflater.inflate(getContentRes(), contentLayout, false));

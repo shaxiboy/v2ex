@@ -16,7 +16,7 @@ public class Node implements Serializable{
     private String desc;
     private String photo;
     private int topicNum;
-    private String collectHref;
+    private String favoriteURL;
     private Node parent;
     private List<Node> children = new ArrayList<>();
     private List<Node> relatives = new ArrayList<>();
@@ -69,12 +69,12 @@ public class Node implements Serializable{
         this.topicNum = topicNum;
     }
 
-    public String getCollectHref() {
-        return collectHref;
+    public String getFavoriteURL() {
+        return favoriteURL;
     }
 
-    public void setCollectHref(String collectHref) {
-        this.collectHref = collectHref;
+    public void setFavoriteURL(String favoriteURL) {
+        this.favoriteURL = favoriteURL;
     }
 
     public Node getParent() {
@@ -102,7 +102,7 @@ public class Node implements Serializable{
                 ", desc='" + desc + '\'' +
                 ", photo='" + photo + '\'' +
                 ", topicNum=" + topicNum +
-                ", collectHref='" + collectHref + '\'' +
+                ", favoriteURL='" + favoriteURL + '\'' +
                 ", parent=" + parent +
                 ", children=" + children +
                 ", relatives=" + relatives +

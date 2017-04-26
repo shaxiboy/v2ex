@@ -207,10 +207,10 @@ public class V2EXapi {
 
     //关注用户、取消关注
     public static void followMember(Member member) {
-//        if(member.getNoticeHref() != null) {
+//        if(member.getFavoriteURL() != null) {
 //            try {
-//                System.out.println(member.getNoticeHref());
-//                RetrofitSingleton.getInstance().doGet(member.getNoticeHref()).execute();
+//                System.out.println(member.getFavoriteURL());
+//                RetrofitSingleton.getInstance().doGet(member.getFavoriteURL()).execute();
 //            } catch (IOException e) {
 //                e.printStackTrace();
 //            }
@@ -220,7 +220,7 @@ public class V2EXapi {
     //我关注的人
     public static List<Member> getMyFollowingMembers() {
 //        try {
-//            return HTMLUtil.parseMyFollowingMembers(RetrofitSingleton.getInstance().myFollowingMembersPage(1).execute().body().string());
+//            return HTMLUtil.parseMyFollowingMembers(RetrofitSingleton.getInstance().favoriteMembersPage(1).execute().body().string());
 //        } catch (IOException e) {
 //            e.printStackTrace();
 //        }
@@ -230,7 +230,7 @@ public class V2EXapi {
     //我关注的人的最新主题
     public static PageData<Topic> getMyFollowingMembersTopics(int page) {
 //        try {
-//            return HTMLUtil.parseMemberTopics(RetrofitSingleton.getInstance().myFollowingMembersPage(page).execute().body().string());
+//            return HTMLUtil.parseMemberTopics(RetrofitSingleton.getInstance().favoriteMembersPage(page).execute().body().string());
 //        } catch (IOException e) {
 //            e.printStackTrace();
 //        }
@@ -263,7 +263,7 @@ public class V2EXapi {
     //获取收藏的主题
     public static PageData<Topic> getMyFollowingTopics(int page) {
 //        try {
-//            return HTMLUtil.parseMemberTopics(RetrofitSingleton.getInstance().myFollowingTopicsPage(page).execute().body().string());
+//            return HTMLUtil.parseMemberTopics(RetrofitSingleton.getInstance().favoriteTopicsPage(page).execute().body().string());
 //        } catch (IOException e) {
 //            e.printStackTrace();
 //        }
@@ -284,7 +284,7 @@ public class V2EXapi {
     //获取收藏的节点
     public static List<Node> getMyFollowingNodes() {
 //        try {
-//            return HTMLUtil.parseMyFollowingNodes(RetrofitSingleton.getInstance().myFollowingNodesPage().execute().body().string());
+//            return HTMLUtil.parseMyFollowingNodes(RetrofitSingleton.getInstance().favoriteNodesPage().execute().body().string());
 //        } catch (IOException e) {
 //            e.printStackTrace();
 //        }

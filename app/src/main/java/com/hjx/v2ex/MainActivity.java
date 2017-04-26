@@ -38,6 +38,7 @@ import com.hjx.v2ex.ui.AboutActivity;
 import com.hjx.v2ex.ui.DataLoadingBaseActivity;
 import com.hjx.v2ex.ui.LoginActivity;
 import com.hjx.v2ex.ui.LoginoutDialogFragment;
+import com.hjx.v2ex.ui.MyFavoritesActivity;
 import com.hjx.v2ex.util.V2EXUtil;
 
 import java.io.File;
@@ -64,9 +65,13 @@ public class MainActivity extends AppCompatActivity
     TabLayout tabLayout;
     @BindView(R.id.pager)
     ViewPager viewPager;
+
+    LinearLayout photoContainer;
     CircleImageView photo;
     TextView name;
     Button loginBtn;
+    Button favoriteBtn;
+    Button newBtn;
 
     private TopicsPagerAdapter topicsPagerAdapter;
     private NodesPagerAdapter nodesPagerAdapter;
@@ -82,8 +87,9 @@ public class MainActivity extends AppCompatActivity
                 this, drawer, toolbar, R.string.navigation_drawer_open, R.string.navigation_drawer_close);
         drawer.addDrawerListener(toggle);
         toggle.syncState();
-
         navigationView.setNavigationItemSelectedListener(this);
+
+        photoContainer = (LinearLayout) navigationView.getHeaderView(0).findViewById(R.id.photo_container);
         photo = (CircleImageView) navigationView.getHeaderView(0).findViewById(R.id.photo);
         photo.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -93,21 +99,8 @@ public class MainActivity extends AppCompatActivity
         });
         name = (TextView) navigationView.getHeaderView(0).findViewById(R.id.name);
         loginBtn = (Button) navigationView.getHeaderView(0).findViewById(R.id.loginBtn);
-
-        if(V2EXUtil.isLogin(this)) {
-            SigninResult signinResult = V2EXUtil.readLoginResult(this);
-            if(signinResult != null) {
-                Glide.with(this).load(signinResult.getPhoto()).into(photo);
-                name.setText(signinResult.getName());
-                loginBtn.setText("登出");
-            }
-        }
-
-        tabLayout.setupWithViewPager(viewPager, false);
-        topicsPagerAdapter = new TopicsPagerAdapter(getSupportFragmentManager());
-        nodesPagerAdapter = new NodesPagerAdapter(getSupportFragmentManager());
-        viewPager.setAdapter(topicsPagerAdapter);
-
+        favoriteBtn = (Button) navigationView.getHeaderView(0).findViewById(R.id.favoriteBtn);
+        newBtn = (Button) navigationView.getHeaderView(0).findViewById(R.id.newBtn);
         loginBtn.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
@@ -118,6 +111,47 @@ public class MainActivity extends AppCompatActivity
                 }
             }
         });
+        favoriteBtn.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                startActivity(new Intent(MainActivity.this, MyFavoritesActivity.class));
+            }
+        });
+        newBtn.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+
+            }
+        });
+        if(V2EXUtil.isLogin(this)) {
+            setViewOnLogin();
+        }
+
+        tabLayout.setupWithViewPager(viewPager, false);
+        topicsPagerAdapter = new TopicsPagerAdapter(getSupportFragmentManager());
+        nodesPagerAdapter = new NodesPagerAdapter(getSupportFragmentManager());
+        viewPager.setAdapter(topicsPagerAdapter);
+
+    }
+
+    private void setViewOnLogin() {
+        SigninResult signinResult = V2EXUtil.readLoginResult(this);
+        if(signinResult != null) {
+            photoContainer.setVisibility(View.VISIBLE);
+            Glide.with(this).load(signinResult.getPhoto()).into(photo);
+            name.setText(signinResult.getName());
+            loginBtn.setText("登出");
+            favoriteBtn.setVisibility(View.VISIBLE);
+            newBtn.setVisibility(View.VISIBLE);
+        }
+    }
+
+    private void setViewOnLogout() {
+        V2EXUtil.clearLoginResult(MainActivity.this);
+        photoContainer.setVisibility(View.GONE);
+        loginBtn.setText("登录");
+        favoriteBtn.setVisibility(View.GONE);
+        newBtn.setVisibility(View.GONE);
     }
 
     @Override
@@ -134,14 +168,16 @@ public class MainActivity extends AppCompatActivity
                     if(result != null) {
                         if(result.isSignout()) {
                             success = true;
+                        } else {
+                            if(result.getNewSessionId() != -1) {
+                                signinResult.setSessionId(result.getNewSessionId());
+                                V2EXUtil.writeLoginResult(MainActivity.this, signinResult);
+                            }
                         }
                     }
                     if(success) {
-                        V2EXUtil.clearLoginResult(MainActivity.this);
                         Toast.makeText(MainActivity.this, "登出成功", Toast.LENGTH_SHORT).show();
-                        loginBtn.setText("登录");
-                        photo.setVisibility(View.GONE);
-                        name.setVisibility(View.GONE);
+                        setViewOnLogout();
                     } else {
                         Toast.makeText(MainActivity.this, "登出失败", Toast.LENGTH_SHORT).show();
                     }
@@ -160,14 +196,7 @@ public class MainActivity extends AppCompatActivity
     @Override
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
         if (resultCode == Activity.RESULT_OK && requestCode == 1) {
-            SigninResult signinResult = V2EXUtil.readLoginResult(this);
-            if(signinResult != null) {
-                photo.setVisibility(View.VISIBLE);
-                name.setVisibility(View.VISIBLE);
-                Glide.with(this).load(signinResult.getPhoto()).into(photo);
-                name.setText(signinResult.getName());
-                loginBtn.setText("登出");
-            }
+            setViewOnLogin();
         }
     }
 

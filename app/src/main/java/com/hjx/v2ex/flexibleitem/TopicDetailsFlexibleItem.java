@@ -76,7 +76,7 @@ public class TopicDetailsFlexibleItem extends AbstractFlexibleItem<TopicDetailsF
             int i = 1;
             if(topic.getPsList() != null && !topic.getPsList().isEmpty()) {
                 for(Topic.PS append : topic.getPsList()) {
-                    appends = appends + "\n\n第" + i++ + "条附言        " + append.getTime() + "\n" + append.getContent();
+                    appends = appends + "\n\n--------   第" + i++ + "条附言 · " + append.getTime() + "   --------\n" + append.getContent();
                 }
             }
             holder.content.setText(topic.getContent() + appends);

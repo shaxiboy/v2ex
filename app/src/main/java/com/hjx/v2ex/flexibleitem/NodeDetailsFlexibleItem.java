@@ -38,6 +38,10 @@ public class NodeDetailsFlexibleItem extends AbstractFlexibleItem<NodeDetailsFle
         this.node = node;
     }
 
+    public Node getNode() {
+        return node;
+    }
+
     @Override
     public boolean equals(Object o) {
         if (this == o) return true;
@@ -67,7 +71,7 @@ public class NodeDetailsFlexibleItem extends AbstractFlexibleItem<NodeDetailsFle
     @Override
     public void bindViewHolder(FlexibleAdapter adapter, NodeDetailsViewHolder holder, int position, List payloads) {
         Context context = holder.itemView.getContext();
-        Glide.with(context).load(node.getPhoto()).into(holder.phote);
+        Glide.with(context).load(node.getPhoto()).into(holder.photo);
         holder.node.setText(node.getTitle());
         holder.desc.setText(node.getDesc());
         holder.topicNum.setBadgeCount(node.getTopicNum());
@@ -126,7 +130,7 @@ public class NodeDetailsFlexibleItem extends AbstractFlexibleItem<NodeDetailsFle
     static class NodeDetailsViewHolder extends FlexibleViewHolder {
 
         @BindView(R.id.photo)
-        ImageView phote;
+        ImageView photo;
         @BindView(R.id.node)
         TextView node;
         @BindView(R.id.desc)
