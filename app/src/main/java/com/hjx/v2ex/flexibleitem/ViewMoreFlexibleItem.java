@@ -59,6 +59,11 @@ public class ViewMoreFlexibleItem extends AbstractFlexibleItem<ViewMoreFlexibleI
 
     @Override
     public void bindViewHolder(FlexibleAdapter adapter, final ViewMoreFlexibleViewHolder holder, int position, List payloads) {
+        if(type == ViewMoreType.MEMBERSTOPICS) {
+            holder.button.setText("查看所有关注用户发表的主题");
+        } else if(type == ViewMoreType.NODESTOPICS) {
+            holder.button.setText("查看所有收藏节点下的主题");
+        }
         holder.button.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
@@ -66,6 +71,10 @@ public class ViewMoreFlexibleItem extends AbstractFlexibleItem<ViewMoreFlexibleI
                     DataLoadingBaseActivity.gotoMemberTopicsActivity(view.getContext(), member);
                 } else if(type == ViewMoreType.REPLY) {
                     DataLoadingBaseActivity.gotoMemberRepliesActivity(view.getContext(), member);
+                } else if(type == ViewMoreType.MEMBERSTOPICS) {
+                    DataLoadingBaseActivity.gotoFavoriteMembersTopicsActivity(view.getContext());
+                } else if(type == ViewMoreType.NODESTOPICS) {
+                    DataLoadingBaseActivity.gotoFavoriteNodesTopicsActivity(view.getContext());
                 }
             }
         });
@@ -82,6 +91,6 @@ public class ViewMoreFlexibleItem extends AbstractFlexibleItem<ViewMoreFlexibleI
     }
 
     public enum ViewMoreType {
-        TOPIC, REPLY
+        TOPIC, REPLY, MEMBERSTOPICS, NODESTOPICS
     }
 }

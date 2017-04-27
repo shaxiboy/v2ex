@@ -10,6 +10,8 @@ import android.os.Bundle;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 
+import static android.R.attr.fragment;
+
 public class DataLoadingBaseActivity extends AppCompatActivity {
 
     public static final String INTENT_EXTRA_TITLE = "TITLE";
@@ -21,6 +23,7 @@ public class DataLoadingBaseActivity extends AppCompatActivity {
     public static final String INTENT_EXTRA_ARGU_TOPIC = "TOPIC_ID";
     public static final String INTENT_EXTRA_ARGU_NODE = "NODE_NAME";
     public static final String INTENT_EXTRA_ARGU_MEMBER = "MEMBER_NAME";
+    public static final String INTENT_EXTRA_ARGU_TAB = "tab";
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -29,8 +32,14 @@ public class DataLoadingBaseActivity extends AppCompatActivity {
         setTitle(intent.getStringExtra(INTENT_EXTRA_TITLE));
         try {
             Class fragmentClass = Class.forName(intent.getStringExtra(INTENT_EXTRA_FRAGMENT));
-            Method newInstance = fragmentClass.getMethod("newInstance", String.class);
-            Fragment fragment = (Fragment) newInstance.invoke(null, intent.getStringExtra(intent.getStringExtra(INTENT_EXTRA_ARGU_NAME)));
+            String arguName = intent.getStringExtra(intent.getStringExtra(INTENT_EXTRA_ARGU_NAME));
+            Fragment fragment;
+            if(arguName != null) {
+                Method newInstance = fragmentClass.getMethod("newInstance", String.class);
+                fragment = (Fragment) newInstance.invoke(null, arguName);
+            } else {
+                fragment = (Fragment) fragmentClass.newInstance();
+            }
             FragmentTransaction transaction = getSupportFragmentManager().beginTransaction();
             transaction.add(android.R.id.content, fragment);
             transaction.commit();
@@ -41,6 +50,8 @@ public class DataLoadingBaseActivity extends AppCompatActivity {
         } catch (InvocationTargetException e) {
             e.printStackTrace();
         } catch (IllegalAccessException e) {
+            e.printStackTrace();
+        } catch (InstantiationException e) {
             e.printStackTrace();
         }
     }
@@ -80,6 +91,23 @@ public class DataLoadingBaseActivity extends AppCompatActivity {
         intent.putExtra(DataLoadingBaseActivity.INTENT_EXTRA_ARGU_MEMBER, memberName);
         context.startActivity(intent);
     }
+
+    public static void gotoFavoriteMembersTopicsActivity(Context context) {
+        Intent intent = new Intent(context, DataLoadingBaseActivity.class);
+        intent.putExtra(DataLoadingBaseActivity.INTENT_EXTRA_TITLE, "我关注的人发表的主题");
+        intent.putExtra(DataLoadingBaseActivity.INTENT_EXTRA_FRAGMENT, FavoriteMembersTopicsFragment.class.getName());
+        context.startActivity(intent);
+    }
+
+    public static void gotoFavoriteNodesTopicsActivity(Context context) {
+        Intent intent = new Intent(context, DataLoadingBaseActivity.class);
+        intent.putExtra(DataLoadingBaseActivity.INTENT_EXTRA_TITLE, "我收藏的节点下的最新主题");
+        intent.putExtra(DataLoadingBaseActivity.INTENT_EXTRA_FRAGMENT, TopicListFragment.class.getName());
+        intent.putExtra(DataLoadingBaseActivity.INTENT_EXTRA_ARGU_NAME, DataLoadingBaseActivity.INTENT_EXTRA_ARGU_TAB);
+        intent.putExtra(DataLoadingBaseActivity.INTENT_EXTRA_ARGU_TAB, "nodes");
+        context.startActivity(intent);
+    }
+
     public static void gotoMemberRepliesActivity(Context context, String memberName) {
         Intent intent = new Intent(context, DataLoadingBaseActivity.class);
         intent.putExtra(DataLoadingBaseActivity.INTENT_EXTRA_TITLE, memberName + "发表的回复");

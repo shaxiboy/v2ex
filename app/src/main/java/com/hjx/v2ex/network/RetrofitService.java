@@ -128,7 +128,7 @@ public interface RetrofitService {
 
     //我关注的人发表的主题
     @GET("my/following")
-    Call<FavoriteMembers> favoriteMembersPage(@Query("p") Integer page);
+    Call<MemberTopicsPage> favoriteMembersPage(@Query("p") Integer page);
 
     //收藏节点、取消收藏节点
     @GET()

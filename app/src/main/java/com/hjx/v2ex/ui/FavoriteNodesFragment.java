@@ -3,6 +3,7 @@ package com.hjx.v2ex.ui;
 
 import android.support.v4.app.Fragment;
 import android.support.v4.widget.SwipeRefreshLayout;
+import android.support.v7.widget.GridLayoutManager;
 import android.support.v7.widget.RecyclerView;
 
 import com.hjx.v2ex.R;
@@ -13,6 +14,7 @@ import com.hjx.v2ex.bean.Topic;
 import com.hjx.v2ex.flexibleitem.NodeFlexibleItem;
 import com.hjx.v2ex.flexibleitem.ProgressItem;
 import com.hjx.v2ex.flexibleitem.TopicFlexibleItem;
+import com.hjx.v2ex.flexibleitem.ViewMoreFlexibleItem;
 import com.hjx.v2ex.network.RetrofitSingleton;
 
 import java.util.ArrayList;
@@ -47,7 +49,7 @@ public class FavoriteNodesFragment extends DataLoadingBaseFragment implements Sw
         swipeRefreshLayout.setOnRefreshListener(this);
         favoriteNodesAdapter = new FlexibleAdapter(new ArrayList());
         recyclerView.setAdapter(favoriteNodesAdapter);
-        recyclerView.setLayoutManager(new SmoothScrollGridLayoutManager(getContext(), 3));
+        recyclerView.setLayoutManager(createLayoutManager());
     }
 
     @Override
@@ -72,6 +74,10 @@ public class FavoriteNodesFragment extends DataLoadingBaseFragment implements Sw
                     for (Node node : favoriteNodes.getFavoriteNodes()) {
                         favoriteNodesAdapter.addItem(new NodeFlexibleItem(node, null));
                     }
+
+                    if(!favoriteNodes.getFavoriteNodes().isEmpty()) {
+                        favoriteNodesAdapter.addItem(new ViewMoreFlexibleItem(null, ViewMoreFlexibleItem.ViewMoreType.NODESTOPICS));
+                    }
                 } else {
                     errorLoadingData();
                 }
@@ -85,5 +91,21 @@ public class FavoriteNodesFragment extends DataLoadingBaseFragment implements Sw
                 throwable.printStackTrace();
             }
         });
+    }
+
+    private RecyclerView.LayoutManager createLayoutManager() {
+        GridLayoutManager layoutManager = new SmoothScrollGridLayoutManager(getActivity(), 3);
+        layoutManager.setSpanSizeLookup(new GridLayoutManager.SpanSizeLookup() {
+            @Override
+            public int getSpanSize(int position) {
+                switch (favoriteNodesAdapter.getItemViewType(position)) {
+                    case R.layout.recycler_view_item_view_more:
+                        return 3;
+                    default:
+                        return 1;
+                }
+            }
+        });
+        return layoutManager;
     }
 }

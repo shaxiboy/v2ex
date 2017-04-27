@@ -62,9 +62,9 @@ public class TopicListFragment extends DataLoadingBaseFragment implements SwipeR
 
     @Override
     protected void loadData() {
-        if (isVisibleToUser) {
+//        if (isVisibleToUser) {
             loadTopics();
-        }
+//        }
     }
 
     //数据懒加载
@@ -73,7 +73,7 @@ public class TopicListFragment extends DataLoadingBaseFragment implements SwipeR
         super.setUserVisibleHint(isVisibleToUser);
         this.isVisibleToUser = isVisibleToUser;
         if (isVisibleToUser && hasCreateView && !hasLoadData) {
-            loadTopics();
+//            loadTopics();
         }
     }
 
