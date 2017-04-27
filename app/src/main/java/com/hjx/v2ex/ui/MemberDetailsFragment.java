@@ -13,14 +13,13 @@ import android.widget.Toast;
 
 import com.hjx.v2ex.R;
 import com.hjx.v2ex.bean.Member;
-import com.hjx.v2ex.bean.MemberTopicRepliesPage;
-import com.hjx.v2ex.bean.MemberTopicsPage;
+import com.hjx.v2ex.bean.MemberTopicReplies;
 import com.hjx.v2ex.bean.MemberFavoriteResult;
 import com.hjx.v2ex.bean.Reply;
 import com.hjx.v2ex.bean.Topic;
+import com.hjx.v2ex.bean.TopicsPageData;
 import com.hjx.v2ex.flexibleitem.MemberDetailsFlexibleItem;
 import com.hjx.v2ex.flexibleitem.MemberReplyFlexibleItem;
-import com.hjx.v2ex.flexibleitem.NodeDetailsFlexibleItem;
 import com.hjx.v2ex.flexibleitem.SimpleFlexibleHeaderItem;
 import com.hjx.v2ex.flexibleitem.TopicFlexibleItem;
 import com.hjx.v2ex.flexibleitem.ViewMoreFlexibleItem;
@@ -207,9 +206,9 @@ public class MemberDetailsFragment extends DataLoadingBaseFragment implements Sw
     }
 
     private void loadMemberTopics() {
-        RetrofitSingleton.getInstance(getContext()).memberTopicsPage(memberName, 1).enqueue(new Callback<MemberTopicsPage>() {
+        RetrofitSingleton.getInstance(getContext()).getMemberTopics(memberName, 1).enqueue(new Callback<TopicsPageData>() {
             @Override
-            public void onResponse(Call<MemberTopicsPage> call, Response<MemberTopicsPage> response) {
+            public void onResponse(Call<TopicsPageData> call, Response<TopicsPageData> response) {
                 topics = response.body().getTopics().getCurrentPageItems();
                 if(member != null) {
                     showMemberTopics();
@@ -217,7 +216,7 @@ public class MemberDetailsFragment extends DataLoadingBaseFragment implements Sw
             }
 
             @Override
-            public void onFailure(Call<MemberTopicsPage> call, Throwable throwable) {
+            public void onFailure(Call<TopicsPageData> call, Throwable throwable) {
                 throwable.printStackTrace();
             }
         });
@@ -227,12 +226,15 @@ public class MemberDetailsFragment extends DataLoadingBaseFragment implements Sw
         try {
             List<AbstractFlexibleItem> topicFlexibleItems = new ArrayList<>();
             SimpleFlexibleHeaderItem headerItem = new SimpleFlexibleHeaderItem(memberName + "发表的主题");
+            if(!topics.isEmpty()) {
+                topicFlexibleItems.add(headerItem);
+            }
             int i = 0;
             for(Topic topic : topics) {
                 if(++i > 5) {
                     break;
                 }
-                topicFlexibleItems.add(new TopicFlexibleItem(topic, TopicFlexibleItem.TopicItemType.MEMBER, headerItem));
+                topicFlexibleItems.add(new TopicFlexibleItem(topic));
             }
             if(topics.size() > 5) {
                 topicFlexibleItems.add(new ViewMoreFlexibleItem(memberName, ViewMoreFlexibleItem.ViewMoreType.TOPIC));
@@ -244,9 +246,9 @@ public class MemberDetailsFragment extends DataLoadingBaseFragment implements Sw
     }
 
     private void loadMemberReplies() {
-        RetrofitSingleton.getInstance(getContext()).memberTopicRepliesPage(memberName, 1).enqueue(new Callback<MemberTopicRepliesPage>() {
+        RetrofitSingleton.getInstance(getContext()).getMemberTopicReplies(memberName, 1).enqueue(new Callback<MemberTopicReplies>() {
             @Override
-            public void onResponse(Call<MemberTopicRepliesPage> call, Response<MemberTopicRepliesPage> response) {
+            public void onResponse(Call<MemberTopicReplies> call, Response<MemberTopicReplies> response) {
                 replies = response.body().getReplies().getCurrentPageItems();
                 if(member != null) {
                     showMemberReplies();
@@ -254,7 +256,7 @@ public class MemberDetailsFragment extends DataLoadingBaseFragment implements Sw
             }
 
             @Override
-            public void onFailure(Call<MemberTopicRepliesPage> call, Throwable throwable) {
+            public void onFailure(Call<MemberTopicReplies> call, Throwable throwable) {
                 throwable.printStackTrace();
             }
         });

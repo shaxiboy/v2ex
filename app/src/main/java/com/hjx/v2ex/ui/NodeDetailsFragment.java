@@ -15,6 +15,7 @@ import com.hjx.v2ex.R;
 import com.hjx.v2ex.bean.NodeFavoriteResult;
 import com.hjx.v2ex.bean.NodePage;
 import com.hjx.v2ex.bean.Topic;
+import com.hjx.v2ex.bean.TopicsPageData;
 import com.hjx.v2ex.flexibleitem.NodeDetailsFlexibleItem;
 import com.hjx.v2ex.flexibleitem.ProgressItem;
 import com.hjx.v2ex.flexibleitem.TopicFlexibleItem;
@@ -39,7 +40,7 @@ public class NodeDetailsFragment extends DataLoadingBaseFragment implements Swip
 
     private String nodeName;
     private FlexibleAdapter nodeDetailsAdapter;
-    private int currentPage = 1;
+    private int currentPage = 2;
 
     @BindView(R.id.swipe_refresh_layout)
     SwipeRefreshLayout swipeRefreshLayout;
@@ -70,7 +71,7 @@ public class NodeDetailsFragment extends DataLoadingBaseFragment implements Swip
 
     @Override
     protected void loadData() {
-        loadNodeDetails();
+        loadNodePage();
     }
 
     @Override
@@ -83,13 +84,13 @@ public class NodeDetailsFragment extends DataLoadingBaseFragment implements Swip
     public void onPrepareOptionsMenu(Menu menu) {
         super.onPrepareOptionsMenu(menu);
         MenuItem favoriteItem = menu.findItem(R.id.menu_favorite);
-        if(V2EXUtil.isLogin(getContext()) && !nodeDetailsAdapter.isEmpty()) {
+        if (V2EXUtil.isLogin(getContext()) && !nodeDetailsAdapter.isEmpty()) {
             String favoriteURL = ((NodeDetailsFlexibleItem) nodeDetailsAdapter.getScrollableHeaders().get(0)).getNode().getFavoriteURL();
             FavoriteNodeType type = getFavoriteNodeType(favoriteURL);
-            if(type != null) {
-                if(type == FavoriteNodeType.UNFAVORITE) {
+            if (type != null) {
+                if (type == FavoriteNodeType.UNFAVORITE) {
                     favoriteItem.setIcon(R.drawable.ic_menu_favorite);
-                } else if(type == FavoriteNodeType.FAVORITE){
+                } else if (type == FavoriteNodeType.FAVORITE) {
                     favoriteItem.setIcon(R.drawable.ic_menu_unfavorite);
                 }
                 favoriteItem.setVisible(true);
@@ -114,7 +115,7 @@ public class NodeDetailsFragment extends DataLoadingBaseFragment implements Swip
     private void favoriteNode() {
         String favoriteURL = ((NodeDetailsFlexibleItem) nodeDetailsAdapter.getScrollableHeaders().get(0)).getNode().getFavoriteURL();
         final FavoriteNodeType type = getFavoriteNodeType(favoriteURL);
-        if(type != null) {
+        if (type != null) {
             String referer = RetrofitService.BASE_URL + "go/" + nodeName;
             final ProgressDialog progressDialog = V2EXUtil.showProgressDialog(getContext(), "正在" + type);
             RetrofitSingleton.getInstance(getContext()).favoriteNode(favoriteURL, referer).enqueue(new Callback<NodeFavoriteResult>() {
@@ -123,16 +124,16 @@ public class NodeDetailsFragment extends DataLoadingBaseFragment implements Swip
                     progressDialog.dismiss();
                     NodeFavoriteResult result = response.body();
                     boolean success = false;
-                    if(result != null) {
+                    if (result != null) {
                         FavoriteNodeType newType = getFavoriteNodeType(result.getFavoriteURL());
-                        if(newType != null) {
-                            if(type == FavoriteNodeType.UNFAVORITE && newType == FavoriteNodeType.FAVORITE
+                        if (newType != null) {
+                            if (type == FavoriteNodeType.UNFAVORITE && newType == FavoriteNodeType.FAVORITE
                                     || type == FavoriteNodeType.FAVORITE && newType == FavoriteNodeType.UNFAVORITE) {
                                 success = true;
                             }
                         }
                     }
-                    if(success) {
+                    if (success) {
                         Toast.makeText(NodeDetailsFragment.this.getContext(), type + "操作成功", Toast.LENGTH_SHORT).show();
                         ((NodeDetailsFlexibleItem) nodeDetailsAdapter.getScrollableHeaders().get(0)).getNode().setFavoriteURL(result.getFavoriteURL());
                         getActivity().invalidateOptionsMenu();
@@ -153,48 +154,39 @@ public class NodeDetailsFragment extends DataLoadingBaseFragment implements Swip
 
     @Override
     public void onRefresh() {
-        currentPage = 1;
-        loadNodeDetails();
+        currentPage = 2;
+        loadNodePage();
     }
 
 
-    private void loadNodeDetails() {
-        RetrofitSingleton.getInstance(getContext()).nodeDetailsPage(nodeName, currentPage).enqueue(new Callback<NodePage>() {
+    private void loadNodePage() {
+        RetrofitSingleton.getInstance(getContext()).nodeDetailsPage(nodeName).enqueue(new Callback<NodePage>() {
             @Override
             public void onResponse(Call<NodePage> call, Response<NodePage> response) {
                 swipeRefreshLayout.setRefreshing(false);
                 NodePage nodePage = response.body();
-                if(nodePage != null) {
+                if (nodePage != null) {
                     List<TopicFlexibleItem> topics = new ArrayList<>();
                     for (Topic topic : nodePage.getTopics().getCurrentPageItems()) {
-                        topics.add(new TopicFlexibleItem(topic, TopicFlexibleItem.TopicItemType.NODE, null));
+                        topics.add(new TopicFlexibleItem(topic));
                     }
-                    if (currentPage == 1) {
-                        nodeDetailsAdapter.clear();
-                        if(nodePage.getNode() != null) {
-                            successLoadingData();
-                            nodeDetailsAdapter.addScrollableHeader(new NodeDetailsFlexibleItem(nodePage.getNode()));
-                            nodeDetailsAdapter.notifyDataSetChanged();
-                            nodeDetailsAdapter.addItems(nodeDetailsAdapter.getItemCount(), topics);
-                            if(nodePage.getTopics().getTotalPage() >=2) {
-                                nodeDetailsAdapter.setEndlessScrollListener(NodeDetailsFragment.this, new ProgressItem())
-                                        .setEndlessTargetCount(nodePage.getTopics().getTotalItems());
-                            }
-                        } else {
-                            errorLoadingData();
-                            return;
+                    nodeDetailsAdapter.clear();
+                    if (nodePage.getNode() != null) {
+                        successLoadingData();
+                        nodeDetailsAdapter.addScrollableHeader(new NodeDetailsFlexibleItem(nodePage.getNode()));
+                        nodeDetailsAdapter.notifyDataSetChanged();
+                        nodeDetailsAdapter.addItems(nodeDetailsAdapter.getItemCount(), topics);
+                        if (nodePage.getTopics().getTotalPage() >= 2) {
+                            nodeDetailsAdapter.setEndlessScrollListener(NodeDetailsFragment.this, new ProgressItem())
+                                    .setEndlessTargetCount(nodePage.getTopics().getTotalItems());
                         }
                     } else {
-                        nodeDetailsAdapter.onLoadMoreComplete(topics, 5000);
-                    }
-                    if (!nodePage.getTopics().getCurrentPageItems().isEmpty()) {
-                        currentPage++;
+                        errorLoadingData();
+                        return;
                     }
                 } else {
-                    if (currentPage == 1) {
-                        nodeDetailsAdapter.clear();
-                        errorLoadingData();
-                    }
+                    nodeDetailsAdapter.clear();
+                    errorLoadingData();
                 }
                 getActivity().invalidateOptionsMenu();
             }
@@ -202,11 +194,33 @@ public class NodeDetailsFragment extends DataLoadingBaseFragment implements Swip
             @Override
             public void onFailure(Call<NodePage> call, Throwable throwable) {
                 swipeRefreshLayout.setRefreshing(false);
-                if (currentPage == 1) {
-                    nodeDetailsAdapter.clear();
-                    errorLoadingData();
-                }
+                nodeDetailsAdapter.clear();
+                errorLoadingData();
                 getActivity().invalidateOptionsMenu();
+                throwable.printStackTrace();
+            }
+        });
+    }
+
+    private void loadNodeTopics() {
+        RetrofitSingleton.getInstance(getContext()).getNodeTopics(nodeName, currentPage).enqueue(new Callback<TopicsPageData>() {
+            @Override
+            public void onResponse(Call<TopicsPageData> call, Response<TopicsPageData> response) {
+                TopicsPageData topicsPageData = response.body();
+                if (topicsPageData != null) {
+                    List<TopicFlexibleItem> topics = new ArrayList<>();
+                    for (Topic topic : topicsPageData.getTopics().getCurrentPageItems()) {
+                        topics.add(new TopicFlexibleItem(topic));
+                    }
+                    nodeDetailsAdapter.onLoadMoreComplete(topics, 5000);
+                    if (!topicsPageData.getTopics().getCurrentPageItems().isEmpty()) {
+                        currentPage++;
+                    }
+                }
+            }
+
+            @Override
+            public void onFailure(Call<TopicsPageData> call, Throwable throwable) {
                 throwable.printStackTrace();
             }
         });
@@ -219,13 +233,13 @@ public class NodeDetailsFragment extends DataLoadingBaseFragment implements Swip
 
     @Override
     public void onLoadMore(int lastPosition, int currentPage) {
-        loadNodeDetails();
+        loadNodeTopics();
     }
 
     public FavoriteNodeType getFavoriteNodeType(String url) {
-        if(url != null) {
-            if(url.contains("unfavorite")) return FavoriteNodeType.UNFAVORITE;
-            if(url.contains("favorite")) return FavoriteNodeType.FAVORITE;
+        if (url != null) {
+            if (url.contains("unfavorite")) return FavoriteNodeType.UNFAVORITE;
+            if (url.contains("favorite")) return FavoriteNodeType.FAVORITE;
         }
         return null;
     }

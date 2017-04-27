@@ -42,6 +42,10 @@ public class PageData<T> {
         return currentPageItems;
     }
 
+    public void setCurrentPageItems(List<T> currentPageItems) {
+        this.currentPageItems = currentPageItems;
+    }
+
     @Override
     public String toString() {
         return "PageData{" +

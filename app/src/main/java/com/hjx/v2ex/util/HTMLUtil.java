@@ -10,7 +10,7 @@ import com.hjx.v2ex.bean.TopicFavoriteResult;
 import com.hjx.v2ex.bean.HomePage;
 import com.hjx.v2ex.bean.Member;
 import com.hjx.v2ex.bean.MemberMoreInfo;
-import com.hjx.v2ex.bean.MemberTopicRepliesPage;
+import com.hjx.v2ex.bean.MemberTopicReplies;
 import com.hjx.v2ex.bean.MemberTopicsPage;
 import com.hjx.v2ex.bean.Node;
 import com.hjx.v2ex.bean.NodePage;
@@ -22,6 +22,7 @@ import com.hjx.v2ex.bean.SigninResult;
 import com.hjx.v2ex.bean.SignoutResult;
 import com.hjx.v2ex.bean.Topic;
 import com.hjx.v2ex.bean.TopicPage;
+import com.hjx.v2ex.bean.TopicsPageData;
 import com.hjx.v2ex.bean.V2EX;
 import com.hjx.v2ex.bean.V2EXMoreInfo;
 import com.hjx.v2ex.network.RetrofitService;
@@ -66,11 +67,77 @@ public class HTMLUtil {
         return moreInfo;
     }
 
+    public static TopicsPageData parseTopicsPageData(String html) {
+        return parseTopicPageData(Jsoup.parse(html));
+    }
+
+    private static TopicsPageData parseTopicPageData(Document doc) {
+        TopicsPageData topicsPageData = new TopicsPageData();
+        Element mainDiv = doc.getElementById("Main");
+        Elements topicDivs = mainDiv.getElementsByClass("cell item");
+        Element headerDiv = null;
+        Element pageNavigationDiv = null;
+        if(topicDivs.isEmpty()) {
+            //节点主题页面
+            Element topicsNodeDiv = mainDiv.getElementById("TopicsNode");
+            if(topicsNodeDiv != null) {
+                topicDivs = topicsNodeDiv.children();
+                headerDiv = topicsNodeDiv.parent().getElementsByClass("header").first();
+                Element elementSibling = headerDiv.nextElementSibling();
+                if(elementSibling != null && elementSibling.attr("class").equals("cell")) {
+                    if(!elementSibling.getElementsByTag("input").isEmpty()) {
+                        pageNavigationDiv = elementSibling;
+                    }
+                }
+            }
+        }
+        for(Element topicDiv : topicDivs) {
+            topicsPageData.getTopics().getCurrentPageItems().add(parseTopicDiv(topicDiv));
+        }
+        if(!topicDivs.isEmpty()) {
+            Element firstSibling = topicDivs.first().previousElementSibling();
+            if(firstSibling != null) {
+                if(firstSibling.attr("class").equals("cell")) {
+                    if(!firstSibling.getElementsByTag("input").isEmpty()) {
+                        pageNavigationDiv = firstSibling;
+                    }
+                } else if(firstSibling.attr("class").equals("header")) {
+                    headerDiv = firstSibling;
+                }
+                Element secondSibling = firstSibling.previousElementSibling();
+                if(secondSibling != null && secondSibling.attr("class").equals("header")) {
+                    headerDiv = secondSibling;
+                }
+            }
+        }
+        if(headerDiv != null) {
+            for(Element span : headerDiv.getElementsByTag("span")) {
+                if(span.text().equals("主题总数")) {
+                    Element elementSibling = span.nextElementSibling();
+                    if(elementSibling.tagName().equals("strong")) {
+                        topicsPageData.getTopics().setTotalItems(Integer.parseInt(elementSibling.text()));
+                    }
+                }
+            }
+        } else {
+            //网站首页
+            topicsPageData.getTopics().setTotalItems(topicsPageData.getTopics().getCurrentPageItems().size());
+        }
+        if(pageNavigationDiv != null) {
+            topicsPageData.getTopics().setCurrentPage(Integer.parseInt(pageNavigationDiv.getElementsByTag("input").first().attr("value")));
+            topicsPageData.getTopics().setTotalPage(Integer.parseInt(pageNavigationDiv.getElementsByTag("a").last().text()));
+        } else {
+            topicsPageData.getTopics().setCurrentPage(1);
+            topicsPageData.getTopics().setTotalPage(1);
+        }
+        return topicsPageData;
+    }
+
     public static List<Topic> parseTopicsFromTabPage(String html) {
         List<Topic> topics = new ArrayList<>();
         Elements elements = Jsoup.parse(html).body().getElementsByClass("cell item");
         for (Element element : elements) {
-            topics.add(parseTopicItemFromList(element));
+            topics.add(parseTopicDiv(element));
         }
         return topics;
     }
@@ -81,7 +148,7 @@ public class HTMLUtil {
         Document document = Jsoup.parse(html);
         Elements elements = document.body().getElementsByClass("cell item");
         for (Element element : elements) {
-            topics.add(parseTopicItemFromList(element));
+            topics.add(parseTopicDiv(element));
         }
         homePage.setTopics(topics);
         homePage.setV2ex(parseV2EX(document));
@@ -94,7 +161,7 @@ public class HTMLUtil {
         PageData<Topic> pageData = new PageData<>();
         Element mainEle = Jsoup.parse(html).body().getElementById("Main");
         for (Element element : mainEle.getElementsByClass("cell item")) {
-            pageData.getCurrentPageItems().add(parseTopicItemFromList(element));
+            pageData.getCurrentPageItems().add(parseTopicDiv(element));
         }
         Element summarizeEle = mainEle.getElementsByClass("header").first().getElementsByClass("fade").first();
         pageData.setTotalItems(parseInt(summarizeEle.text().split("共")[1].split("个")[0].trim()));
@@ -111,7 +178,7 @@ public class HTMLUtil {
         PageData<Topic> pageData = new PageData<>();
         Element topicsEle = doc.body().getElementById("TopicsNode");
         for (Element element : topicsEle.children()) {
-            pageData.getCurrentPageItems().add(parseTopicItemFromList(element));
+            pageData.getCurrentPageItems().add(parseTopicDiv(element));
         }
 //        Element summarizeEle = topicsEle.nextElementSibling().nextElementSibling();
 //        if(summarizeEle == null) {
@@ -131,11 +198,11 @@ public class HTMLUtil {
         return pageData;
     }
 
-    public static Topic parseTopicItemFromList(Element element) {
+    public static Topic parseTopicDiv(Element topicDiv) {
         Topic topic = new Topic();
         Member member = new Member();
         Node node = new Node();
-        Elements tds = element.getElementsByTag("td");
+        Elements tds = topicDiv.getElementsByTag("td");
         int mainTDIndex = 0;//会员发表的主题页中的主题项没有会员信息
         if (tds.size() >= 4) {
             mainTDIndex = 2;
@@ -177,8 +244,12 @@ public class HTMLUtil {
         if (!TextUtils.isEmpty(reply)) {
             topic.setReplyNum(parseInt(reply));
         }
-        topic.setMember(member);
-        topic.setNode(node);
+        if(member.getUsername() != null) {
+            topic.setMember(member);
+        }
+        if(node.getName() != null) {
+            topic.setNode(node);
+        }
 
         return topic;
     }
@@ -343,7 +414,7 @@ public class HTMLUtil {
         PageData<Topic> pageData = new PageData<>();
         Document doc = Jsoup.parse(html);
         for (Element element : doc.getElementsByClass("cell item")) {
-            pageData.getCurrentPageItems().add(parseTopicItemFromList(element));
+            pageData.getCurrentPageItems().add(parseTopicDiv(element));
         }
         if (!pageData.getCurrentPageItems().isEmpty()) {
             Element summarizeEle = doc.getElementsByClass("header").first();
@@ -358,7 +429,7 @@ public class HTMLUtil {
         return new MemberTopicsPage(pageData);
     }
 
-    public static MemberTopicRepliesPage parseMemberTopicRepliesPage(String html) {
+    public static MemberTopicReplies parseMemberTopicReplies(String html) {
         PageData<Map<Reply, Topic>> pageData = new PageData<>();
         Document doc = Jsoup.parse(html);
         Element strongEle =  doc.getElementById("Main").getElementsByTag("strong").get(0);
@@ -391,7 +462,7 @@ public class HTMLUtil {
                 pageData.getCurrentPageItems().add(replyMap);
             }
         }
-        return new MemberTopicRepliesPage(pageData);
+        return new MemberTopicReplies(pageData);
     }
 
     public static NodesPlane parseNodesPlane(String html) {
@@ -459,7 +530,7 @@ public class HTMLUtil {
         NodePage nodePage = new NodePage();
         Document doc = Jsoup.parse(html);
         nodePage.setNode(parseNodeDetails(doc));
-        nodePage.setTopics(parseNodeTopics(doc));
+        nodePage.setTopics(parseTopicPageData(doc).getTopics());
         return nodePage;
     }
 
@@ -637,7 +708,12 @@ public class HTMLUtil {
             favoriteNode.setPhoto("https:" + aEle.getElementsByTag("img").first().attr("src"));
             favoriteNode.setTitle(aEle.text().split(" ")[0]);
             favoriteNode.setTopicNum(parseInt(aEle.text().split(" ")[1]));
-            favoriteNodes.getFavoriteNodes().add(favoriteNode);
+            favoriteNodes.getFavoriteNodes().getCurrentPageItems().add(favoriteNode);
+        }
+        if(!favoriteNodes.getFavoriteNodes().getCurrentPageItems().isEmpty()) {
+            favoriteNodes.getFavoriteNodes().setCurrentPage(1);
+            favoriteNodes.getFavoriteNodes().setTotalPage(1);
+            favoriteNodes.getFavoriteNodes().setTotalItems(favoriteNodes.getFavoriteNodes().getCurrentPageItems().size());
         }
         return favoriteNodes;
     }
@@ -650,9 +726,14 @@ public class HTMLUtil {
                     Member member = new Member();
                     member.setPhoto("https:" + imgEle.attr("src"));
                     member.setUsername(imgEle.parent().attr("href").split("/")[2]);
-                    favoriteMembers.getFavoriteMembers().add(member);
+                    favoriteMembers.getFavoriteMembers().getCurrentPageItems().add(member);
                 }
             }
+        }
+        if(!favoriteMembers.getFavoriteMembers().getCurrentPageItems().isEmpty()) {
+            favoriteMembers.getFavoriteMembers().setCurrentPage(1);
+            favoriteMembers.getFavoriteMembers().setTotalPage(1);
+            favoriteMembers.getFavoriteMembers().setTotalItems(favoriteMembers.getFavoriteMembers().getCurrentPageItems().size());
         }
         return favoriteMembers;
     }

@@ -18,6 +18,7 @@ import butterknife.BindView;
 import butterknife.ButterKnife;
 import de.hdodenhof.circleimageview.CircleImageView;
 import eu.davidea.flexibleadapter.FlexibleAdapter;
+import eu.davidea.flexibleadapter.items.AbstractFlexibleItem;
 import eu.davidea.flexibleadapter.items.AbstractSectionableItem;
 import eu.davidea.flexibleadapter.items.IHeader;
 import eu.davidea.viewholders.FlexibleViewHolder;
@@ -26,15 +27,12 @@ import eu.davidea.viewholders.FlexibleViewHolder;
  * Created by shaxiboy on 2017/4/15 0015.
  */
 
-public class TopicFlexibleItem extends AbstractSectionableItem<TopicFlexibleItem.TopicViewHolder, IHeader> {
+public class TopicFlexibleItem extends AbstractFlexibleItem<TopicFlexibleItem.TopicViewHolder> {
 
     private Topic topic;
-    private TopicItemType topicType;
 
-    public TopicFlexibleItem(Topic topic, TopicItemType topicType, IHeader header) {
-        super(header);
+    public TopicFlexibleItem(Topic topic) {
         this.topic = topic;
-        this.topicType = topicType;
     }
 
     public Topic getTopic() {
@@ -53,7 +51,7 @@ public class TopicFlexibleItem extends AbstractSectionableItem<TopicFlexibleItem
 
     @Override
     public void bindViewHolder(FlexibleAdapter adapter, TopicViewHolder holder, int position, List payloads) {
-        if(topicType == TopicItemType.MEMBER) {
+        if(topic.getMember() == null) {
             holder.photoContainer.setVisibility(View.GONE);
         } else {
             Glide.with(holder.itemView.getContext()).load(topic.getMember().getPhoto()).into(holder.photo);
@@ -72,7 +70,7 @@ public class TopicFlexibleItem extends AbstractSectionableItem<TopicFlexibleItem
                 DataLoadingBaseActivity.gotoTopicDetailsActivity(view.getContext(), TopicFlexibleItem.this.topic.getId());
             }
         });
-        if(topicType == TopicItemType.NODE) {
+        if(topic.getNode() == null) {
             holder.node.setVisibility(View.GONE);
         } else {
             holder.node.setText(topic.getNode().getTitle());
@@ -126,7 +124,4 @@ public class TopicFlexibleItem extends AbstractSectionableItem<TopicFlexibleItem
         }
     }
 
-    public enum TopicItemType {
-        FULL, NODE, MEMBER
-    }
 }

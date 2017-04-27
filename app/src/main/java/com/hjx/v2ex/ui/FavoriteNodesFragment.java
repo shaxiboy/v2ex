@@ -8,21 +8,19 @@ import android.support.v7.widget.RecyclerView;
 
 import com.hjx.v2ex.R;
 import com.hjx.v2ex.bean.FavoriteNodes;
-import com.hjx.v2ex.bean.MemberTopicsPage;
+import com.hjx.v2ex.bean.Member;
 import com.hjx.v2ex.bean.Node;
-import com.hjx.v2ex.bean.Topic;
+import com.hjx.v2ex.flexibleitem.MemberFlexibleItem;
 import com.hjx.v2ex.flexibleitem.NodeFlexibleItem;
-import com.hjx.v2ex.flexibleitem.ProgressItem;
-import com.hjx.v2ex.flexibleitem.TopicFlexibleItem;
 import com.hjx.v2ex.flexibleitem.ViewMoreFlexibleItem;
 import com.hjx.v2ex.network.RetrofitSingleton;
 
 import java.util.ArrayList;
-import java.util.List;
 
 import butterknife.BindView;
 import eu.davidea.flexibleadapter.FlexibleAdapter;
 import eu.davidea.flexibleadapter.common.SmoothScrollGridLayoutManager;
+import eu.davidea.flexibleadapter.items.AbstractFlexibleItem;
 import retrofit2.Call;
 import retrofit2.Callback;
 import retrofit2.Response;
@@ -30,75 +28,25 @@ import retrofit2.Response;
 /**
  * A simple {@link Fragment} subclass.
  */
-public class FavoriteNodesFragment extends DataLoadingBaseFragment implements SwipeRefreshLayout.OnRefreshListener {
-
-    private FlexibleAdapter favoriteNodesAdapter;
-
-    @BindView(R.id.swipe_refresh_layout)
-    SwipeRefreshLayout swipeRefreshLayout;
-    @BindView(R.id.recycler_view)
-    RecyclerView recyclerView;
-
-    @Override
-    public int getContentRes() {
-        return R.layout.recycler_view_layout;
-    }
-
-    @Override
-    protected void initView() {
-        swipeRefreshLayout.setOnRefreshListener(this);
-        favoriteNodesAdapter = new FlexibleAdapter(new ArrayList());
-        recyclerView.setAdapter(favoriteNodesAdapter);
-        recyclerView.setLayoutManager(createLayoutManager());
-    }
+public class FavoriteNodesFragment extends ListBaseFragment {
 
     @Override
     protected void loadData() {
-        loadFavoriteNodes();
+        RetrofitSingleton.getInstance(getContext()).getFavoriteNodes().enqueue(getListBaseFragmentCallBack());
     }
 
     @Override
-    public void onRefresh() {
-        loadFavoriteNodes();
+    AbstractFlexibleItem getFlexibleItem(Object item) {
+        return new NodeFlexibleItem((Node) item, null);
     }
 
-    private void loadFavoriteNodes() {
-        RetrofitSingleton.getInstance(getContext()).favoriteNodesPage().enqueue(new Callback<FavoriteNodes>() {
-            @Override
-            public void onResponse(Call<FavoriteNodes> call, Response<FavoriteNodes> response) {
-                swipeRefreshLayout.setRefreshing(false);
-                favoriteNodesAdapter.clear();
-                FavoriteNodes favoriteNodes = response.body();
-                if (favoriteNodes != null) {
-                    successLoadingData();
-                    for (Node node : favoriteNodes.getFavoriteNodes()) {
-                        favoriteNodesAdapter.addItem(new NodeFlexibleItem(node, null));
-                    }
-
-                    if(!favoriteNodes.getFavoriteNodes().isEmpty()) {
-                        favoriteNodesAdapter.addItem(new ViewMoreFlexibleItem(null, ViewMoreFlexibleItem.ViewMoreType.NODESTOPICS));
-                    }
-                } else {
-                    errorLoadingData();
-                }
-            }
-
-            @Override
-            public void onFailure(Call<FavoriteNodes> call, Throwable throwable) {
-                swipeRefreshLayout.setRefreshing(false);
-                favoriteNodesAdapter.clear();
-                errorLoadingData();
-                throwable.printStackTrace();
-            }
-        });
-    }
-
-    private RecyclerView.LayoutManager createLayoutManager() {
+    @Override
+    RecyclerView.LayoutManager getLayoutManager() {
         GridLayoutManager layoutManager = new SmoothScrollGridLayoutManager(getActivity(), 3);
         layoutManager.setSpanSizeLookup(new GridLayoutManager.SpanSizeLookup() {
             @Override
             public int getSpanSize(int position) {
-                switch (favoriteNodesAdapter.getItemViewType(position)) {
+                switch (getListAdapter().getItemViewType(position)) {
                     case R.layout.recycler_view_item_view_more:
                         return 3;
                     default:
@@ -108,4 +56,5 @@ public class FavoriteNodesFragment extends DataLoadingBaseFragment implements Sw
         });
         return layoutManager;
     }
+
 }

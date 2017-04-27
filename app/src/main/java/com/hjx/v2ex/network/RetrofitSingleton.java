@@ -36,13 +36,9 @@ public class RetrofitSingleton {
             }
             ClearableCookieJar cookieJar =
                     new PersistentCookieJar(new SetCookieCache(), new SharedPrefsCookiePersistor(context));
-//            CookieManager manager = new CookieManager();
-//            manager.setCookiePolicy(CookiePolicy.ACCEPT_ALL);
-//            CookieHandler.setDefault(manager);
             OkHttpClient client = new OkHttpClient.Builder()
                     .addInterceptor(interceptor)
                     .cookieJar(cookieJar)
-//                    .cookieJar(new JavaNetCookieJar(CookieHandler.getDefault()))
                     .build();
             Retrofit retrofit = new Retrofit.Builder()
                     .client(client)
