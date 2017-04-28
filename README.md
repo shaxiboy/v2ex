@@ -1,2 +1,2 @@
 # V2EX
-v2ExStatistics 安卓客户端，练手项目
+V2EX网站安卓客户端，练手项目
