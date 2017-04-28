@@ -4,7 +4,7 @@ package com.hjx.v2ex.bean;
  * Created by shaxiboy on 2017/3/22 0022.
  */
 
-public class V2EX {
+public class V2EXStatistics {
 
     private int members;
     private int nodes;
@@ -45,7 +45,7 @@ public class V2EX {
 
     @Override
     public String toString() {
-        return "V2EX{" +
+        return "V2EXStatistics{" +
                 "members=" + members +
                 ", nodes=" + nodes +
                 ", topics=" + topics +

@@ -4,41 +4,29 @@ package com.hjx.v2ex.ui;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
-import android.support.v4.widget.SwipeRefreshLayout;
-import android.support.v7.widget.RecyclerView;
 
-import com.hjx.v2ex.R;
+import com.hjx.v2ex.bean.PageData;
 import com.hjx.v2ex.flexibleitem.MemberReplyFlexibleItem;
 import com.hjx.v2ex.bean.MemberTopicReplies;
-import com.hjx.v2ex.flexibleitem.ProgressItem;
 import com.hjx.v2ex.bean.Reply;
 import com.hjx.v2ex.bean.Topic;
-import com.hjx.v2ex.flexibleitem.TopicFlexibleItem;
 import com.hjx.v2ex.network.RetrofitSingleton;
 
-import java.util.ArrayList;
-import java.util.List;
 import java.util.Map;
 
-import butterknife.BindView;
-import eu.davidea.flexibleadapter.FlexibleAdapter;
-import eu.davidea.flexibleadapter.common.SmoothScrollLinearLayoutManager;
 import eu.davidea.flexibleadapter.items.AbstractFlexibleItem;
-import retrofit2.Call;
-import retrofit2.Callback;
-import retrofit2.Response;
 
 /**
  * A simple {@link Fragment} subclass.
  */
-public class MemberRepliesFragment extends ListBaseFragment {
+public class MemberRepliesFragment extends ListBaseFragment<MemberTopicReplies> {
 
     private String memberName;
 
     public static MemberRepliesFragment newInstance(String memberName) {
         MemberRepliesFragment memberRepliesFragment = new MemberRepliesFragment();
         Bundle bundle = new Bundle();
-        bundle.putString(DataLoadingBaseActivity.INTENT_EXTRA_ARGU_MEMBER, memberName);
+        bundle.putString(DataLoadingBaseActivity.ARG_MEMBERNAME, memberName);
         memberRepliesFragment.setArguments(bundle);
         return memberRepliesFragment;
     }
@@ -46,7 +34,7 @@ public class MemberRepliesFragment extends ListBaseFragment {
     @Override
     public void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        memberName = getArguments().getString(DataLoadingBaseActivity.INTENT_EXTRA_ARGU_MEMBER);
+        memberName = getArguments().getString(DataLoadingBaseActivity.ARG_MEMBERNAME);
 
     }
 
@@ -56,8 +44,13 @@ public class MemberRepliesFragment extends ListBaseFragment {
     }
 
     @Override
-    AbstractFlexibleItem getFlexibleItem(Object item) {
-        return new MemberReplyFlexibleItem((Map<Reply, Topic>) item, null);
+    PageData<AbstractFlexibleItem> getPageData(MemberTopicReplies data) {
+        PageData<AbstractFlexibleItem> pageData = new PageData<>();
+        copyPageDataStatistics(data.getReplies(), pageData);
+        for(Map<Reply, Topic> reply : data.getReplies().getCurrentPageItems()) {
+            pageData.getCurrentPageItems().add(new MemberReplyFlexibleItem(reply, null));
+        }
+        return pageData;
     }
 
 }

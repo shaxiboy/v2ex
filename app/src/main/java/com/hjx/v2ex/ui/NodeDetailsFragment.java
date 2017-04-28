@@ -50,7 +50,7 @@ public class NodeDetailsFragment extends DataLoadingBaseFragment implements Swip
     public static NodeDetailsFragment newInstance(String nodeName) {
         NodeDetailsFragment topicDetailsFragment = new NodeDetailsFragment();
         Bundle bundle = new Bundle();
-        bundle.putString(DataLoadingBaseActivity.INTENT_EXTRA_ARGU_NODE, nodeName);
+        bundle.putString(DataLoadingBaseActivity.ARG_NODENAME, nodeName);
         topicDetailsFragment.setArguments(bundle);
         return topicDetailsFragment;
     }
@@ -62,7 +62,7 @@ public class NodeDetailsFragment extends DataLoadingBaseFragment implements Swip
 
     @Override
     protected void initView() {
-        nodeName = getArguments().getString(DataLoadingBaseActivity.INTENT_EXTRA_ARGU_NODE);
+        nodeName = getArguments().getString(DataLoadingBaseActivity.ARG_NODENAME);
         swipeRefreshLayout.setOnRefreshListener(this);
         nodeDetailsAdapter = new FlexibleAdapter(new ArrayList());
         recyclerView.setAdapter(nodeDetailsAdapter);
@@ -160,7 +160,7 @@ public class NodeDetailsFragment extends DataLoadingBaseFragment implements Swip
 
 
     private void loadNodePage() {
-        RetrofitSingleton.getInstance(getContext()).nodeDetailsPage(nodeName).enqueue(new Callback<NodePage>() {
+        RetrofitSingleton.getInstance(getContext()).getNodePage(nodeName).enqueue(new Callback<NodePage>() {
             @Override
             public void onResponse(Call<NodePage> call, Response<NodePage> response) {
                 swipeRefreshLayout.setRefreshing(false);

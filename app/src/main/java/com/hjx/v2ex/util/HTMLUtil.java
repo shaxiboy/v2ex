@@ -4,27 +4,29 @@ import android.text.TextUtils;
 
 import com.hjx.v2ex.bean.FavoriteMembers;
 import com.hjx.v2ex.bean.FavoriteNodes;
-import com.hjx.v2ex.bean.MemberFavoriteResult;
-import com.hjx.v2ex.bean.NodeFavoriteResult;
-import com.hjx.v2ex.bean.TopicFavoriteResult;
 import com.hjx.v2ex.bean.HomePage;
 import com.hjx.v2ex.bean.Member;
+import com.hjx.v2ex.bean.MemberFavoriteResult;
 import com.hjx.v2ex.bean.MemberMoreInfo;
 import com.hjx.v2ex.bean.MemberTopicReplies;
 import com.hjx.v2ex.bean.MemberTopicsPage;
 import com.hjx.v2ex.bean.Node;
+import com.hjx.v2ex.bean.NodeFavoriteResult;
 import com.hjx.v2ex.bean.NodePage;
-import com.hjx.v2ex.bean.NodesPlane;
+import com.hjx.v2ex.bean.NodesAll;
+import com.hjx.v2ex.bean.NodesHottest;
+import com.hjx.v2ex.bean.NodesNavigation;
 import com.hjx.v2ex.bean.PageData;
 import com.hjx.v2ex.bean.Reply;
 import com.hjx.v2ex.bean.SigninParams;
 import com.hjx.v2ex.bean.SigninResult;
 import com.hjx.v2ex.bean.SignoutResult;
 import com.hjx.v2ex.bean.Topic;
+import com.hjx.v2ex.bean.TopicFavoriteResult;
 import com.hjx.v2ex.bean.TopicPage;
 import com.hjx.v2ex.bean.TopicsPageData;
-import com.hjx.v2ex.bean.V2EX;
-import com.hjx.v2ex.bean.V2EXMoreInfo;
+import com.hjx.v2ex.bean.V2EXIntroduction;
+import com.hjx.v2ex.bean.V2EXStatistics;
 import com.hjx.v2ex.network.RetrofitService;
 
 import org.jsoup.Jsoup;
@@ -35,7 +37,6 @@ import org.jsoup.select.Elements;
 
 import java.util.ArrayList;
 import java.util.HashMap;
-import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.regex.Pattern;
@@ -48,23 +49,33 @@ import static java.lang.Integer.parseInt;
 
 public class HTMLUtil {
 
-    public static V2EX parseV2EX(Document doc) {
-        V2EX v = new V2EX();
-        for(Element boxEle : doc.getElementById("Rightbar").getElementsByClass("box")) {
-            if(boxEle.text().contains("社区运行状况")) {
-                Element cell = boxEle.getElementsByClass("cell").get(1);
-                v.setMembers(parseInt(cell.getElementsByTag("td").get(1).text()));
-                v.setTopics(parseInt(cell.getElementsByTag("td").get(3).text()));
-                v.setReplies(parseInt(cell.getElementsByTag("td").get(5).text()));
-            }
-        }
-        return v;
+    public static V2EXIntroduction parseV2EXIntroduction(String html) {
+        V2EXIntroduction introduction = new V2EXIntroduction();
+        introduction.setIntroduction(Jsoup.parse(html).getElementById("Main").getElementsByClass("page").first().text());
+        return introduction;
     }
 
-    public static V2EXMoreInfo parseV2EXMoreInfo(String html) {
-        V2EXMoreInfo moreInfo = new V2EXMoreInfo();
-        moreInfo.setMoreInfo(Jsoup.parse(html).getElementById("Main").getElementsByClass("page").first().text());
-        return moreInfo;
+    public static V2EXStatistics parseV2EXStatistics(String html) {
+        V2EXStatistics statistics = new V2EXStatistics();
+        Document doc = Jsoup.parse(html);
+        boolean homePage = false;
+        for(Element boxEle : doc.getElementById("Rightbar").getElementsByClass("box")) {
+            if(boxEle.text().contains("社区运行状况")) {
+                homePage = true;
+                Element cell = boxEle.getElementsByClass("cell").get(1);
+                statistics.setMembers(parseInt(cell.getElementsByTag("td").get(1).text()));
+                statistics.setTopics(parseInt(cell.getElementsByTag("td").get(3).text()));
+                statistics.setReplies(parseInt(cell.getElementsByTag("td").get(5).text()));
+                break;
+            }
+        }
+        //所有节点页面
+        if(!homePage) {
+            String text = doc.getElementById("Main").getElementsByClass("box").first().getElementsByTag("h2").first().text();
+            int num = parseInt(Pattern.compile("[^0-9]").matcher(text).replaceAll(""));
+            statistics.setNodes(num);
+        }
+        return statistics;
     }
 
     public static TopicsPageData parseTopicsPageData(String html) {
@@ -112,7 +123,7 @@ public class HTMLUtil {
         }
         if(headerDiv != null) {
             for(Element span : headerDiv.getElementsByTag("span")) {
-                if(span.text().equals("主题总数")) {
+                if(span.text().contains("主题总数")) {
                     Element elementSibling = span.nextElementSibling();
                     if(elementSibling.tagName().equals("strong")) {
                         topicsPageData.getTopics().setTotalItems(Integer.parseInt(elementSibling.text()));
@@ -151,9 +162,9 @@ public class HTMLUtil {
             topics.add(parseTopicDiv(element));
         }
         homePage.setTopics(topics);
-        homePage.setV2ex(parseV2EX(document));
-        homePage.setHottestNodes(parseHottestNodes(document));
-        homePage.setNodeGuide(parseNodesGuide(document));
+//        homePage.setV2ExStatistics(parseV2EX(document));
+//        homePage.setHottestNodes(parseHottestNodes(document));
+//        homePage.setNodeGuide(parseNodesGuide(document));
         return homePage;
     }
 
@@ -465,12 +476,12 @@ public class HTMLUtil {
         return new MemberTopicReplies(pageData);
     }
 
-    public static NodesPlane parseNodesPlane(String html) {
-        NodesPlane nodesPlane = new NodesPlane();
+    public static NodesAll parseNodesAll(String html) {
+        NodesAll nodesAll = new NodesAll();
         Document doc = Jsoup.parse(html);
         String text = doc.getElementsByTag("h2").first().text();
         int num = parseInt(Pattern.compile("[^0-9]").matcher(text).replaceAll(""));
-        nodesPlane.setNodeCount(num);
+        nodesAll.setNodeNum(num);
         Element main = doc.getElementById("Main");
         List<Node> nodes;
         Node node;
@@ -486,13 +497,14 @@ public class HTMLUtil {
             }
             Element header = box.child(0);
             String tag = header.html().split("\n<span")[0];
-            nodesPlane.getNodeSections().put(tag, nodes);
+            nodesAll.getNodeSections().put(tag, nodes);
         }
-        return nodesPlane;
+        return nodesAll;
     }
 
-    public static Map<String, List<Node>> parseNodesGuide(Document doc) {
-        Map<String, List<Node>> nodesGuide = new LinkedHashMap<>();
+    public static NodesNavigation parseNodesNavigation(String html) {
+        NodesNavigation nodesNavigation = new NodesNavigation();
+        Document doc = Jsoup.parse(html);
         Element boxEle = doc.getElementById("Main").getElementsByClass("box").get(1);
         for (Element div : boxEle.children()) {
             Elements tds = div.getElementsByTag("td");
@@ -504,26 +516,27 @@ public class HTMLUtil {
                     node.setTitle(nodeEle.text());
                     nodeList.add(node);
                 }
-                nodesGuide.put(tds.first().text(), nodeList);
+                nodesNavigation.getNodeSections().put(tds.first().text(), nodeList);
             }
         }
-        return nodesGuide;
+        return nodesNavigation;
     }
 
-    public static List<Node> parseHottestNodes(Document doc) {
-        List<Node> hottestNodes = new ArrayList<>();
+    public static NodesHottest parseNodesHottest(String html) {
+        NodesHottest nodesHottest = new NodesHottest();
+        Document doc = Jsoup.parse(html);
         for(Element boxEle : doc.getElementById("Rightbar").getElementsByClass("box")) {
             if (boxEle.text().contains("最热节点")) {
                 for (Element nodeEle : boxEle.getElementsByClass("cell").get(1).getElementsByTag("a")) {
                     Node node = new Node();
                     node.setName(nodeEle.attr("href").split("/")[2]);
                     node.setTitle(nodeEle.text());
-                    hottestNodes.add(node);
+                    nodesHottest.getHottestNodes().add(node);
                 }
                 break;
             }
         }
-        return hottestNodes;
+        return nodesHottest;
     }
 
     public static NodePage parseNodePage(String html) {
@@ -708,12 +721,7 @@ public class HTMLUtil {
             favoriteNode.setPhoto("https:" + aEle.getElementsByTag("img").first().attr("src"));
             favoriteNode.setTitle(aEle.text().split(" ")[0]);
             favoriteNode.setTopicNum(parseInt(aEle.text().split(" ")[1]));
-            favoriteNodes.getFavoriteNodes().getCurrentPageItems().add(favoriteNode);
-        }
-        if(!favoriteNodes.getFavoriteNodes().getCurrentPageItems().isEmpty()) {
-            favoriteNodes.getFavoriteNodes().setCurrentPage(1);
-            favoriteNodes.getFavoriteNodes().setTotalPage(1);
-            favoriteNodes.getFavoriteNodes().setTotalItems(favoriteNodes.getFavoriteNodes().getCurrentPageItems().size());
+            favoriteNodes.getFavoriteNodes().add(favoriteNode);
         }
         return favoriteNodes;
     }
@@ -726,14 +734,9 @@ public class HTMLUtil {
                     Member member = new Member();
                     member.setPhoto("https:" + imgEle.attr("src"));
                     member.setUsername(imgEle.parent().attr("href").split("/")[2]);
-                    favoriteMembers.getFavoriteMembers().getCurrentPageItems().add(member);
+                    favoriteMembers.getFavoriteMembers().add(member);
                 }
             }
-        }
-        if(!favoriteMembers.getFavoriteMembers().getCurrentPageItems().isEmpty()) {
-            favoriteMembers.getFavoriteMembers().setCurrentPage(1);
-            favoriteMembers.getFavoriteMembers().setTotalPage(1);
-            favoriteMembers.getFavoriteMembers().setTotalItems(favoriteMembers.getFavoriteMembers().getCurrentPageItems().size());
         }
         return favoriteMembers;
     }

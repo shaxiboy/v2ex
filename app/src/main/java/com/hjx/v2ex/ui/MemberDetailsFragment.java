@@ -58,7 +58,7 @@ public class MemberDetailsFragment extends DataLoadingBaseFragment implements Sw
     public static MemberDetailsFragment newInstance(String memberName) {
         MemberDetailsFragment memberDetailsFragment = new MemberDetailsFragment();
         Bundle bundle = new Bundle();
-        bundle.putString(DataLoadingBaseActivity.INTENT_EXTRA_ARGU_MEMBER, memberName);
+        bundle.putString(DataLoadingBaseActivity.ARG_MEMBERNAME, memberName);
         memberDetailsFragment.setArguments(bundle);
         return memberDetailsFragment;
     }
@@ -70,7 +70,7 @@ public class MemberDetailsFragment extends DataLoadingBaseFragment implements Sw
 
     @Override
     protected void initView() {
-        memberName = getArguments().getString(DataLoadingBaseActivity.INTENT_EXTRA_ARGU_MEMBER);
+        memberName = getArguments().getString(DataLoadingBaseActivity.ARG_MEMBERNAME);
         swipeRefreshLayout.setOnRefreshListener(this);
         memberDetailsAdapter = new FlexibleAdapter(new ArrayList());
         memberDetailsAdapter.setDisplayHeadersAtStartUp(true)
@@ -173,7 +173,7 @@ public class MemberDetailsFragment extends DataLoadingBaseFragment implements Sw
     }
 
     private void loadMemberDetails() {
-        RetrofitSingleton.getInstance(getContext()).memberDetailsPage(memberName).enqueue(new Callback<Member>() {
+        RetrofitSingleton.getInstance(getContext()).getMember(memberName).enqueue(new Callback<Member>() {
             @Override
             public void onResponse(Call<Member> call, Response<Member> response) {
                 swipeRefreshLayout.setRefreshing(false);
@@ -249,9 +249,12 @@ public class MemberDetailsFragment extends DataLoadingBaseFragment implements Sw
         RetrofitSingleton.getInstance(getContext()).getMemberTopicReplies(memberName, 1).enqueue(new Callback<MemberTopicReplies>() {
             @Override
             public void onResponse(Call<MemberTopicReplies> call, Response<MemberTopicReplies> response) {
-                replies = response.body().getReplies().getCurrentPageItems();
-                if(member != null) {
-                    showMemberReplies();
+                MemberTopicReplies memberTopicReplies = response.body();
+                if(memberTopicReplies != null) {
+                    replies = memberTopicReplies.getReplies().getCurrentPageItems();
+                    if(member != null) {
+                        showMemberReplies();
+                    }
                 }
             }
 

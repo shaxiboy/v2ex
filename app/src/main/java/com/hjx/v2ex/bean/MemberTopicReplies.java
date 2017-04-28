@@ -8,7 +8,7 @@ import java.util.Map;
  * Created by shaxiboy on 2017/4/18 0018.
  */
 
-public class MemberTopicReplies implements ListBaseFragment.ListBaseFragmentData{
+public class MemberTopicReplies {
 
     private PageData<Map<Reply, Topic>> replies = new PageData<>();
 
@@ -22,10 +22,5 @@ public class MemberTopicReplies implements ListBaseFragment.ListBaseFragmentData
 
     public void setReplies(PageData<Map<Reply, Topic>> replies) {
         this.replies = replies;
-    }
-
-    @Override
-    public PageData getPageData() {
-        return replies;
     }
 }

@@ -9,7 +9,7 @@ import java.util.Map;
 
 public class HomePage {
 
-    private V2EX v2ex;
+    private V2EXStatistics v2ExStatistics;
     private List<Topic> topics;
     private List<Node> hottestNodes;
     private Map<String, List<Node>> nodeGuide;
@@ -22,12 +22,12 @@ public class HomePage {
         this.topics = topics;
     }
 
-    public V2EX getV2ex() {
-        return v2ex;
+    public V2EXStatistics getV2ExStatistics() {
+        return v2ExStatistics;
     }
 
-    public void setV2ex(V2EX v2ex) {
-        this.v2ex = v2ex;
+    public void setV2ExStatistics(V2EXStatistics v2ExStatistics) {
+        this.v2ExStatistics = v2ExStatistics;
     }
 
     public List<Node> getHottestNodes() {

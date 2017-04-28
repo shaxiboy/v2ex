@@ -6,7 +6,7 @@ import com.hjx.v2ex.ui.ListBaseFragment;
  * Created by shaxiboy on 2017/4/27 0027.
  */
 
-public class TopicsPageData implements ListBaseFragment.ListBaseFragmentData{
+public class TopicsPageData {
 
     private PageData<Topic> topics = new PageData<>();
 
@@ -18,8 +18,4 @@ public class TopicsPageData implements ListBaseFragment.ListBaseFragmentData{
         this.topics = topics;
     }
 
-    @Override
-    public PageData getPageData() {
-        return topics;
-    }
 }

@@ -1,21 +1,17 @@
 package com.hjx.v2ex.bean;
 
-import com.hjx.v2ex.ui.ListBaseFragment;
+import java.util.ArrayList;
+import java.util.List;
 
 /**
  * Created by shaxiboy on 2017/4/26 0026.
  */
 
-public class FavoriteNodes implements ListBaseFragment.ListBaseFragmentData{
+public class FavoriteNodes {
 
-    private PageData<Node> favoriteNodes = new PageData<>();
+    private List<Node> favoriteNodes = new ArrayList<>();
 
-    public PageData<Node> getFavoriteNodes() {
-        return favoriteNodes;
-    }
-
-    @Override
-    public PageData getPageData() {
+    public List<Node> getFavoriteNodes() {
         return favoriteNodes;
     }
 }

@@ -8,17 +8,17 @@ import java.util.Map;
  * Created by shaxiboy on 2017/3/22 0022.
  */
 
-public class NodesPlane {
+public class NodesAll {
 
-    private int nodeCount;
+    private int nodeNum;
     private Map<String, List<Node>> nodeSections = new LinkedHashMap<>();
 
-    public int getNodeCount() {
-        return nodeCount;
+    public int getNodeNum() {
+        return nodeNum;
     }
 
-    public void setNodeCount(int nodeCount) {
-        this.nodeCount = nodeCount;
+    public void setNodeNum(int nodeNum) {
+        this.nodeNum = nodeNum;
     }
 
     public Map<String, List<Node>> getNodeSections() {

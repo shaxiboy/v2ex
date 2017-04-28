@@ -2,6 +2,7 @@ package com.hjx.v2ex.ui;
 
 
 import android.os.Bundle;
+import android.support.annotation.Nullable;
 import android.support.v7.widget.GridLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.view.Menu;
@@ -10,11 +11,15 @@ import android.view.MenuItem;
 import android.widget.SearchView;
 
 import com.hjx.v2ex.R;
+import com.hjx.v2ex.bean.FavoriteNodes;
 import com.hjx.v2ex.bean.HomePage;
 import com.hjx.v2ex.bean.Node;
+import com.hjx.v2ex.bean.NodesHottest;
+import com.hjx.v2ex.bean.NodesNavigation;
+import com.hjx.v2ex.bean.PageData;
 import com.hjx.v2ex.flexibleitem.NodeCategoryFlexibleHeaderItem;
 import com.hjx.v2ex.flexibleitem.NodeFlexibleItem;
-import com.hjx.v2ex.bean.NodesPlane;
+import com.hjx.v2ex.bean.NodesAll;
 import com.hjx.v2ex.network.RetrofitSingleton;
 
 import java.util.ArrayList;
@@ -33,17 +38,10 @@ import retrofit2.Response;
  * Created by shaxiboy on 2017/4/12 0012.
  */
 
-public class NodeListFragment extends DataLoadingBaseFragment {
+public class NodeListFragment extends ListBaseFragment {
 
     private String tab;
-    private boolean hasCreateView;
-    private boolean hasLoadData;
-    private boolean isVisibleToUser;
-    private FlexibleAdapter<AbstractFlexibleItem> nodeListAdapter;
     private List<AbstractFlexibleItem> nodes = new ArrayList<>();
-
-    @BindView(R.id.recycler_view)
-    RecyclerView recyclerView;
 
     public static NodeListFragment newInstance(String tab) {
         NodeListFragment nodeListFragment = new NodeListFragment();
@@ -54,29 +52,47 @@ public class NodeListFragment extends DataLoadingBaseFragment {
     }
 
     @Override
-    public int getContentRes() {
-        return R.layout.fragment_node_list;
+    public void onCreate(@Nullable Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
+        tab = getArguments().getString("tab");
     }
 
     @Override
-    protected void initView() {
-        tab = getArguments().getString("tab");
-        setHasOptionsMenu(true);
-        nodeListAdapter = new FlexibleAdapter<>(nodes);
-        nodeListAdapter.setDisplayHeadersAtStartUp(true)
-                .expandItemsAtStartUp()
-                .setStickyHeaders(true);
-        recyclerView.setLayoutManager(createLayoutManager());
-        recyclerView.setAdapter(nodeListAdapter);
-
-        hasCreateView = true;
+    PageData<AbstractFlexibleItem> getPageData(Object data) {
+        if(getCurrentPage() == 1) {
+            nodes.clear();
+        }
+        if(data instanceof NodesHottest || data instanceof FavoriteNodes) {
+            List<Node> nodeList = null;
+            if(data instanceof NodesHottest) {
+                nodeList = ((NodesHottest) data).getHottestNodes();
+            } else if(data instanceof FavoriteNodes) {
+                nodeList = ((FavoriteNodes) data).getFavoriteNodes();
+            }
+            for(Node node : nodeList) {
+                nodes.add(new NodeFlexibleItem(node, null));
+            }
+        } else if(data instanceof NodesNavigation || data instanceof NodesAll) {
+            Map<String, List<Node>> nodeSections = null;
+            if(data instanceof NodesNavigation) {
+                nodeSections = ((NodesNavigation) data).getNodeSections();
+            } else if(data instanceof NodesAll) {
+                nodeSections = ((NodesAll) data).getNodeSections();
+            }
+            for (String categoryName : nodeSections.keySet()) {
+                NodeCategoryFlexibleHeaderItem category = new NodeCategoryFlexibleHeaderItem(categoryName);
+                for (Node node : nodeSections.get(categoryName)) {
+                    category.addSubItem(new NodeFlexibleItem(node, category));
+                }
+                nodes.add(category);
+            }
+        }
+        return getOnePageData(nodes);
     }
 
     @Override
     protected void loadData() {
-        if (isVisibleToUser) {
-            loadNodes();
-        }
+        loadNodes();
     }
 
     @Override
@@ -96,87 +112,34 @@ public class NodeListFragment extends DataLoadingBaseFragment {
 
             @Override
             public boolean onQueryTextChange(String newText) {
-                if (nodeListAdapter.hasNewSearchText(newText)) {
-                    nodeListAdapter.setSearchText(newText);
-                    nodeListAdapter.filterItems(new ArrayList<>(nodes), 200);
+                if (getListAdapter().hasNewSearchText(newText)) {
+                    getListAdapter().setSearchText(newText);
+                    getListAdapter().filterItems(new ArrayList<>(nodes), 200);
                 }
                 return true;
             }
         });
     }
 
-    //数据懒加载
-    @Override
-    public void setUserVisibleHint(boolean isVisibleToUser) {
-        super.setUserVisibleHint(isVisibleToUser);
-        this.isVisibleToUser = isVisibleToUser;
-        if (isVisibleToUser && hasCreateView && !hasLoadData) {
-            loadNodes();
-        }
-    }
-
     private void loadNodes() {
-        if (tab.equals("最热") || tab.equals("导航")) {
-            RetrofitSingleton.getInstance(getContext()).homePage(null).enqueue(new Callback<HomePage>() {
-                @Override
-                public void onResponse(Call<HomePage> call, Response<HomePage> response) {
-                    if (tab.equals("最热")) {
-                        for (Node node : response.body().getHottestNodes()) {
-                            nodes.add(new NodeFlexibleItem(node, null));
-                        }
-                    } else if (tab.equals("导航")) {
-                        Map<String, List<Node>> nodeSections = response.body().getNodeGuide();
-                        for (String categoryName : nodeSections.keySet()) {
-                            NodeCategoryFlexibleHeaderItem category = new NodeCategoryFlexibleHeaderItem(categoryName);
-                            for (Node node : nodeSections.get(categoryName)) {
-                                category.addSubItem(new NodeFlexibleItem(node, category));
-                            }
-                            nodes.add(category);
-                        }
-                    }
-                    successLoadingData();
-                    nodeListAdapter.updateDataSet(new ArrayList<>(nodes));
-                    hasLoadData = true;
-                }
-
-                @Override
-                public void onFailure(Call<HomePage> call, Throwable throwable) {
-                    errorLoadingData();
-                    throwable.printStackTrace();
-                }
-            });
+        if (tab.equals("最热")) {
+            RetrofitSingleton.getInstance(getContext()).getHottestNodes().enqueue(getListBaseFragmentCallBack());
+        } else if (tab.equals("导航")) {
+            RetrofitSingleton.getInstance(getContext()).getNavigationNodes().enqueue(getListBaseFragmentCallBack());
         } else if (tab.equals("全部")) {
-            RetrofitSingleton.getInstance(getContext()).allNodesPage().enqueue(new Callback<NodesPlane>() {
-                @Override
-                public void onResponse(Call<NodesPlane> call, Response<NodesPlane> response) {
-                    Map<String, List<Node>> nodeSections = response.body().getNodeSections();
-                    for (String categoryName : nodeSections.keySet()) {
-                        NodeCategoryFlexibleHeaderItem category = new NodeCategoryFlexibleHeaderItem(categoryName);
-                        for (Node node : nodeSections.get(categoryName)) {
-                            category.addSubItem(new NodeFlexibleItem(node, category));
-                        }
-                        nodes.add(category);
-                    }
-                    successLoadingData();
-                    nodeListAdapter.updateDataSet(new ArrayList<>(nodes));
-                    hasLoadData = true;
-                }
-
-                @Override
-                public void onFailure(Call<NodesPlane> call, Throwable throwable) {
-                    errorLoadingData();
-                    throwable.printStackTrace();
-                }
-            });
+            RetrofitSingleton.getInstance(getContext()).getAllNodes().enqueue(getListBaseFragmentCallBack());
+        } else if(tab.equals("收藏")) {
+            RetrofitSingleton.getInstance(getContext()).getFavoriteNodes().enqueue(getListBaseFragmentCallBack());
         }
     }
 
-    private RecyclerView.LayoutManager createLayoutManager() {
+    @Override
+    RecyclerView.LayoutManager getLayoutManager() {
         GridLayoutManager layoutManager = new SmoothScrollGridLayoutManager(getActivity(), 3);
         layoutManager.setSpanSizeLookup(new GridLayoutManager.SpanSizeLookup() {
             @Override
             public int getSpanSize(int position) {
-                switch (nodeListAdapter.getItemViewType(position)) {
+                switch (getListAdapter().getItemViewType(position)) {
                     case R.layout.recycler_item_header_simple:
                         return 3;
                     default:

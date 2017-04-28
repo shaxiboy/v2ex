@@ -50,7 +50,7 @@ public class TopicDetailsFragment extends DataLoadingBaseFragment implements Swi
     public static TopicDetailsFragment newInstance(String topicId) {
         TopicDetailsFragment topicDetailsFragment = new TopicDetailsFragment();
         Bundle bundle = new Bundle();
-        bundle.putInt(DataLoadingBaseActivity.INTENT_EXTRA_ARGU_TOPIC, Integer.parseInt(topicId));
+        bundle.putInt(DataLoadingBaseActivity.ARG_TOPICID, Integer.parseInt(topicId));
         topicDetailsFragment.setArguments(bundle);
         return topicDetailsFragment;
     }
@@ -62,7 +62,7 @@ public class TopicDetailsFragment extends DataLoadingBaseFragment implements Swi
 
     @Override
     protected void initView() {
-        topicId = getArguments().getInt(DataLoadingBaseActivity.INTENT_EXTRA_ARGU_TOPIC);
+        topicId = getArguments().getInt(DataLoadingBaseActivity.ARG_TOPICID);
         swipeRefreshLayout.setOnRefreshListener(this);
         topicDetailsAdapter = new FlexibleAdapter(new ArrayList());
         recyclerView.setAdapter(topicDetailsAdapter);
@@ -159,7 +159,7 @@ public class TopicDetailsFragment extends DataLoadingBaseFragment implements Swi
     }
 
     private void loadTopicDetails() {
-        RetrofitSingleton.getInstance(getContext()).topicPage(topicId, currentPage).enqueue(new Callback<TopicPage>() {
+        RetrofitSingleton.getInstance(getContext()).getTopicPage(topicId, currentPage).enqueue(new Callback<TopicPage>() {
             @Override
             public void onResponse(Call<TopicPage> call, Response<TopicPage> response) {
                 swipeRefreshLayout.setRefreshing(false);

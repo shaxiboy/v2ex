@@ -7,7 +7,7 @@ import org.junit.Test;
 /**
  * Created by shaxiboy on 2017/3/26 0026.
  */
-public class V2EXapiTest {
+public class V2EXapiTestStatistics {
 
     int sessionId;
 

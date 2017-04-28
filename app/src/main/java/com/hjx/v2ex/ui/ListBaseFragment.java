@@ -7,7 +7,10 @@ import android.support.v7.widget.RecyclerView;
 
 import com.hjx.v2ex.R;
 import com.hjx.v2ex.bean.PageData;
+import com.hjx.v2ex.bean.Topic;
+import com.hjx.v2ex.bean.TopicsPageData;
 import com.hjx.v2ex.flexibleitem.ProgressItem;
+import com.hjx.v2ex.flexibleitem.TopicFlexibleItem;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -23,7 +26,7 @@ import retrofit2.Response;
 /**
  * A simple {@link Fragment} subclass.
  */
-public abstract class ListBaseFragment extends DataLoadingBaseFragment implements SwipeRefreshLayout.OnRefreshListener, FlexibleAdapter.EndlessScrollListener {
+public abstract class ListBaseFragment<T> extends DataLoadingBaseFragment implements SwipeRefreshLayout.OnRefreshListener, FlexibleAdapter.EndlessScrollListener {
 
     private FlexibleAdapter listAdapter;
     private int currentPage = 1;
@@ -50,6 +53,9 @@ public abstract class ListBaseFragment extends DataLoadingBaseFragment implement
     protected void initView() {
         swipeRefreshLayout.setOnRefreshListener(this);
         listAdapter = new FlexibleAdapter(new ArrayList());
+        listAdapter.setDisplayHeadersAtStartUp(true)
+                .expandItemsAtStartUp()
+                .setStickyHeaders(true);
         recyclerView.setAdapter(listAdapter);
         recyclerView.setLayoutManager(getLayoutManager());
     }
@@ -59,35 +65,28 @@ public abstract class ListBaseFragment extends DataLoadingBaseFragment implement
     }
 
     public Callback getListBaseFragmentCallBack() {
-        return new Callback<ListBaseFragmentData>() {
+        return new Callback<T>() {
             @Override
-            public void onResponse(Call<ListBaseFragmentData> call, Response<ListBaseFragmentData> response) {
+            public void onResponse(Call<T> call, Response<T> response) {
                 swipeRefreshLayout.setRefreshing(false);
-                ListBaseFragmentData data = response.body();
+                T data = response.body();
                 if (data != null) {
-                    List<AbstractFlexibleItem> items = new ArrayList<>();
-                    for(Object item : data.getPageData().getCurrentPageItems()) {
-                        items.add(getFlexibleItem(item));
-                    }
+                    PageData pageData = getPageData(data);
                     if (currentPage == 1) {
-                        listAdapter.clear();
-                        if (data.getPageData() != null) {
+                        if (pageData.getTotalItems() != 0) {
                             successLoadingData();
-                            listAdapter.addItems(0, items);
-                            if (data.getPageData().getTotalPage() >= 2) {
+                            listAdapter.updateDataSet(pageData.getCurrentPageItems());
+                            if (pageData.getTotalPage() >= 2) {
                                 listAdapter.setEndlessScrollListener(ListBaseFragment.this, new ProgressItem())
-                                        .setEndlessTargetCount(data.getPageData().getTotalItems());
+                                        .setEndlessTargetCount(pageData.getTotalItems())
+                                        .setEndlessPageSize(pageData.getTotalPage());
                             }
-                        } else {
-                            errorLoadingData();
-                            return;
                         }
-
                     } else {
-                        listAdapter.onLoadMoreComplete(items, 5000);
-                    }
-                    if (!data.getPageData().getCurrentPageItems().isEmpty()) {
-                        currentPage++;
+                        if (pageData.getTotalItems() != 0) {
+                            listAdapter.onLoadMoreComplete(pageData.getCurrentPageItems(), 5000);
+                            currentPage++;
+                        }
                     }
                 } else {
                     if (currentPage == 1) {
@@ -98,7 +97,7 @@ public abstract class ListBaseFragment extends DataLoadingBaseFragment implement
             }
 
             @Override
-            public void onFailure(Call<ListBaseFragmentData> call, Throwable throwable) {
+            public void onFailure(Call<T> call, Throwable throwable) {
                 swipeRefreshLayout.setRefreshing(false);
                 if (currentPage == 1) {
                     listAdapter.clear();
@@ -124,9 +123,31 @@ public abstract class ListBaseFragment extends DataLoadingBaseFragment implement
         loadData();
     }
 
-    abstract AbstractFlexibleItem getFlexibleItem(Object item);
+    abstract PageData<AbstractFlexibleItem> getPageData(T data);
 
-    public interface ListBaseFragmentData {
-        PageData getPageData();
+    public PageData<AbstractFlexibleItem> getOnePageData(List items) {
+        PageData<AbstractFlexibleItem> pageData = new PageData<>();
+        if(items != null && !items.isEmpty()) {
+            pageData.setCurrentPage(1);
+            pageData.setTotalPage(1);
+            pageData.setTotalItems(items.size());
+            pageData.setCurrentPageItems(items);
+        }
+        return pageData;
+    }
+
+    public PageData<AbstractFlexibleItem> getFlexibleTopicPageData(TopicsPageData data) {
+        PageData<AbstractFlexibleItem> pageData = new PageData<>();
+        copyPageDataStatistics(data.getTopics(), pageData);
+        for(Topic topic : data.getTopics().getCurrentPageItems()) {
+            pageData.getCurrentPageItems().add(new TopicFlexibleItem(topic));
+        }
+        return pageData;
+    }
+
+    public static void copyPageDataStatistics(PageData source, PageData target) {
+        target.setCurrentPage(source.getCurrentPage());
+        target.setTotalPage(source.getTotalPage());
+        target.setTotalItems(source.getTotalItems());
     }
 }

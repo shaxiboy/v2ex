@@ -7,7 +7,7 @@ package com.hjx.v2ex.bean;
 public class TopicPage {
 
     private Topic topic;
-    private PageData<Reply> replies;
+    private PageData<Reply> replies = new PageData<>();
 
     public Topic getTopic() {
         return topic;

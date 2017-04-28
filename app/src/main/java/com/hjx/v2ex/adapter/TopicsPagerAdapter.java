@@ -21,7 +21,7 @@ public class TopicsPagerAdapter extends FragmentStatePagerAdapter {
 
     @Override
     public Fragment getItem(int position) {
-        return TopicListFragment.newInstance(tabs[position]);
+        return TopicListFragment.newInstance(TopicListFragment.TOPICTYPE_TABTOPIC, tabs[position]);
     }
 
     @Override

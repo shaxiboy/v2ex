@@ -1,25 +1,17 @@
 package com.hjx.v2ex;
 
 import android.app.Activity;
-import android.app.Dialog;
 import android.app.ProgressDialog;
-import android.content.Context;
-import android.content.DialogInterface;
 import android.content.Intent;
-import android.net.Uri;
 import android.os.Bundle;
 import android.support.design.widget.TabLayout;
-import android.support.v4.app.DialogFragment;
-import android.support.v4.view.PagerAdapter;
 import android.support.v4.view.ViewPager;
 import android.support.design.widget.NavigationView;
 import android.support.v4.view.GravityCompat;
 import android.support.v4.widget.DrawerLayout;
 import android.support.v7.app.ActionBarDrawerToggle;
-import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
-import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.Button;
@@ -32,7 +24,6 @@ import com.hjx.v2ex.adapter.NodesPagerAdapter;
 import com.hjx.v2ex.adapter.TopicsPagerAdapter;
 import com.hjx.v2ex.bean.SigninResult;
 import com.hjx.v2ex.bean.SignoutResult;
-import com.hjx.v2ex.bean.V2EX;
 import com.hjx.v2ex.network.RetrofitSingleton;
 import com.hjx.v2ex.ui.AboutActivity;
 import com.hjx.v2ex.ui.DataLoadingBaseActivity;
@@ -41,16 +32,12 @@ import com.hjx.v2ex.ui.LoginoutDialogFragment;
 import com.hjx.v2ex.ui.MyFavoritesActivity;
 import com.hjx.v2ex.util.V2EXUtil;
 
-import java.io.File;
-
 import butterknife.BindView;
 import butterknife.ButterKnife;
 import de.hdodenhof.circleimageview.CircleImageView;
 import retrofit2.Call;
 import retrofit2.Callback;
 import retrofit2.Response;
-
-import static android.icu.lang.UCharacter.GraphemeClusterBreak.T;
 
 public class MainActivity extends AppCompatActivity
         implements NavigationView.OnNavigationItemSelectedListener, LoginoutDialogFragment.LoginoutDialogFragmentListener {
@@ -215,7 +202,7 @@ public class MainActivity extends AppCompatActivity
         switch (item.getItemId()) {
             case R.id.topic:
                 viewPager.setAdapter(topicsPagerAdapter);
-                setTitle("V2EX");
+                setTitle("V2EXStatistics");
                 break;
             case R.id.node:
                 viewPager.setAdapter(nodesPagerAdapter);

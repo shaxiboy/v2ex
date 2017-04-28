@@ -9,10 +9,8 @@ import android.widget.ScrollView;
 import android.widget.TextView;
 
 import com.hjx.v2ex.R;
-import com.hjx.v2ex.bean.HomePage;
-import com.hjx.v2ex.bean.NodesPlane;
-import com.hjx.v2ex.bean.V2EX;
-import com.hjx.v2ex.bean.V2EXMoreInfo;
+import com.hjx.v2ex.bean.V2EXStatistics;
+import com.hjx.v2ex.bean.V2EXIntroduction;
 import com.hjx.v2ex.network.RetrofitSingleton;
 
 import butterknife.BindView;
@@ -23,10 +21,12 @@ import retrofit2.Response;
 
 public class AboutActivity extends AppCompatActivity {
 
+    private V2EXStatistics statistics;
+
     @BindView(R.id.scrollView)
     ScrollView scrollView;
-    @BindView(R.id.moreInfo)
-    TextView moreInfo;
+    @BindView(R.id.introduction)
+    TextView introduction;
     @BindView(R.id.constraintLayout)
     ConstraintLayout constraintLayout;
     @BindView(R.id.progressBar)
@@ -45,48 +45,65 @@ public class AboutActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_about);
         ButterKnife.bind(this);
-        RetrofitSingleton.getInstance(this).homePage(null).enqueue(new Callback<HomePage>() {
+        RetrofitSingleton.getInstance(this).getV2EXStatistics().enqueue(new Callback<V2EXStatistics>() {
             @Override
-            public void onResponse(Call<HomePage> call, Response<HomePage> response) {
-                progressBar.setVisibility(View.INVISIBLE);
-                V2EX v2ex = response.body().getV2ex();
-                member.setText(v2ex.getMembers() + "");
-                topic.setText(v2ex.getTopics() + "");
-                reply.setText(v2ex.getReplies() + "");
+            public void onResponse(Call<V2EXStatistics> call, Response<V2EXStatistics> response) {
+                V2EXStatistics data = response.body();
+                if(data == null) data = new V2EXStatistics();
+                setStatisticsView(data);
             }
 
             @Override
-            public void onFailure(Call<HomePage> call, Throwable throwable) {
-                progressBar.setVisibility(View.INVISIBLE);
+            public void onFailure(Call<V2EXStatistics> call, Throwable throwable) {
+                setStatisticsView(new V2EXStatistics());
+                throwable.printStackTrace();
             }
         });
 
-        RetrofitSingleton.getInstance(this).allNodesPage().enqueue(new Callback<NodesPlane>() {
+        RetrofitSingleton.getInstance(this).getV2EXNodesSum().enqueue(new Callback<V2EXStatistics>() {
             @Override
-            public void onResponse(Call<NodesPlane> call, Response<NodesPlane> response) {
-                progressBar.setVisibility(View.INVISIBLE);
-                node.setText(response.body().getNodeCount() + "");
+            public void onResponse(Call<V2EXStatistics> call, Response<V2EXStatistics> response) {
+                V2EXStatistics data = response.body();
+                if(data == null) data = new V2EXStatistics();
+                setStatisticsView(data);
             }
 
             @Override
-            public void onFailure(Call<NodesPlane> call, Throwable throwable) {
-                progressBar.setVisibility(View.INVISIBLE);
+            public void onFailure(Call<V2EXStatistics> call, Throwable throwable) {
+                setStatisticsView(new V2EXStatistics());
+                throwable.printStackTrace();
             }
         });
+    }
+
+    public void setStatisticsView(V2EXStatistics data) {
+        if (statistics != null) {
+            if(statistics.getTopics() == 0) statistics.setTopics(data.getTopics());
+            if(statistics.getMembers() == 0) statistics.setMembers(data.getMembers());
+            if(statistics.getReplies() == 0) statistics.setReplies(data.getReplies());
+            if(statistics.getNodes() == 0) statistics.setNodes(data.getNodes());
+            member.setText(statistics.getMembers() + "");
+            topic.setText(statistics.getTopics() + "");
+            reply.setText(statistics.getReplies() + "");
+            node.setText(statistics.getNodes() + "");
+            progressBar.setVisibility(View.INVISIBLE);
+        } else {
+            statistics = data;
+        }
     }
 
     public void showMore(View view) {
         constraintLayout.setVisibility(View.INVISIBLE);
         scrollView.setVisibility(View.VISIBLE);
-        RetrofitSingleton.getInstance(this).aboutPage().enqueue(new Callback<V2EXMoreInfo>() {
+        RetrofitSingleton.getInstance(this).getV2EXIntroduction().enqueue(new Callback<V2EXIntroduction>() {
             @Override
-            public void onResponse(Call<V2EXMoreInfo> call, Response<V2EXMoreInfo> response) {
-                moreInfo.setText(response.body().getMoreInfo());
+            public void onResponse(Call<V2EXIntroduction> call, Response<V2EXIntroduction> response) {
+                introduction.setText(response.body().getIntroduction());
             }
 
             @Override
-            public void onFailure(Call<V2EXMoreInfo> call, Throwable throwable) {
-                moreInfo.setText("加载失败");
+            public void onFailure(Call<V2EXIntroduction> call, Throwable throwable) {
+                introduction.setText("加载失败");
             }
         });
     }

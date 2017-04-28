@@ -2,14 +2,12 @@ package com.hjx.v2ex.network;
 
 import com.hjx.v2ex.bean.Member;
 import com.hjx.v2ex.bean.Node;
-import com.hjx.v2ex.bean.NodesPlane;
+import com.hjx.v2ex.bean.NodesAll;
 import com.hjx.v2ex.bean.PageData;
 import com.hjx.v2ex.bean.Reply;
 import com.hjx.v2ex.bean.Topic;
-import com.hjx.v2ex.bean.V2EX;
-import com.hjx.v2ex.util.HTMLUtil;
+import com.hjx.v2ex.bean.V2EXStatistics;
 
-import java.io.IOException;
 import java.util.List;
 import java.util.Map;
 
@@ -20,10 +18,10 @@ import java.util.Map;
 public class V2EXapi {
 
     //获取V2EX网站相关信息
-    public static V2EX getV2EX() {
+    public static V2EXStatistics getV2EX() {
 //        try {
-//            V2EX v2ex = HTMLUtil.parseV2EX(RetrofitSingleton.getInstance().homePageOld(null).execute().body().string());
-//            v2ex.setNodes(getAllNodes().getNodeCount());
+//            V2EXStatistics v2ex = HTMLUtil.parseV2EX(RetrofitSingleton.getInstance().homePageOld(null).execute().body().string());
+//            v2ex.setNodes(getAllNodes().getNodeNum());
 //            return v2ex;
 //        } catch (IOException e) {
 //            e.printStackTrace();
@@ -76,7 +74,7 @@ public class V2EXapi {
     //获取用户详细信息
     public static Member getMemberDetails(String memberName) {
 //        try {
-//            Member member = HTMLUtil.parseMember(RetrofitSingleton.getInstance().memberDetailsPage(memberName).execute().body().string());
+//            Member member = HTMLUtil.parseMember(RetrofitSingleton.getInstance().getMember(memberName).execute().body().string());
 //            member.setUsername(memberName);
 //            return member;
 //        } catch (IOException e) {
@@ -126,9 +124,9 @@ public class V2EXapi {
 //    }
 
     //获取所有节点
-    public static NodesPlane getAllNodes() {
+    public static NodesAll getAllNodes() {
 //        try {
-//            return HTMLUtil.parseNodesPlane(RetrofitSingleton.getInstance().allNodesPage().execute().body().string());
+//            return HTMLUtil.parseNodesPlane(RetrofitSingleton.getInstance().getAllNodes().execute().body().string());
 //        } catch (IOException e) {
 //            e.printStackTrace();
 //        }
@@ -138,7 +136,7 @@ public class V2EXapi {
     //获取节点详细信息
     public static Node getNodeDetails(String nodeName) {
 //        try {
-//            Node node = HTMLUtil.parseNodeDetails(RetrofitSingleton.getInstance().nodeDetailsPage(nodeName, 1).execute().body().string());
+//            Node node = HTMLUtil.parseNodeDetails(RetrofitSingleton.getInstance().getNodePage(nodeName, 1).execute().body().string());
 //            node.setName(nodeName);
 //            return node;
 //        } catch (IOException e) {
@@ -150,7 +148,7 @@ public class V2EXapi {
     //获取节点下的主题列表
     public static PageData<Topic> getNodeTopics(String nodeName, int page) {
 //        try {
-//            return HTMLUtil.parseNodeTopics(RetrofitSingleton.getInstance().nodeDetailsPage(nodeName, page).execute().body().string());
+//            return HTMLUtil.parseNodeTopics(RetrofitSingleton.getInstance().getNodePage(nodeName, page).execute().body().string());
 //        } catch (IOException e) {
 //            e.printStackTrace();
 //        }

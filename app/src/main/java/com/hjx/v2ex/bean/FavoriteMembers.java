@@ -9,16 +9,11 @@ import java.util.List;
  * Created by shaxiboy on 2017/4/26 0026.
  */
 
-public class FavoriteMembers implements ListBaseFragment.ListBaseFragmentData {
+public class FavoriteMembers {
 
-    private PageData<Member> favoriteMembers = new PageData<>();
+    private List<Member> favoriteMembers = new ArrayList<>();
 
-    public PageData<Member> getFavoriteMembers() {
-        return favoriteMembers;
-    }
-
-    @Override
-    public PageData getPageData() {
+    public List<Member> getFavoriteMembers() {
         return favoriteMembers;
     }
 }

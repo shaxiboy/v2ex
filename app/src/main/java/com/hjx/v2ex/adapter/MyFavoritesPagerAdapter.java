@@ -5,8 +5,8 @@ import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentStatePagerAdapter;
 
 import com.hjx.v2ex.ui.FavoriteMembersFragment;
-import com.hjx.v2ex.ui.FavoriteNodesFragment;
-import com.hjx.v2ex.ui.FavoriteTopicsFragment;
+import com.hjx.v2ex.ui.NodeListFragment;
+import com.hjx.v2ex.ui.TopicListFragment;
 
 /**
  * Created by shaxiboy on 2017/3/6 0006.
@@ -22,9 +22,9 @@ public class MyFavoritesPagerAdapter extends FragmentStatePagerAdapter {
 
     @Override
     public Fragment getItem(int position) {
-        if(tabnames[position].equals("主题")) return new FavoriteTopicsFragment();
+        if(tabnames[position].equals("主题")) return TopicListFragment.newInstance(TopicListFragment.TOPICTYPE_FAVORITETOPIC);
         else if(tabnames[position].equals("会员")) return new FavoriteMembersFragment();
-        else return  new FavoriteNodesFragment();
+        else return  NodeListFragment.newInstance("收藏");
     }
 
     @Override

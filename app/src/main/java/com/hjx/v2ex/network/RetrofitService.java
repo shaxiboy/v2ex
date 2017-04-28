@@ -2,20 +2,23 @@ package com.hjx.v2ex.network;
 
 import com.hjx.v2ex.bean.FavoriteMembers;
 import com.hjx.v2ex.bean.FavoriteNodes;
+import com.hjx.v2ex.bean.NodesHottest;
 import com.hjx.v2ex.bean.MemberFavoriteResult;
 import com.hjx.v2ex.bean.NodeFavoriteResult;
+import com.hjx.v2ex.bean.NodesNavigation;
 import com.hjx.v2ex.bean.TopicFavoriteResult;
 import com.hjx.v2ex.bean.HomePage;
 import com.hjx.v2ex.bean.Member;
 import com.hjx.v2ex.bean.MemberTopicReplies;
 import com.hjx.v2ex.bean.NodePage;
-import com.hjx.v2ex.bean.NodesPlane;
+import com.hjx.v2ex.bean.NodesAll;
 import com.hjx.v2ex.bean.SigninParams;
 import com.hjx.v2ex.bean.SigninResult;
 import com.hjx.v2ex.bean.SignoutResult;
 import com.hjx.v2ex.bean.TopicPage;
 import com.hjx.v2ex.bean.TopicsPageData;
-import com.hjx.v2ex.bean.V2EXMoreInfo;
+import com.hjx.v2ex.bean.V2EXIntroduction;
+import com.hjx.v2ex.bean.V2EXStatistics;
 
 import java.util.Map;
 
@@ -42,18 +45,17 @@ public interface RetrofitService {
     int PAGE_TOPICS_ITEM_NUM = 20;
     int PAGE_TOPIC_REPLIES_ITEM_NUM = 100;
 
-
-    //get请求
-    @GET
-    Call<ResponseBody> doGet(@Url String url);
-
-    //关于页面
+    //获取V2EX网站介绍
     @GET("about")
-    Call<V2EXMoreInfo> aboutPage();
+    Call<V2EXIntroduction> getV2EXIntroduction();
 
-    //tab标签对应的主页
+    //获取V2EX网站数据统计（会员数、主题数、回复数）
     @GET(".")
-    Call<ResponseBody> homePageOld(@Query("tab") String tab);
+    Call<V2EXStatistics> getV2EXStatistics();
+
+    //获取V2EX网站节点总数
+    @GET("planes")
+    Call<V2EXStatistics> getV2EXNodesSum();
 
     //tab标签对应的主页
     @GET(".")
@@ -63,25 +65,29 @@ public interface RetrofitService {
     @GET(".")
     Call<TopicsPageData> getTabTopics(@Query("tab") String tab);
 
-    //全部主题列表页
+    //获取最近的主题
     @GET("recent")
-    Call<ResponseBody> allTopicsPage(@Query("p") Integer page);
+    Call<TopicsPageData> getRecentTopics(@Query("p") int page);
 
-    //主题详情页
+    //获取主题详情和主题回复
     @GET("t/{id}")
-    Call<ResponseBody> topicDetailsPageOld(@Path("id") int topicID, @Query("p") Integer page);
+    Call<TopicPage> getTopicPage(@Path("id") int topicID, @Query("p") int page);
 
-    //主题详情页
-    @GET("t/{id}")
-    Call<TopicPage> topicPage(@Path("id") int topicID, @Query("p") Integer page);
+    //获取最热节点
+    @GET(".")
+    Call<NodesHottest> getHottestNodes();
 
-    //全部节点页面
+    //获取导航节点
+    @GET(".")
+    Call<NodesNavigation> getNavigationNodes();
+
+    //获取全部节点
     @GET("planes")
-    Call<NodesPlane> allNodesPage();
+    Call<NodesAll> getAllNodes();
 
-    //节点详情页
+    //获取节点详情和节点下的主题
     @GET("go/{node}")
-    Call<NodePage> nodeDetailsPage(@Path("node") String nodeName);
+    Call<NodePage> getNodePage(@Path("node") String nodeName);
 
     //获取节点下的主题
     @GET("go/{node}")
@@ -89,7 +95,7 @@ public interface RetrofitService {
 
     //会员详情页
     @GET("member/{membername}")
-    Call<Member> memberDetailsPage(@Path("membername") String memberName);
+    Call<Member> getMember(@Path("membername") String memberName);
 
     //会员发表的主题列表页
     @GET("member/{membername}/topics")
@@ -101,7 +107,7 @@ public interface RetrofitService {
 
     //登陆页面
     @GET("signin")
-    Call<SigninParams> signin();
+    Call<SigninParams> getSigninParams();
 
     //登陆
     @Headers({
@@ -132,7 +138,7 @@ public interface RetrofitService {
 
     //我关注的人
     @GET("my/following")
-    Call<FavoriteMembers> getFavoriteMembersTopics();
+    Call<FavoriteMembers> getFavoriteMembers();
 
     //我关注的人发表的主题
     @GET("my/following")

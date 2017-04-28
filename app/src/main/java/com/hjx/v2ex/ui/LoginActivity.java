@@ -72,7 +72,7 @@ public class LoginActivity extends AppCompatActivity {
             return;
         }
         final ProgressDialog progressDialog = V2EXUtil.showProgressDialog(this, "正在登录");
-        RetrofitSingleton.getInstance(this).signin().enqueue(new Callback<SigninParams>() {
+        RetrofitSingleton.getInstance(this).getSigninParams().enqueue(new Callback<SigninParams>() {
             @Override
             public void onResponse(Call<SigninParams> call, Response<SigninParams> response) {
                 SigninParams signinParams = response.body();

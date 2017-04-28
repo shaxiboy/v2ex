@@ -9,11 +9,13 @@ import android.support.v7.widget.RecyclerView;
 import com.hjx.v2ex.R;
 import com.hjx.v2ex.bean.FavoriteMembers;
 import com.hjx.v2ex.bean.Member;
+import com.hjx.v2ex.bean.PageData;
 import com.hjx.v2ex.flexibleitem.MemberFlexibleItem;
 import com.hjx.v2ex.flexibleitem.ViewMoreFlexibleItem;
 import com.hjx.v2ex.network.RetrofitSingleton;
 
 import java.util.ArrayList;
+import java.util.List;
 
 import butterknife.BindView;
 import eu.davidea.flexibleadapter.FlexibleAdapter;
@@ -26,16 +28,20 @@ import retrofit2.Response;
 /**
  * A simple {@link Fragment} subclass.
  */
-public class FavoriteMembersFragment extends ListBaseFragment {
+public class FavoriteMembersFragment extends ListBaseFragment<FavoriteMembers> {
 
     @Override
     protected void loadData() {
-        RetrofitSingleton.getInstance(getContext()).getFavoriteMembersTopics().enqueue(getListBaseFragmentCallBack());
+        RetrofitSingleton.getInstance(getContext()).getFavoriteMembers().enqueue(getListBaseFragmentCallBack());
     }
 
     @Override
-    AbstractFlexibleItem getFlexibleItem(Object item) {
-        return new MemberFlexibleItem((Member) item);
+    PageData<AbstractFlexibleItem> getPageData(FavoriteMembers data) {
+        List<MemberFlexibleItem> items = new ArrayList<>();
+        for(Member member : data.getFavoriteMembers()) {
+            items.add(new MemberFlexibleItem(member));
+        }
+        return getOnePageData(items);
     }
 
     @Override
