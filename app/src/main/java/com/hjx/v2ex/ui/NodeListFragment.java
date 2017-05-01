@@ -20,6 +20,7 @@ import com.hjx.v2ex.bean.PageData;
 import com.hjx.v2ex.flexibleitem.NodeCategoryFlexibleHeaderItem;
 import com.hjx.v2ex.flexibleitem.NodeFlexibleItem;
 import com.hjx.v2ex.bean.NodesAll;
+import com.hjx.v2ex.flexibleitem.ViewMoreFlexibleItem;
 import com.hjx.v2ex.network.RetrofitSingleton;
 
 import java.util.ArrayList;
@@ -71,6 +72,9 @@ public class NodeListFragment extends ListBaseFragment {
             }
             for(Node node : nodeList) {
                 nodes.add(new NodeFlexibleItem(node, null));
+            }
+            if(data instanceof FavoriteNodes && !nodeList.isEmpty()) {
+                nodes.add(new ViewMoreFlexibleItem(null, ViewMoreFlexibleItem.ViewMoreType.NODESTOPICS));
             }
         } else if(data instanceof NodesNavigation || data instanceof NodesAll) {
             Map<String, List<Node>> nodeSections = null;
@@ -141,6 +145,7 @@ public class NodeListFragment extends ListBaseFragment {
             public int getSpanSize(int position) {
                 switch (getListAdapter().getItemViewType(position)) {
                     case R.layout.recycler_item_header_simple:
+                    case R.layout.recycler_view_item_view_more:
                         return 3;
                     default:
                         return 1;

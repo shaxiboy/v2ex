@@ -66,7 +66,6 @@ public class DataLoadingBaseActivity extends AppCompatActivity {
         Intent intent = new Intent(context, DataLoadingBaseActivity.class);
         intent.putExtra(DataLoadingBaseActivity.INTENT_EXTRA_ACTIVITY_TITLE, DataLoadingBaseActivity.ACTIVITY_TITLE_TOPIC_DETAILS);
         intent.putExtra(DataLoadingBaseActivity.INTENT_EXTRA_FRAGMENTNAME, TopicDetailsFragment.class.getName());
-//        intent.putExtra(DataLoadingBaseActivity.INTENT_EXTRA_FRAGENT_ARG_ONE, DataLoadingBaseActivity.ARG_TOPICID);
         intent.putExtra(DataLoadingBaseActivity.INTENT_EXTRA_FRAGENT_ARG_ONE, topicId + "");
         context.startActivity(intent);
     }
@@ -75,7 +74,6 @@ public class DataLoadingBaseActivity extends AppCompatActivity {
         Intent intent = new Intent(context, DataLoadingBaseActivity.class);
         intent.putExtra(DataLoadingBaseActivity.INTENT_EXTRA_ACTIVITY_TITLE, DataLoadingBaseActivity.ACTIVITY_TITLE_NODE_DETAILS);
         intent.putExtra(DataLoadingBaseActivity.INTENT_EXTRA_FRAGMENTNAME, NodeDetailsFragment.class.getName());
-//        intent.putExtra(DataLoadingBaseActivity.INTENT_EXTRA_FRAGENT_ARG_ONE, DataLoadingBaseActivity.ARG_NODENAME);
         intent.putExtra(DataLoadingBaseActivity.INTENT_EXTRA_FRAGENT_ARG_ONE, nodeName);
         context.startActivity(intent);
     }
@@ -84,7 +82,6 @@ public class DataLoadingBaseActivity extends AppCompatActivity {
         Intent intent = new Intent(context, DataLoadingBaseActivity.class);
         intent.putExtra(DataLoadingBaseActivity.INTENT_EXTRA_ACTIVITY_TITLE, DataLoadingBaseActivity.ACTIVITY_TITLE_MEMBER_DETAILS);
         intent.putExtra(DataLoadingBaseActivity.INTENT_EXTRA_FRAGMENTNAME, MemberDetailsFragment.class.getName());
-//        intent.putExtra(DataLoadingBaseActivity.INTENT_EXTRA_FRAGENT_ARG_ONE, DataLoadingBaseActivity.ARG_MEMBERNAME);
         intent.putExtra(DataLoadingBaseActivity.INTENT_EXTRA_FRAGENT_ARG_ONE, memberName);
         context.startActivity(intent);
     }
@@ -95,7 +92,14 @@ public class DataLoadingBaseActivity extends AppCompatActivity {
         intent.putExtra(DataLoadingBaseActivity.INTENT_EXTRA_FRAGMENTNAME, TopicListFragment.class.getName());
         intent.putExtra(DataLoadingBaseActivity.INTENT_EXTRA_FRAGENT_ARG_ONE, TopicListFragment.TOPICTYPE_MEMBERTOPIC);
         intent.putExtra(DataLoadingBaseActivity.INTENT_EXTRA_FRAGENT_ARG_TWO, memberName);
-//        intent.putExtra(DataLoadingBaseActivity.ARG_MEMBERNAME, memberName);
+        context.startActivity(intent);
+    }
+
+    public static void gotoMemberRepliesActivity(Context context, String memberName) {
+        Intent intent = new Intent(context, DataLoadingBaseActivity.class);
+        intent.putExtra(DataLoadingBaseActivity.INTENT_EXTRA_ACTIVITY_TITLE, memberName + "发表的回复");
+        intent.putExtra(DataLoadingBaseActivity.INTENT_EXTRA_FRAGMENTNAME, MemberRepliesFragment.class.getName());
+        intent.putExtra(DataLoadingBaseActivity.INTENT_EXTRA_FRAGENT_ARG_ONE, memberName);
         context.startActivity(intent);
     }
 
@@ -109,19 +113,10 @@ public class DataLoadingBaseActivity extends AppCompatActivity {
 
     public static void gotoFavoriteNodesTopicsActivity(Context context) {
         Intent intent = new Intent(context, DataLoadingBaseActivity.class);
-        intent.putExtra(DataLoadingBaseActivity.INTENT_EXTRA_ACTIVITY_TITLE, "我收藏的节点下的最新主题");
+        intent.putExtra(DataLoadingBaseActivity.INTENT_EXTRA_ACTIVITY_TITLE, "我收藏节点下的最新主题");
         intent.putExtra(DataLoadingBaseActivity.INTENT_EXTRA_FRAGMENTNAME, TopicListFragment.class.getName());
         intent.putExtra(DataLoadingBaseActivity.INTENT_EXTRA_FRAGENT_ARG_ONE, TopicListFragment.TOPICTYPE_TABTOPIC);
         intent.putExtra(DataLoadingBaseActivity.INTENT_EXTRA_FRAGENT_ARG_TWO, "nodes");
-        context.startActivity(intent);
-    }
-
-    public static void gotoMemberRepliesActivity(Context context, String memberName) {
-        Intent intent = new Intent(context, DataLoadingBaseActivity.class);
-        intent.putExtra(DataLoadingBaseActivity.INTENT_EXTRA_ACTIVITY_TITLE, memberName + "发表的回复");
-        intent.putExtra(DataLoadingBaseActivity.INTENT_EXTRA_FRAGMENTNAME, MemberRepliesFragment.class.getName());
-//        intent.putExtra(DataLoadingBaseActivity.INTENT_EXTRA_FRAGENT_ARG_ONE, DataLoadingBaseActivity.ARG_MEMBERNAME);
-        intent.putExtra(DataLoadingBaseActivity.INTENT_EXTRA_FRAGENT_ARG_ONE, memberName);
         context.startActivity(intent);
     }
 }

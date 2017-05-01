@@ -59,10 +59,8 @@ public class ViewMoreFlexibleItem extends AbstractFlexibleItem<ViewMoreFlexibleI
 
     @Override
     public void bindViewHolder(FlexibleAdapter adapter, final ViewMoreFlexibleViewHolder holder, int position, List payloads) {
-        if(type == ViewMoreType.MEMBERSTOPICS) {
-            holder.button.setText("查看所有关注用户发表的主题");
-        } else if(type == ViewMoreType.NODESTOPICS) {
-            holder.button.setText("查看所有收藏节点下的主题");
+        if(type == ViewMoreType.MEMBERSTOPICS || type == ViewMoreType.NODESTOPICS) {
+            holder.button.setText("查看相关主题");
         }
         holder.button.setOnClickListener(new View.OnClickListener() {
             @Override

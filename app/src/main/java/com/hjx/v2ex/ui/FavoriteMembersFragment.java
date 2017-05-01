@@ -37,9 +37,12 @@ public class FavoriteMembersFragment extends ListBaseFragment<FavoriteMembers> {
 
     @Override
     PageData<AbstractFlexibleItem> getPageData(FavoriteMembers data) {
-        List<MemberFlexibleItem> items = new ArrayList<>();
+        List<AbstractFlexibleItem> items = new ArrayList<>();
         for(Member member : data.getFavoriteMembers()) {
             items.add(new MemberFlexibleItem(member));
+        }
+        if(!data.getFavoriteMembers().isEmpty()) {
+            items.add(new ViewMoreFlexibleItem(null, ViewMoreFlexibleItem.ViewMoreType.MEMBERSTOPICS));
         }
         return getOnePageData(items);
     }
