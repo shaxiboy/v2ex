@@ -35,6 +35,8 @@ import retrofit2.Call;
 import retrofit2.Callback;
 import retrofit2.Response;
 
+import static android.R.attr.data;
+
 /**
  * Created by shaxiboy on 2017/4/12 0012.
  */

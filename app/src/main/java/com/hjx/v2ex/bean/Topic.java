@@ -20,6 +20,7 @@ public class Topic {
     private Node node;
     private String createdTime;
     private String lastRepliedTime;
+    private int replyOnce;
     private List<PS> psList;
 
     public int getId() {
@@ -118,6 +119,14 @@ public class Topic {
         this.lastRepliedTime = lastRepliedTime;
     }
 
+    public int getReplyOnce() {
+        return replyOnce;
+    }
+
+    public void setReplyOnce(int replyOnce) {
+        this.replyOnce = replyOnce;
+    }
+
     public List<PS> getPsList() {
         return psList;
     }
@@ -141,6 +150,7 @@ public class Topic {
                 ", node=" + node +
                 ", createdTime='" + createdTime + '\'' +
                 ", lastRepliedTime='" + lastRepliedTime + '\'' +
+                ", replyOnce=" + replyOnce +
                 ", psList=" + psList +
                 '}';
     }

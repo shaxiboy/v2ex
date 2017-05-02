@@ -202,7 +202,7 @@ public class MainActivity extends AppCompatActivity
         switch (item.getItemId()) {
             case R.id.topic:
                 viewPager.setAdapter(topicsPagerAdapter);
-                setTitle("V2EXStatistics");
+                setTitle("V2EX");
                 break;
             case R.id.node:
                 viewPager.setAdapter(nodesPagerAdapter);

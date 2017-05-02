@@ -18,6 +18,7 @@ import com.hjx.v2ex.bean.NodesHottest;
 import com.hjx.v2ex.bean.NodesNavigation;
 import com.hjx.v2ex.bean.PageData;
 import com.hjx.v2ex.bean.Reply;
+import com.hjx.v2ex.bean.ReplyTopicResult;
 import com.hjx.v2ex.bean.SigninParams;
 import com.hjx.v2ex.bean.SigninResult;
 import com.hjx.v2ex.bean.SignoutResult;
@@ -267,14 +268,14 @@ public class HTMLUtil {
 
     public static TopicPage parseTopicPage(String html) {
         TopicPage topicPage = new TopicPage();
-        topicPage.setTopic(parseTopicDetails(html));
-        topicPage.setReplies(parseTopicReplies(html));
+        Document doc = Jsoup.parse(html);
+        topicPage.setTopic(parseTopicDetails(doc));
+        topicPage.setReplies(parseTopicReplies(doc));
         return topicPage;
     }
 
-    public static Topic parseTopicDetails(String html) {
+    public static Topic parseTopicDetails(Document doc) {
         Topic topic = new Topic();
-        Document doc = Jsoup.parse(html);
         Element headerEle = doc.getElementsByClass("header").first();
 
         Element authorEle = headerEle.getElementsByClass("fr").first();
@@ -331,9 +332,20 @@ public class HTMLUtil {
 
         Element replyBox = doc.getElementById("Main").getElementsByClass("box").get(1);
         if (replyBox.children().size() > 1) {
-            topic.setReplyNum(parseInt(replyBox.getElementsByTag("div").get(0).getElementsByTag("span").first().text().split(" 回复 ")[0]));
+            String text = replyBox.getElementsByTag("div").get(0).getElementsByTag("span").first().text().split("回复")[0];
+            text = text.substring(0, text.length() - 1);
+            topic.setReplyNum(parseInt(text));
+        }
+        for(Element inputEle : doc.getElementById("Main").getElementsByTag("input")) {
+            if(inputEle.attr("name").equals("once")) {
+                topic.setReplyOnce(Integer.parseInt(inputEle.attr("value")));
+            }
         }
         return topic;
+    }
+
+    public static Topic parseTopicDetails(String html) {
+        return parseTopicDetails(Jsoup.parse(html));
     }
 
     private static Topic.PS parseTopicPS(Element psEle) {
@@ -344,14 +356,19 @@ public class HTMLUtil {
     }
 
     public static PageData<Reply> parseTopicReplies(String html) {
+        return parseTopicReplies(Jsoup.parse(html));
+    }
+
+    private static PageData<Reply> parseTopicReplies(Document doc) {
         PageData<Reply> pageData = new PageData<>();
-        Document doc = Jsoup.parse(html);
         Element replyBox = doc.getElementById("Main").getElementsByClass("box").get(1);
         String replyNumInfo = replyBox.getElementsByTag("div").get(0).getElementsByTag("span").first().text();
         if(replyNumInfo.equals("目前尚无回复")) {
             return pageData;
         }
-        pageData.setTotalItems(parseInt(replyNumInfo.split(" 回复 ")[0]));
+        String text = replyNumInfo.split("回复")[0];
+        text = text.substring(0, text.length() - 1);
+        pageData.setTotalItems(parseInt(text));
         pageData.setCurrentPage(1);
         Element inputEle = replyBox.getElementsByClass("cell").get(1).getElementsByTag("input").first();
         if(inputEle != null) {
@@ -739,6 +756,18 @@ public class HTMLUtil {
             }
         }
         return favoriteMembers;
+    }
+
+    public static ReplyTopicResult parseReplyTopicResult(String html) {
+        ReplyTopicResult result = new ReplyTopicResult();
+        Element mainEle = Jsoup.parse(html).getElementById("Main");
+        if(mainEle.children().size() == 2) result.setSuccess(false);
+        for(Element inputEle : mainEle.getElementsByTag("input")) {
+            if(inputEle.attr("name").equals("once")) {
+                result.setReplyOnce(Integer.parseInt(inputEle.attr("value")));
+            }
+        }
+        return result;
     }
 
 }

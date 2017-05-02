@@ -9,4 +9,10 @@
         android:visible="false"
         android:title="收藏"
         />
+    <item android:id="@+id/menu_reply"
+        android:icon="@drawable/ic_menu_reply"
+        app:showAsAction="always"
+        android:visible="false"
+        android:title="回复"
+        />
 </menu>

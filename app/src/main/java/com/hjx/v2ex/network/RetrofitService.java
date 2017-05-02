@@ -6,6 +6,7 @@ import com.hjx.v2ex.bean.NodesHottest;
 import com.hjx.v2ex.bean.MemberFavoriteResult;
 import com.hjx.v2ex.bean.NodeFavoriteResult;
 import com.hjx.v2ex.bean.NodesNavigation;
+import com.hjx.v2ex.bean.ReplyTopicResult;
 import com.hjx.v2ex.bean.TopicFavoriteResult;
 import com.hjx.v2ex.bean.HomePage;
 import com.hjx.v2ex.bean.Member;
@@ -157,4 +158,8 @@ public interface RetrofitService {
     @FormUrlEncoded
     Call<ResponseBody> thankTopic(@Path("id") int topicID, @Field("t") String token);
 
+    //回复主题
+    @POST("t/{id}")
+    @FormUrlEncoded
+    Call<ReplyTopicResult> replyTopic(@Header("referer") String referer, @Path("id") int topicID, @Field("content") String replyContent, @Field("once") int replyOnce);
 }

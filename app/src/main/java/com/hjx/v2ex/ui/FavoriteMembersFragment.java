@@ -1,6 +1,8 @@
 package com.hjx.v2ex.ui;
 
 
+import android.os.Bundle;
+import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
 import android.support.v4.widget.SwipeRefreshLayout;
 import android.support.v7.widget.GridLayoutManager;
@@ -29,6 +31,11 @@ import retrofit2.Response;
  * A simple {@link Fragment} subclass.
  */
 public class FavoriteMembersFragment extends ListBaseFragment<FavoriteMembers> {
+
+    @Override
+    public void onCreate(@Nullable Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
+    }
 
     @Override
     protected void loadData() {
