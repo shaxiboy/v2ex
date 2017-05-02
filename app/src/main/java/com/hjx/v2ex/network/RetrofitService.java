@@ -2,6 +2,8 @@ package com.hjx.v2ex.network;
 
 import com.hjx.v2ex.bean.FavoriteMembers;
 import com.hjx.v2ex.bean.FavoriteNodes;
+import com.hjx.v2ex.bean.NewTopicOnce;
+import com.hjx.v2ex.bean.NewTopicResult;
 import com.hjx.v2ex.bean.NodesHottest;
 import com.hjx.v2ex.bean.MemberFavoriteResult;
 import com.hjx.v2ex.bean.NodeFavoriteResult;
@@ -162,4 +164,13 @@ public interface RetrofitService {
     @POST("t/{id}")
     @FormUrlEncoded
     Call<ReplyTopicResult> replyTopic(@Header("referer") String referer, @Path("id") int topicID, @Field("content") String replyContent, @Field("once") int replyOnce);
+
+    //获取发表新主题once
+    @GET("new")
+    Call<NewTopicOnce> getNewTopicOnce();
+
+    //发表新主题
+    @POST("new")
+    @FormUrlEncoded
+    Call<NewTopicResult> newTopic(@Field("title") String title, @Field("content") String content, @Field("node_name") String nodeName, @Field("once") int once);
 }

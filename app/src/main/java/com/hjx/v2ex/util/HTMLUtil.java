@@ -10,6 +10,8 @@ import com.hjx.v2ex.bean.MemberFavoriteResult;
 import com.hjx.v2ex.bean.MemberMoreInfo;
 import com.hjx.v2ex.bean.MemberTopicReplies;
 import com.hjx.v2ex.bean.MemberTopicsPage;
+import com.hjx.v2ex.bean.NewTopicOnce;
+import com.hjx.v2ex.bean.NewTopicResult;
 import com.hjx.v2ex.bean.Node;
 import com.hjx.v2ex.bean.NodeFavoriteResult;
 import com.hjx.v2ex.bean.NodePage;
@@ -765,6 +767,40 @@ public class HTMLUtil {
         for(Element inputEle : mainEle.getElementsByTag("input")) {
             if(inputEle.attr("name").equals("once")) {
                 result.setReplyOnce(Integer.parseInt(inputEle.attr("value")));
+            }
+        }
+        return result;
+    }
+
+    public static NewTopicOnce parseNewTopicOnce(String html) {
+        NewTopicOnce result = new NewTopicOnce();
+        Element mainEle = Jsoup.parse(html).getElementById("Main");
+        for(Element inputEle : mainEle.getElementsByTag("input")) {
+            if(inputEle.attr("name").equals("once")) {
+                result.setOnce(Integer.parseInt(inputEle.attr("value")));
+                break;
+            }
+        }
+        return result;
+    }
+
+    public static NewTopicResult parseNewTopicResult(String html) {
+        NewTopicResult result = new NewTopicResult();
+        Element mainEle = Jsoup.parse(html).getElementById("Main");
+        for(Element inputEle : mainEle.getElementsByTag("input")) {
+            if(inputEle.attr("value").equals("回复")) {
+                result.setSuccess(true);
+                break;
+            }
+        }
+        if(!result.isSuccess()) {
+           Element liEle = mainEle.getElementsByClass("problem").first().getElementsByTag("li").first();
+            result.setFailedMsg(liEle.text());
+            for(Element inputEle : mainEle.getElementsByTag("input")) {
+                if(inputEle.attr("name").equals("once")) {
+                    result.setNewOnce(Integer.parseInt(inputEle.attr("value")));
+                    break;
+                }
             }
         }
         return result;

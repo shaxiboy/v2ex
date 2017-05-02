@@ -30,6 +30,7 @@ import com.hjx.v2ex.ui.DataLoadingBaseActivity;
 import com.hjx.v2ex.ui.LoginActivity;
 import com.hjx.v2ex.ui.LoginoutDialogFragment;
 import com.hjx.v2ex.ui.MyFavoritesActivity;
+import com.hjx.v2ex.ui.NewTopicActivity;
 import com.hjx.v2ex.util.V2EXUtil;
 
 import butterknife.BindView;
@@ -107,7 +108,7 @@ public class MainActivity extends AppCompatActivity
         newBtn.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-
+                startActivity(new Intent(MainActivity.this, NewTopicActivity.class));
             }
         });
         if(V2EXUtil.isLogin(this)) {
