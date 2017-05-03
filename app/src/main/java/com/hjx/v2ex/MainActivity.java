@@ -31,6 +31,7 @@ import com.hjx.v2ex.ui.LoginActivity;
 import com.hjx.v2ex.ui.LoginoutDialogFragment;
 import com.hjx.v2ex.ui.MyFavoritesActivity;
 import com.hjx.v2ex.ui.NewTopicActivity;
+import com.hjx.v2ex.ui.NodeListFragment;
 import com.hjx.v2ex.util.V2EXUtil;
 
 import butterknife.BindView;
@@ -117,7 +118,7 @@ public class MainActivity extends AppCompatActivity
 
         tabLayout.setupWithViewPager(viewPager, false);
         topicsPagerAdapter = new TopicsPagerAdapter(getSupportFragmentManager());
-        nodesPagerAdapter = new NodesPagerAdapter(getSupportFragmentManager());
+        nodesPagerAdapter = new NodesPagerAdapter(getSupportFragmentManager(), NodeListFragment.NODEACTIONTYPE_VIEW);
         viewPager.setAdapter(topicsPagerAdapter);
 
     }

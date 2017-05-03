@@ -24,7 +24,7 @@ public class MyFavoritesPagerAdapter extends FragmentStatePagerAdapter {
     public Fragment getItem(int position) {
         if(tabnames[position].equals("主题")) return TopicListFragment.newInstance(TopicListFragment.TOPICTYPE_FAVORITETOPIC);
         else if(tabnames[position].equals("会员")) return new FavoriteMembersFragment();
-        else return  NodeListFragment.newInstance("收藏");
+        else return  NodeListFragment.newInstance("收藏", NodeListFragment.NODEACTIONTYPE_VIEW);
     }
 
     @Override

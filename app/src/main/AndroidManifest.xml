@@ -38,7 +38,12 @@
             android:name=".ui.MyFavoritesActivity"
             android:label="我的收藏"
             android:theme="@style/AppTheme.NoActionBar" />
-        <activity android:name=".ui.NewTopicActivity"></activity>
+        <activity
+            android:name=".ui.NewTopicActivity"
+            android:label="发布新主题" />
+        <activity android:name=".ui.ChooseNodeActivity"
+            android:label="选择节点"
+            android:theme="@style/AppTheme.NoActionBar"/>
     </application>
 
 </manifest>

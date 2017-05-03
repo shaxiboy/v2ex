@@ -7,6 +7,7 @@ package com.hjx.v2ex.bean;
 public class NewTopicResult {
 
     private boolean success;
+    private int newTopicId;
     private int newOnce;
     private String failedMsg;
 
@@ -16,6 +17,14 @@ public class NewTopicResult {
 
     public void setSuccess(boolean success) {
         this.success = success;
+    }
+
+    public int getNewTopicId() {
+        return newTopicId;
+    }
+
+    public void setNewTopicId(int newTopicId) {
+        this.newTopicId = newTopicId;
     }
 
     public int getNewOnce() {

@@ -1,6 +1,8 @@
 package com.hjx.v2ex.ui;
 
 
+import android.app.Activity;
+import android.content.Intent;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.v7.widget.GridLayoutManager;
@@ -8,6 +10,7 @@ import android.support.v7.widget.RecyclerView;
 import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
+import android.view.View;
 import android.widget.SearchView;
 
 import com.hjx.v2ex.R;
@@ -41,15 +44,22 @@ import static android.R.attr.data;
  * Created by shaxiboy on 2017/4/12 0012.
  */
 
-public class NodeListFragment extends ListBaseFragment {
+public class NodeListFragment extends ListBaseFragment implements FlexibleAdapter.OnItemClickListener{
+
+    public static final String ARG_TAB = "TAB";
+    public static final String ARG_NODEACTIONTYPE = "NODEACTIONTYPE";
+    public static final String NODEACTIONTYPE_VIEW = "NODEACTIONTYPE_VIEW";
+    public static final String NODEACTIONTYPE_CHOOSE = "NODEACTIONTYPE_CHOOSE";
 
     private String tab;
+    private String nodeActionType;
     private List<AbstractFlexibleItem> nodes = new ArrayList<>();
 
-    public static NodeListFragment newInstance(String tab) {
+    public static NodeListFragment newInstance(String tab, String nodeActionType) {
         NodeListFragment nodeListFragment = new NodeListFragment();
         Bundle bundle = new Bundle();
-        bundle.putString("tab", tab);
+        bundle.putString(ARG_TAB, tab);
+        bundle.putString(ARG_NODEACTIONTYPE, nodeActionType);
         nodeListFragment.setArguments(bundle);
         return nodeListFragment;
     }
@@ -57,7 +67,14 @@ public class NodeListFragment extends ListBaseFragment {
     @Override
     public void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        tab = getArguments().getString("tab");
+        tab = getArguments().getString(ARG_TAB);
+        nodeActionType = getArguments().getString(ARG_NODEACTIONTYPE);
+    }
+
+    @Override
+    public void onViewCreated(View view, @Nullable Bundle savedInstanceState) {
+        super.onViewCreated(view, savedInstanceState);
+        getListAdapter().addListener(this);
     }
 
     @Override
@@ -157,4 +174,21 @@ public class NodeListFragment extends ListBaseFragment {
         return layoutManager;
     }
 
+    @Override
+    public boolean onItemClick(int position) {
+        if(getListAdapter().getItemViewType(position) == R.layout.recycler_item_node) {
+            Node node = ((NodeFlexibleItem) getListAdapter().getItem(position)).getNode();
+            if(nodeActionType.equals(NODEACTIONTYPE_VIEW)) {
+                DataLoadingBaseActivity.gotoNodeDetailsActivity(getContext(), node.getName());
+                return true;
+            } else if(nodeActionType.equals(NODEACTIONTYPE_CHOOSE)) {
+                Intent data = new Intent();
+                data.putExtra("node", node);
+                getActivity().setResult(Activity.RESULT_OK, data);
+                getActivity().finish();
+                return true;
+            }
+        }
+        return false;
+    }
 }

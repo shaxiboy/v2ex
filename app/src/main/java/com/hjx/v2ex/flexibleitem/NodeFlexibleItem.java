@@ -47,12 +47,12 @@ public class NodeFlexibleItem extends AbstractSectionableItem<NodeFlexibleItem.N
     @Override
     public void bindViewHolder(FlexibleAdapter adapter, NodeViewHolder holder, int position, List payloads) {
         holder.nodeTitle.setText(node.getTitle());
-        holder.nodeTitle.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                DataLoadingBaseActivity.gotoNodeDetailsActivity(view.getContext(), node.getName());
-            }
-        });
+//        holder.nodeTitle.setOnClickListener(new View.OnClickListener() {
+//            @Override
+//            public void onClick(View view) {
+//                DataLoadingBaseActivity.gotoNodeDetailsActivity(view.getContext(), node.getName());
+//            }
+//        });
     }
 
     @Override

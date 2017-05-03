@@ -790,6 +790,12 @@ public class HTMLUtil {
         for(Element inputEle : mainEle.getElementsByTag("input")) {
             if(inputEle.attr("value").equals("回复")) {
                 result.setSuccess(true);
+                for(Element aEle : mainEle.getElementsByClass("topic_buttons").first().getElementsByTag("a")) {
+                    if(aEle.text().equals("加入收藏")) {
+                        result.setNewTopicId(Integer.parseInt(aEle.attr("href").split("\\?")[0].split("/")[3]));
+                        break;
+                    }
+                }
                 break;
             }
         }

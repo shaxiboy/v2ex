@@ -13,14 +13,16 @@ import com.hjx.v2ex.ui.TopicListFragment;
 
 public class NodesPagerAdapter extends FragmentStatePagerAdapter {
 
+    private String nodeActionType;
     private String[] tabs = new String[] {"最热", "导航", "全部"};
 
-    public NodesPagerAdapter(FragmentManager fm) {
+    public NodesPagerAdapter(FragmentManager fm, String nodeActionType) {
         super(fm);
+        this.nodeActionType = nodeActionType;
     }
     @Override
     public Fragment getItem(int position) {
-        return NodeListFragment.newInstance(tabs[position]);
+        return NodeListFragment.newInstance(tabs[position], nodeActionType);
     }
 
     @Override
