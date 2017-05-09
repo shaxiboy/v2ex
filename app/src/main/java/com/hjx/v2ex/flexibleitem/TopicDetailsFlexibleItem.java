@@ -1,6 +1,11 @@
 package com.hjx.v2ex.flexibleitem;
 
+import android.graphics.Bitmap;
+import android.graphics.drawable.BitmapDrawable;
+import android.graphics.drawable.Drawable;
+import android.text.Html;
 import android.text.TextUtils;
+import android.text.method.LinkMovementMethod;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -8,10 +13,18 @@ import android.widget.LinearLayout;
 import android.widget.TextView;
 
 import com.bumptech.glide.Glide;
+import com.bumptech.glide.request.animation.GlideAnimation;
+import com.bumptech.glide.request.target.SimpleTarget;
 import com.hjx.v2ex.R;
 import com.hjx.v2ex.bean.Topic;
+import com.hjx.v2ex.bean.URLDrawable;
+import com.hjx.v2ex.network.TextViewImageGetter;
 import com.hjx.v2ex.ui.DataLoadingBaseActivity;
+import com.hjx.v2ex.util.V2EXUtil;
 import com.jauker.widget.BadgeView;
+
+import org.sufficientlysecure.htmltextview.HtmlHttpImageGetter;
+import org.sufficientlysecure.htmltextview.HtmlTextView;
 
 import java.util.List;
 
@@ -49,7 +62,7 @@ public class TopicDetailsFlexibleItem extends AbstractFlexibleItem<TopicDetailsF
     }
 
     @Override
-    public void bindViewHolder(FlexibleAdapter adapter, TopicDetailsViewHolder holder, int position, List payloads) {
+    public void bindViewHolder(FlexibleAdapter adapter, final TopicDetailsViewHolder holder, int position, List payloads) {
         holder.photoContainer.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
@@ -76,10 +89,12 @@ public class TopicDetailsFlexibleItem extends AbstractFlexibleItem<TopicDetailsF
             int i = 1;
             if(topic.getPsList() != null && !topic.getPsList().isEmpty()) {
                 for(Topic.PS append : topic.getPsList()) {
-                    appends = appends + "\n\n--------   第" + i++ + "条附言 · " + append.getTime() + "   --------\n" + append.getContent();
+                    appends = appends + "<br><br>--------   第" + i++ + "条附言 · " + append.getTime() + "   --------<br>" + append.getContent();
                 }
             }
-            holder.content.setText(topic.getContent() + appends);
+            int maxWidth = V2EXUtil.getDisplayWidth(holder.itemView.getContext()) -  V2EXUtil.dp(holder.itemView.getContext(), 16);
+            holder.content.setText(V2EXUtil.fromHtml(topic.getContent() + appends, new TextViewImageGetter(holder.itemView.getContext(), holder.content, maxWidth), null));
+            holder.content.setMovementMethod(LinkMovementMethod.getInstance());
         }
     }
 

@@ -2,6 +2,7 @@ package com.hjx.v2ex.ui;
 
 import android.os.Bundle;
 import android.support.annotation.Nullable;
+import android.util.Log;
 
 import com.hjx.v2ex.bean.PageData;
 import com.hjx.v2ex.bean.TopicsPageData;
@@ -16,9 +17,11 @@ import eu.davidea.flexibleadapter.items.AbstractFlexibleItem;
 public class TopicListFragment extends ListBaseFragment<TopicsPageData> {
 
     public static final String TOPICTYPE_TABTOPIC = "TABTOPIC";
+    public static final String TOPICTYPE_RECENTTOPIC = "RECENTTOPIC";
     public static final String TOPICTYPE_FAVORITETOPIC = "FAVORITETOPIC";
     public static final String TOPICTYPE_MEMBERTOPIC = "MEMBERTOPIC";
     public static final String TOPICTYPE_FAVORITEMEMBERSTOPIC = "FAVORITEMEMBERSTOPIC";
+    private static final String TAG = TopicListFragment.class.getSimpleName();
     private String topicType;
     private String arg;
 
@@ -51,6 +54,9 @@ public class TopicListFragment extends ListBaseFragment<TopicsPageData> {
         switch (topicType) {
             case TOPICTYPE_TABTOPIC:
                 RetrofitSingleton.getInstance(getContext()).getTabTopics(arg).enqueue(getListBaseFragmentCallBack());
+                break;
+            case TOPICTYPE_RECENTTOPIC:
+                RetrofitSingleton.getInstance(getContext()).getRecentTopics(getCurrentPage()).enqueue(getListBaseFragmentCallBack());
                 break;
             case TOPICTYPE_FAVORITETOPIC:
                 RetrofitSingleton.getInstance(getContext()).getFavoriteTopics(getCurrentPage()).enqueue(getListBaseFragmentCallBack());

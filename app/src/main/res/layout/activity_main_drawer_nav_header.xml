@@ -45,14 +45,16 @@
             android:layout_width="60dp"
             android:layout_height="40dp"
             android:layout_weight="1"
-            android:text="收藏"/>
+            android:text="收藏"
+            android:visibility="gone" />
 
         <Button
             android:id="@+id/newBtn"
             android:layout_width="60dp"
             android:layout_height="40dp"
             android:layout_weight="1"
-            android:text="发布"/>
+            android:text="发布"
+            android:visibility="gone" />
 
         <Button
             android:id="@+id/loginBtn"

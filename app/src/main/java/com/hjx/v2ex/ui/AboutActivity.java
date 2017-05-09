@@ -12,6 +12,7 @@ import com.hjx.v2ex.R;
 import com.hjx.v2ex.bean.V2EXStatistics;
 import com.hjx.v2ex.bean.V2EXIntroduction;
 import com.hjx.v2ex.network.RetrofitSingleton;
+import com.hjx.v2ex.util.V2EXUtil;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
@@ -98,7 +99,7 @@ public class AboutActivity extends AppCompatActivity {
         RetrofitSingleton.getInstance(this).getV2EXIntroduction().enqueue(new Callback<V2EXIntroduction>() {
             @Override
             public void onResponse(Call<V2EXIntroduction> call, Response<V2EXIntroduction> response) {
-                introduction.setText(response.body().getIntroduction());
+                introduction.setText(V2EXUtil.fromHtml(response.body().getIntroduction(), null, null));
             }
 
             @Override

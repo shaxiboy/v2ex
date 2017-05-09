@@ -117,7 +117,7 @@ public class MainActivity extends AppCompatActivity
         }
 
         tabLayout.setupWithViewPager(viewPager, false);
-        topicsPagerAdapter = new TopicsPagerAdapter(getSupportFragmentManager());
+        topicsPagerAdapter = new TopicsPagerAdapter(getSupportFragmentManager(), this);
         nodesPagerAdapter = new NodesPagerAdapter(getSupportFragmentManager(), NodeListFragment.NODEACTIONTYPE_VIEW);
         viewPager.setAdapter(topicsPagerAdapter);
 
@@ -132,6 +132,7 @@ public class MainActivity extends AppCompatActivity
             loginBtn.setText("登出");
             favoriteBtn.setVisibility(View.VISIBLE);
             newBtn.setVisibility(View.VISIBLE);
+            viewPager.setAdapter(topicsPagerAdapter);
         }
     }
 
@@ -141,6 +142,7 @@ public class MainActivity extends AppCompatActivity
         loginBtn.setText("登录");
         favoriteBtn.setVisibility(View.GONE);
         newBtn.setVisibility(View.GONE);
+        viewPager.setAdapter(topicsPagerAdapter);
     }
 
     @Override

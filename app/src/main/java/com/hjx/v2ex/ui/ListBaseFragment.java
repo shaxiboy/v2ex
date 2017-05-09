@@ -4,6 +4,7 @@ package com.hjx.v2ex.ui;
 import android.support.v4.app.Fragment;
 import android.support.v4.widget.SwipeRefreshLayout;
 import android.support.v7.widget.RecyclerView;
+import android.util.Log;
 
 import com.hjx.v2ex.R;
 import com.hjx.v2ex.bean.PageData;
@@ -28,6 +29,7 @@ import retrofit2.Response;
  */
 public abstract class ListBaseFragment<T> extends DataLoadingBaseFragment implements SwipeRefreshLayout.OnRefreshListener, FlexibleAdapter.EndlessScrollListener {
 
+    private static final String TAG = ListBaseFragment.class.getSimpleName();
     private FlexibleAdapter listAdapter;
     private int currentPage = 1;
 
@@ -73,20 +75,22 @@ public abstract class ListBaseFragment<T> extends DataLoadingBaseFragment implem
                 if (data != null) {
                     PageData pageData = getPageData(data);
                     if (currentPage == 1) {
+                        listAdapter.clear();
+                        successLoadingData();
                         if (pageData.getTotalItems() != 0) {
-                            successLoadingData();
-                            listAdapter.updateDataSet(pageData.getCurrentPageItems());
+                            listAdapter.addItems(0, pageData.getCurrentPageItems());
                             if (pageData.getTotalPage() >= 2) {
                                 listAdapter.setEndlessScrollListener(ListBaseFragment.this, new ProgressItem())
-                                        .setEndlessTargetCount(pageData.getTotalItems())
-                                        .setEndlessPageSize(pageData.getTotalPage());
+                                        .setEndlessTargetCount(pageData.getTotalItems());
                             }
                         }
                     } else {
-                        if (pageData.getTotalItems() != 0) {
+                        if (!pageData.getCurrentPageItems().isEmpty()) {
                             listAdapter.onLoadMoreComplete(pageData.getCurrentPageItems(), 5000);
-                            currentPage++;
                         }
+                    }
+                    if (!pageData.getCurrentPageItems().isEmpty()) {
+                        currentPage++;
                     }
                 } else {
                     if (currentPage == 1) {
@@ -110,6 +114,7 @@ public abstract class ListBaseFragment<T> extends DataLoadingBaseFragment implem
 
     @Override
     public void onRefresh() {
+        currentPage = 1;
         loadData();
     }
 

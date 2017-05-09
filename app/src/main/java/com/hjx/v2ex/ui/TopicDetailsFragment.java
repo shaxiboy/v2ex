@@ -189,7 +189,6 @@ public class TopicDetailsFragment extends DataLoadingBaseFragment implements Swi
                 swipeRefreshLayout.setRefreshing(false);
                 TopicPage topicPage = response.body();
                 if (topicPage != null) {
-                    LogUtil.d(topicPage.toString());
                     List<TopicReplyFlexibleItem> topicReplies = new ArrayList<>();
                     for (Reply reply : topicPage.getReplies().getCurrentPageItems()) {
                         topicReplies.add(new TopicReplyFlexibleItem(reply));

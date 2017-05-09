@@ -54,7 +54,7 @@ public class HTMLUtil {
 
     public static V2EXIntroduction parseV2EXIntroduction(String html) {
         V2EXIntroduction introduction = new V2EXIntroduction();
-        introduction.setIntroduction(Jsoup.parse(html).getElementById("Main").getElementsByClass("page").first().text());
+        introduction.setIntroduction(Jsoup.parse(html).getElementById("Main").getElementsByClass("page").first().html());
         return introduction;
     }
 
@@ -128,9 +128,12 @@ public class HTMLUtil {
             for(Element span : headerDiv.getElementsByTag("span")) {
                 if(span.text().contains("主题总数")) {
                     Element elementSibling = span.nextElementSibling();
-                    if(elementSibling.tagName().equals("strong")) {
+                    if(elementSibling != null && elementSibling.tagName().equals("strong")) {
                         topicsPageData.getTopics().setTotalItems(Integer.parseInt(elementSibling.text()));
                     }
+                } else if(span.text().contains("个主题")) {
+                    //最近的主题页面
+                    topicsPageData.getTopics().setTotalItems(Integer.parseInt(Pattern.compile("[^0-9]").matcher(span.text()).replaceAll("")));
                 }
             }
         } else {
@@ -298,7 +301,7 @@ public class HTMLUtil {
 
         Element contentEle = doc.getElementsByClass("topic_content").first();
         if(contentEle != null) {
-            topic.setContent(contentEle.text());
+            topic.setContent(contentEle.html());
         }
         List<Topic.PS> psList = new ArrayList<>();
         for (Element psEle : doc.getElementsByClass("subtle")) {
@@ -353,7 +356,7 @@ public class HTMLUtil {
     private static Topic.PS parseTopicPS(Element psEle) {
         Topic.PS ps = new Topic.PS();
         ps.setTime(psEle.getElementsByTag("span").first().text().split("  ·  ")[1]);
-        ps.setContent(psEle.getElementsByClass("topic_content").first().text());
+        ps.setContent(psEle.getElementsByClass("topic_content").first().html());
         return ps;
     }
 
@@ -399,7 +402,7 @@ public class HTMLUtil {
             timeInfo = timeInfo.split(" via ")[0];
         }
         reply.setReplyTime(timeInfo);
-        reply.setContent(mainTD.getElementsByClass("reply_content").first().text());
+        reply.setContent(mainTD.getElementsByClass("reply_content").first().html());
         return reply;
     }
 
