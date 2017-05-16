@@ -75,14 +75,13 @@ public abstract class ListBaseFragment<T> extends DataLoadingBaseFragment implem
                     if (data != null) {
                         ListData listData = getListData(data);
                         if (currentPage == 1) {
-                            listAdapter.clear();
                             successLoadingData();
                             if(listData.getHeader() != null) {
                                 listAdapter.addScrollableHeader(listData.getHeader());
                                 listAdapter.notifyDataSetChanged();
                             }
                             if (listData.getPageData().getTotalItems() != 0) {
-                                listAdapter.updateDataSet(listData.getPageData().getCurrentPageItems());
+                                listAdapter.updateDataSet(new ArrayList(listData.getPageData().getCurrentPageItems()));
                                 if (listData.getPageData().getTotalPage() >= 2) {
                                     listAdapter.setEndlessScrollListener(ListBaseFragment.this, new ProgressItem())
                                             .setEndlessTargetCount(listData.getPageData().getTotalItems());

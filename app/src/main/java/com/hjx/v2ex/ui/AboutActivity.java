@@ -51,11 +51,9 @@ public class AboutActivity extends AppCompatActivity {
         RetrofitSingleton.getInstance(this).getV2EXStatistics().enqueue(new Callback<V2EXStatistics>() {
             @Override
             public void onResponse(Call<V2EXStatistics> call, Response<V2EXStatistics> response) {
-                if(AboutActivity.this.isDestroyed()) {
-                    V2EXStatistics data = response.body();
-                    if(data == null) data = new V2EXStatistics();
-                    setStatisticsView(data);
-                }
+                V2EXStatistics data = response.body();
+                if (data == null) data = new V2EXStatistics();
+                setStatisticsView(data);
             }
 
             @Override
@@ -69,7 +67,7 @@ public class AboutActivity extends AppCompatActivity {
             @Override
             public void onResponse(Call<V2EXStatistics> call, Response<V2EXStatistics> response) {
                 V2EXStatistics data = response.body();
-                if(data == null) data = new V2EXStatistics();
+                if (data == null) data = new V2EXStatistics();
                 setStatisticsView(data);
             }
 
@@ -83,10 +81,10 @@ public class AboutActivity extends AppCompatActivity {
 
     public void setStatisticsView(V2EXStatistics data) {
         if (statistics != null) {
-            if(statistics.getTopics() == 0) statistics.setTopics(data.getTopics());
-            if(statistics.getMembers() == 0) statistics.setMembers(data.getMembers());
-            if(statistics.getReplies() == 0) statistics.setReplies(data.getReplies());
-            if(statistics.getNodes() == 0) statistics.setNodes(data.getNodes());
+            if (statistics.getTopics() == 0) statistics.setTopics(data.getTopics());
+            if (statistics.getMembers() == 0) statistics.setMembers(data.getMembers());
+            if (statistics.getReplies() == 0) statistics.setReplies(data.getReplies());
+            if (statistics.getNodes() == 0) statistics.setNodes(data.getNodes());
             member.setText(statistics.getMembers() + "");
             topic.setText(statistics.getTopics() + "");
             reply.setText(statistics.getReplies() + "");

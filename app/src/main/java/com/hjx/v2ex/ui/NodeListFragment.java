@@ -139,7 +139,7 @@ public class NodeListFragment extends ListBaseFragment implements FlexibleAdapte
             public boolean onQueryTextChange(String newText) {
                 if (getListAdapter().hasNewSearchText(newText)) {
                     getListAdapter().setSearchText(newText);
-                    getListAdapter().filterItems(new ArrayList<>(nodes), 200);
+                    getListAdapter().filterItems(new ArrayList(nodes), 200);
                 }
                 return true;
             }

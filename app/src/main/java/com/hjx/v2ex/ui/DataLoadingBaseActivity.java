@@ -4,8 +4,10 @@ import android.content.Context;
 import android.content.Intent;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentTransaction;
+import android.support.v4.app.NavUtils;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
+import android.view.MenuItem;
 
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
@@ -28,15 +30,17 @@ public class DataLoadingBaseActivity extends AppCompatActivity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        getSupportActionBar().setDisplayHomeAsUpEnabled(true);
         Intent intent = getIntent();
         setTitle(intent.getStringExtra(INTENT_EXTRA_ACTIVITY_TITLE));
+        if(savedInstanceState != null) return;
         try {
             Class fragmentClass = Class.forName(intent.getStringExtra(INTENT_EXTRA_FRAGMENTNAME));
             String arguOne = intent.getStringExtra(INTENT_EXTRA_FRAGENT_ARG_ONE);
             String arguTwo = intent.getStringExtra(INTENT_EXTRA_FRAGENT_ARG_TWO);
             Fragment fragment;
-            if(arguOne != null) {
-                if(arguTwo != null) {
+            if (arguOne != null) {
+                if (arguTwo != null) {
                     Method newInstance = fragmentClass.getMethod("newInstance", String.class, String.class);
                     fragment = (Fragment) newInstance.invoke(null, arguOne, arguTwo);
                 } else {
@@ -60,6 +64,17 @@ public class DataLoadingBaseActivity extends AppCompatActivity {
         } catch (InstantiationException e) {
             e.printStackTrace();
         }
+    }
+
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
+        switch (item.getItemId()) {
+            // Respond to the action bar's Up/Home button
+            case android.R.id.home:
+                NavUtils.navigateUpFromSameTask(this);
+                return true;
+        }
+        return super.onOptionsItemSelected(item);
     }
 
     public static void gotoTopicDetailsActivity(Context context, int topicId) {
