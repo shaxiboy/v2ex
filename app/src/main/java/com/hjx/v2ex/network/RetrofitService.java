@@ -90,7 +90,7 @@ public interface RetrofitService {
 
     //获取节点详情和节点下的主题
     @GET("go/{node}")
-    Call<NodePage> getNodePage(@Path("node") String nodeName);
+    Call<NodePage> getNodePage(@Path("node") String nodeName, @Query("p") int page);
 
     //获取节点下的主题
     @GET("go/{node}")

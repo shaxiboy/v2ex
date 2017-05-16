@@ -5,7 +5,9 @@ import android.support.annotation.Nullable;
 import android.util.Log;
 
 import com.hjx.v2ex.bean.PageData;
+import com.hjx.v2ex.bean.Topic;
 import com.hjx.v2ex.bean.TopicsPageData;
+import com.hjx.v2ex.flexibleitem.TopicFlexibleItem;
 import com.hjx.v2ex.network.RetrofitSingleton;
 
 import eu.davidea.flexibleadapter.items.AbstractFlexibleItem;
@@ -70,7 +72,14 @@ public class TopicListFragment extends ListBaseFragment<TopicsPageData> {
     }
 
     @Override
-    PageData<AbstractFlexibleItem> getPageData(TopicsPageData data) {
-        return getFlexibleTopicPageData(data);
+    ListData getListData(TopicsPageData data) {
+        ListData listData = new ListData();
+        PageData<AbstractFlexibleItem> pageData = new PageData<>();
+        copyPageDataStatistics(data.getTopics(), pageData);
+        for(Topic topic : data.getTopics().getCurrentPageItems()) {
+            pageData.getCurrentPageItems().add(new TopicFlexibleItem(topic));
+        }
+        listData.setPageData(pageData);
+        return listData;
     }
 }

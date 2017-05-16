@@ -4,6 +4,7 @@ package com.hjx.v2ex.ui;
 import android.app.ProgressDialog;
 import android.content.Context;
 import android.os.Bundle;
+import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
 import android.support.v4.widget.SwipeRefreshLayout;
 import android.support.v7.widget.RecyclerView;
@@ -20,6 +21,7 @@ import android.widget.LinearLayout;
 import android.widget.Toast;
 
 import com.hjx.v2ex.R;
+import com.hjx.v2ex.bean.PageData;
 import com.hjx.v2ex.bean.ReplyTopicResult;
 import com.hjx.v2ex.bean.Topic;
 import com.hjx.v2ex.bean.TopicFavoriteResult;
@@ -27,6 +29,7 @@ import com.hjx.v2ex.flexibleitem.ProgressItem;
 import com.hjx.v2ex.bean.Reply;
 import com.hjx.v2ex.flexibleitem.TopicDetailsFlexibleItem;
 import com.hjx.v2ex.bean.TopicPage;
+import com.hjx.v2ex.flexibleitem.TopicFlexibleItem;
 import com.hjx.v2ex.flexibleitem.TopicReplyFlexibleItem;
 import com.hjx.v2ex.network.RetrofitService;
 import com.hjx.v2ex.network.RetrofitSingleton;
@@ -39,6 +42,7 @@ import java.util.List;
 import butterknife.BindView;
 import eu.davidea.flexibleadapter.FlexibleAdapter;
 import eu.davidea.flexibleadapter.common.SmoothScrollLinearLayoutManager;
+import eu.davidea.flexibleadapter.items.AbstractFlexibleItem;
 import retrofit2.Call;
 import retrofit2.Callback;
 import retrofit2.Response;
@@ -48,12 +52,8 @@ import static com.hjx.v2ex.util.V2EXUtil.showProgressDialog;
 /**
  * A simple {@link Fragment} subclass.
  */
-public class TopicDetailsFragment extends DataLoadingBaseFragment implements SwipeRefreshLayout.OnRefreshListener, FlexibleAdapter.EndlessScrollListener {
+public class TopicDetailsFragment extends ListBaseFragment<TopicPage> {
 
-    @BindView(R.id.swipe_refresh_layout)
-    SwipeRefreshLayout swipeRefreshLayout;
-    @BindView(R.id.recycler_view)
-    RecyclerView recyclerView;
     @BindView(R.id.edit_container)
     LinearLayout editContainer;
     @BindView(R.id.editText)
@@ -63,8 +63,6 @@ public class TopicDetailsFragment extends DataLoadingBaseFragment implements Swi
 
     private int topicId;
     private Topic topic;
-    private FlexibleAdapter topicDetailsAdapter;
-    private int currentPage = 1;
 
     public static TopicDetailsFragment newInstance(String topicId) {
         TopicDetailsFragment topicDetailsFragment = new TopicDetailsFragment();
@@ -75,17 +73,19 @@ public class TopicDetailsFragment extends DataLoadingBaseFragment implements Swi
     }
 
     @Override
+    public void onCreate(@Nullable Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
+        topicId = getArguments().getInt(DataLoadingBaseActivity.ARG_TOPICID);
+    }
+
+    @Override
     public int getContentRes() {
         return R.layout.fragment_topic_details;
     }
 
     @Override
     protected void initView() {
-        topicId = getArguments().getInt(DataLoadingBaseActivity.ARG_TOPICID);
-        swipeRefreshLayout.setOnRefreshListener(this);
-        topicDetailsAdapter = new FlexibleAdapter(new ArrayList());
-        recyclerView.setAdapter(topicDetailsAdapter);
-        recyclerView.setLayoutManager(new SmoothScrollLinearLayoutManager(getContext()));
+        super.initView();
         replyEdt.addTextChangedListener(new TextWatcher() {
             @Override
             public void beforeTextChanged(CharSequence charSequence, int i, int i1, int i2) {
@@ -94,7 +94,7 @@ public class TopicDetailsFragment extends DataLoadingBaseFragment implements Swi
 
             @Override
             public void onTextChanged(CharSequence charSequence, int i, int i1, int i2) {
-                if(charSequence.toString().trim().equals("")) {
+                if (charSequence.toString().trim().equals("")) {
                     sendBtn.setEnabled(false);
                 } else {
                     sendBtn.setEnabled(true);
@@ -130,8 +130,8 @@ public class TopicDetailsFragment extends DataLoadingBaseFragment implements Swi
         super.onPrepareOptionsMenu(menu);
         MenuItem favoriteItem = menu.findItem(R.id.menu_favorite);
         MenuItem replyItem = menu.findItem(R.id.menu_reply);
-        if (V2EXUtil.isLogin(getContext()) && !topicDetailsAdapter.isEmpty()) {
-            String favoriteURL = ((TopicDetailsFlexibleItem) topicDetailsAdapter.getScrollableHeaders().get(0)).getTopic().getFavoriteURL();
+        if (V2EXUtil.isLogin(getContext()) && !getListAdapter().isEmpty()) {
+            String favoriteURL = ((TopicDetailsFlexibleItem) getListAdapter().getScrollableHeaders().get(0)).getTopic().getFavoriteURL();
             FavoriteTopicType type = getFavoriteTopicType(favoriteURL);
             if (type != null) {
                 if (type == FavoriteTopicType.UNFAVORITE) {
@@ -165,80 +165,29 @@ public class TopicDetailsFragment extends DataLoadingBaseFragment implements Swi
 
     @Override
     public void onRefresh() {
-        currentPage = 1;
         topic = null;
-        loadTopicDetails();
+        super.onRefresh();
     }
 
-    private void showReplyEditView() {
-        InputMethodManager imm = (InputMethodManager) getContext().getSystemService(Context.INPUT_METHOD_SERVICE);
-        if (editContainer.getVisibility() == View.VISIBLE) {
-            editContainer.setVisibility(View.GONE);
-            imm.hideSoftInputFromWindow(editContainer.getWindowToken(), 0);
-        } else if (editContainer.getVisibility() == View.GONE) {
-            editContainer.setVisibility(View.VISIBLE);
-            replyEdt.requestFocus();
-            imm.showSoftInput(replyEdt, InputMethodManager.SHOW_IMPLICIT);
+    @Override
+    ListData getListData(TopicPage data) {
+        ListData listData = new ListData();
+        listData.setHeader(new TopicDetailsFlexibleItem(data.getTopic()));
+        PageData<AbstractFlexibleItem> pageData = new PageData<>();
+        copyPageDataStatistics(data.getReplies(), pageData);
+        for (Reply reply : data.getReplies().getCurrentPageItems()) {
+            pageData.getCurrentPageItems().add(new TopicReplyFlexibleItem(reply));
         }
+        listData.setPageData(pageData);
+        return listData;
     }
 
     private void loadTopicDetails() {
-        RetrofitSingleton.getInstance(getContext()).getTopicPage(topicId, currentPage).enqueue(new Callback<TopicPage>() {
-            @Override
-            public void onResponse(Call<TopicPage> call, Response<TopicPage> response) {
-                swipeRefreshLayout.setRefreshing(false);
-                TopicPage topicPage = response.body();
-                if (topicPage != null) {
-                    List<TopicReplyFlexibleItem> topicReplies = new ArrayList<>();
-                    for (Reply reply : topicPage.getReplies().getCurrentPageItems()) {
-                        topicReplies.add(new TopicReplyFlexibleItem(reply));
-                    }
-                    if (currentPage == 1) {
-                        topicDetailsAdapter.clear();
-                        if (topicPage.getTopic() != null) {
-                            successLoadingData();
-                            topic = topicPage.getTopic();
-                            topicDetailsAdapter.addScrollableHeader(new TopicDetailsFlexibleItem(topicPage.getTopic()));
-                            topicDetailsAdapter.notifyDataSetChanged();
-                            topicDetailsAdapter.addItems(topicDetailsAdapter.getItemCount(), topicReplies);
-                            if (topicPage.getReplies().getTotalPage() >= 2) {
-                                topicDetailsAdapter.setEndlessScrollListener(TopicDetailsFragment.this, new ProgressItem())
-                                        .setEndlessTargetCount(topicPage.getReplies().getTotalItems());
-                            }
-                        } else {
-                            errorLoadingData();
-                            return;
-                        }
-                    } else {
-                        topicDetailsAdapter.onLoadMoreComplete(topicReplies, 5000);
-                    }
-                    if (!topicPage.getReplies().getCurrentPageItems().isEmpty()) {
-                        currentPage++;
-                    }
-                } else {
-                    if (currentPage == 1) {
-                        topicDetailsAdapter.clear();
-                        errorLoadingData();
-                    }
-                }
-                getActivity().invalidateOptionsMenu();
-            }
-
-            @Override
-            public void onFailure(Call<TopicPage> call, Throwable throwable) {
-                swipeRefreshLayout.setRefreshing(false);
-                if (currentPage == 1) {
-                    topicDetailsAdapter.clear();
-                    errorLoadingData();
-                }
-                getActivity().invalidateOptionsMenu();
-                throwable.printStackTrace();
-            }
-        });
+        RetrofitSingleton.getInstance(getContext()).getTopicPage(topicId, getCurrentPage()).enqueue(getListBaseFragmentCallBack());
     }
 
     private void favoriteTopic() {
-        String favoriteURL = ((TopicDetailsFlexibleItem) topicDetailsAdapter.getScrollableHeaders().get(0)).getTopic().getFavoriteURL();
+        String favoriteURL = ((TopicDetailsFlexibleItem) getListAdapter().getScrollableHeaders().get(0)).getTopic().getFavoriteURL();
         final FavoriteTopicType type = getFavoriteTopicType(favoriteURL);
         if (type != null) {
             String referer = RetrofitService.BASE_URL + "t/" + topicId;
@@ -260,7 +209,7 @@ public class TopicDetailsFragment extends DataLoadingBaseFragment implements Swi
                     }
                     if (success) {
                         Toast.makeText(TopicDetailsFragment.this.getContext(), type + "操作成功", Toast.LENGTH_SHORT).show();
-                        ((TopicDetailsFlexibleItem) topicDetailsAdapter.getScrollableHeaders().get(0)).getTopic().setFavoriteURL(result.getFavoriteURL());
+                        ((TopicDetailsFlexibleItem) getListAdapter().getScrollableHeaders().get(0)).getTopic().setFavoriteURL(result.getFavoriteURL());
                         getActivity().invalidateOptionsMenu();
                     } else {
                         Toast.makeText(TopicDetailsFragment.this.getContext(), type + "操作失败", Toast.LENGTH_SHORT).show();
@@ -277,6 +226,18 @@ public class TopicDetailsFragment extends DataLoadingBaseFragment implements Swi
         }
     }
 
+    private void showReplyEditView() {
+        InputMethodManager imm = (InputMethodManager) getContext().getSystemService(Context.INPUT_METHOD_SERVICE);
+        if (editContainer.getVisibility() == View.VISIBLE) {
+            editContainer.setVisibility(View.GONE);
+            imm.hideSoftInputFromWindow(editContainer.getWindowToken(), 0);
+        } else if (editContainer.getVisibility() == View.GONE) {
+            editContainer.setVisibility(View.VISIBLE);
+            replyEdt.requestFocus();
+            imm.showSoftInput(replyEdt, InputMethodManager.SHOW_IMPLICIT);
+        }
+    }
+
     private void replyTopic() {
         final ProgressDialog dialog = V2EXUtil.showProgressDialog(getContext(), "正在发送回复");
         final String referer = RetrofitService.BASE_URL + "t/" + topicId;
@@ -286,13 +247,13 @@ public class TopicDetailsFragment extends DataLoadingBaseFragment implements Swi
                 dialog.dismiss();
                 ReplyTopicResult result = response.body();
                 boolean success = false;
-                if(result != null) {
+                if (result != null) {
                     topic.setReplyOnce(result.getReplyOnce());
-                    if(result.isSuccess()) {
+                    if (result.isSuccess()) {
                         success = true;
                     }
                 }
-                if(success) {
+                if (success) {
                     Toast.makeText(getContext(), "回复成功", Toast.LENGTH_SHORT).show();
                     replyEdt.setText("");
                     showReplyEditView();
@@ -309,16 +270,6 @@ public class TopicDetailsFragment extends DataLoadingBaseFragment implements Swi
                 throwable.printStackTrace();
             }
         });
-    }
-
-    @Override
-    public void noMoreLoad(int newItemsSize) {
-
-    }
-
-    @Override
-    public void onLoadMore(int lastPosition, int currentPage) {
-        loadTopicDetails();
     }
 
     public FavoriteTopicType getFavoriteTopicType(String url) {

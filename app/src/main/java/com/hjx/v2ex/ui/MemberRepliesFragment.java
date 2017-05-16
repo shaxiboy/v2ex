@@ -44,13 +44,15 @@ public class MemberRepliesFragment extends ListBaseFragment<MemberTopicReplies> 
     }
 
     @Override
-    PageData<AbstractFlexibleItem> getPageData(MemberTopicReplies data) {
+    ListData getListData(MemberTopicReplies data) {
+        ListData listData = new ListData();
         PageData<AbstractFlexibleItem> pageData = new PageData<>();
         copyPageDataStatistics(data.getReplies(), pageData);
         for(Map<Reply, Topic> reply : data.getReplies().getCurrentPageItems()) {
             pageData.getCurrentPageItems().add(new MemberReplyFlexibleItem(reply, null));
         }
-        return pageData;
+        listData.setPageData(pageData);
+        return listData;
     }
 
 }

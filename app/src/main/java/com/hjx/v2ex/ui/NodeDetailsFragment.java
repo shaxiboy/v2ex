@@ -3,6 +3,7 @@ package com.hjx.v2ex.ui;
 
 import android.app.ProgressDialog;
 import android.os.Bundle;
+import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
 import android.support.v4.widget.SwipeRefreshLayout;
 import android.support.v7.widget.RecyclerView;
@@ -14,6 +15,7 @@ import android.widget.Toast;
 import com.hjx.v2ex.R;
 import com.hjx.v2ex.bean.NodeFavoriteResult;
 import com.hjx.v2ex.bean.NodePage;
+import com.hjx.v2ex.bean.PageData;
 import com.hjx.v2ex.bean.Topic;
 import com.hjx.v2ex.bean.TopicsPageData;
 import com.hjx.v2ex.flexibleitem.NodeDetailsFlexibleItem;
@@ -29,6 +31,7 @@ import java.util.List;
 import butterknife.BindView;
 import eu.davidea.flexibleadapter.FlexibleAdapter;
 import eu.davidea.flexibleadapter.common.SmoothScrollLinearLayoutManager;
+import eu.davidea.flexibleadapter.items.AbstractFlexibleItem;
 import retrofit2.Call;
 import retrofit2.Callback;
 import retrofit2.Response;
@@ -36,16 +39,9 @@ import retrofit2.Response;
 /**
  * A simple {@link Fragment} subclass.
  */
-public class NodeDetailsFragment extends DataLoadingBaseFragment implements SwipeRefreshLayout.OnRefreshListener, FlexibleAdapter.EndlessScrollListener {
+public class NodeDetailsFragment extends ListBaseFragment<NodePage> {
 
     private String nodeName;
-    private FlexibleAdapter nodeDetailsAdapter;
-    private int currentPage = 2;
-
-    @BindView(R.id.swipe_refresh_layout)
-    SwipeRefreshLayout swipeRefreshLayout;
-    @BindView(R.id.recycler_view)
-    RecyclerView recyclerView;
 
     public static NodeDetailsFragment newInstance(String nodeName) {
         NodeDetailsFragment topicDetailsFragment = new NodeDetailsFragment();
@@ -56,17 +52,9 @@ public class NodeDetailsFragment extends DataLoadingBaseFragment implements Swip
     }
 
     @Override
-    public int getContentRes() {
-        return R.layout.recycler_view_layout;
-    }
-
-    @Override
-    protected void initView() {
+    public void onCreate(@Nullable Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
         nodeName = getArguments().getString(DataLoadingBaseActivity.ARG_NODENAME);
-        swipeRefreshLayout.setOnRefreshListener(this);
-        nodeDetailsAdapter = new FlexibleAdapter(new ArrayList());
-        recyclerView.setAdapter(nodeDetailsAdapter);
-        recyclerView.setLayoutManager(new SmoothScrollLinearLayoutManager(getContext()));
     }
 
     @Override
@@ -84,8 +72,8 @@ public class NodeDetailsFragment extends DataLoadingBaseFragment implements Swip
     public void onPrepareOptionsMenu(Menu menu) {
         super.onPrepareOptionsMenu(menu);
         MenuItem favoriteItem = menu.findItem(R.id.menu_favorite);
-        if (V2EXUtil.isLogin(getContext()) && !nodeDetailsAdapter.isEmpty()) {
-            String favoriteURL = ((NodeDetailsFlexibleItem) nodeDetailsAdapter.getScrollableHeaders().get(0)).getNode().getFavoriteURL();
+        if (V2EXUtil.isLogin(getContext()) && !getListAdapter().isEmpty()) {
+            String favoriteURL = ((NodeDetailsFlexibleItem) getListAdapter().getScrollableHeaders().get(0)).getNode().getFavoriteURL();
             FavoriteNodeType type = getFavoriteNodeType(favoriteURL);
             if (type != null) {
                 if (type == FavoriteNodeType.UNFAVORITE) {
@@ -112,8 +100,26 @@ public class NodeDetailsFragment extends DataLoadingBaseFragment implements Swip
         return super.onOptionsItemSelected(item);
     }
 
+    @Override
+    ListData getListData(NodePage data) {
+        ListData listData = new ListData();
+        listData.setHeader(new NodeDetailsFlexibleItem(data.getNode()));
+        PageData<AbstractFlexibleItem> pageData = new PageData<>();
+        copyPageDataStatistics(data.getTopics(), pageData);
+        for(Topic topic : data.getTopics().getCurrentPageItems()) {
+            pageData.getCurrentPageItems().add(new TopicFlexibleItem(topic));
+        }
+        listData.setPageData(pageData);
+        return listData;
+    }
+
+
+    private void loadNodePage() {
+        RetrofitSingleton.getInstance(getContext()).getNodePage(nodeName, getCurrentPage()).enqueue(getListBaseFragmentCallBack());
+    }
+
     private void favoriteNode() {
-        String favoriteURL = ((NodeDetailsFlexibleItem) nodeDetailsAdapter.getScrollableHeaders().get(0)).getNode().getFavoriteURL();
+        String favoriteURL = ((NodeDetailsFlexibleItem) getListAdapter().getScrollableHeaders().get(0)).getNode().getFavoriteURL();
         final FavoriteNodeType type = getFavoriteNodeType(favoriteURL);
         if (type != null) {
             String referer = RetrofitService.BASE_URL + "go/" + nodeName;
@@ -135,7 +141,7 @@ public class NodeDetailsFragment extends DataLoadingBaseFragment implements Swip
                     }
                     if (success) {
                         Toast.makeText(NodeDetailsFragment.this.getContext(), type + "操作成功", Toast.LENGTH_SHORT).show();
-                        ((NodeDetailsFlexibleItem) nodeDetailsAdapter.getScrollableHeaders().get(0)).getNode().setFavoriteURL(result.getFavoriteURL());
+                        ((NodeDetailsFlexibleItem) getListAdapter().getScrollableHeaders().get(0)).getNode().setFavoriteURL(result.getFavoriteURL());
                         getActivity().invalidateOptionsMenu();
                     } else {
                         Toast.makeText(NodeDetailsFragment.this.getContext(), type + "操作失败", Toast.LENGTH_SHORT).show();
@@ -150,90 +156,6 @@ public class NodeDetailsFragment extends DataLoadingBaseFragment implements Swip
                 }
             });
         }
-    }
-
-    @Override
-    public void onRefresh() {
-        currentPage = 2;
-        loadNodePage();
-    }
-
-
-    private void loadNodePage() {
-        RetrofitSingleton.getInstance(getContext()).getNodePage(nodeName).enqueue(new Callback<NodePage>() {
-            @Override
-            public void onResponse(Call<NodePage> call, Response<NodePage> response) {
-                swipeRefreshLayout.setRefreshing(false);
-                NodePage nodePage = response.body();
-                if (nodePage != null) {
-                    List<TopicFlexibleItem> topics = new ArrayList<>();
-                    for (Topic topic : nodePage.getTopics().getCurrentPageItems()) {
-                        topics.add(new TopicFlexibleItem(topic));
-                    }
-                    nodeDetailsAdapter.clear();
-                    if (nodePage.getNode() != null) {
-                        successLoadingData();
-                        nodeDetailsAdapter.addScrollableHeader(new NodeDetailsFlexibleItem(nodePage.getNode()));
-                        nodeDetailsAdapter.notifyDataSetChanged();
-                        nodeDetailsAdapter.addItems(nodeDetailsAdapter.getItemCount(), topics);
-                        if (nodePage.getTopics().getTotalPage() >= 2) {
-                            nodeDetailsAdapter.setEndlessScrollListener(NodeDetailsFragment.this, new ProgressItem())
-                                    .setEndlessTargetCount(nodePage.getTopics().getTotalItems());
-                        }
-                    } else {
-                        errorLoadingData();
-                        return;
-                    }
-                } else {
-                    nodeDetailsAdapter.clear();
-                    errorLoadingData();
-                }
-                getActivity().invalidateOptionsMenu();
-            }
-
-            @Override
-            public void onFailure(Call<NodePage> call, Throwable throwable) {
-                swipeRefreshLayout.setRefreshing(false);
-                nodeDetailsAdapter.clear();
-                errorLoadingData();
-                getActivity().invalidateOptionsMenu();
-                throwable.printStackTrace();
-            }
-        });
-    }
-
-    private void loadNodeTopics() {
-        RetrofitSingleton.getInstance(getContext()).getNodeTopics(nodeName, currentPage).enqueue(new Callback<TopicsPageData>() {
-            @Override
-            public void onResponse(Call<TopicsPageData> call, Response<TopicsPageData> response) {
-                TopicsPageData topicsPageData = response.body();
-                if (topicsPageData != null) {
-                    List<TopicFlexibleItem> topics = new ArrayList<>();
-                    for (Topic topic : topicsPageData.getTopics().getCurrentPageItems()) {
-                        topics.add(new TopicFlexibleItem(topic));
-                    }
-                    nodeDetailsAdapter.onLoadMoreComplete(topics, 5000);
-                    if (!topicsPageData.getTopics().getCurrentPageItems().isEmpty()) {
-                        currentPage++;
-                    }
-                }
-            }
-
-            @Override
-            public void onFailure(Call<TopicsPageData> call, Throwable throwable) {
-                throwable.printStackTrace();
-            }
-        });
-    }
-
-    @Override
-    public void noMoreLoad(int newItemsSize) {
-
-    }
-
-    @Override
-    public void onLoadMore(int lastPosition, int currentPage) {
-        loadNodeTopics();
     }
 
     public FavoriteNodeType getFavoriteNodeType(String url) {

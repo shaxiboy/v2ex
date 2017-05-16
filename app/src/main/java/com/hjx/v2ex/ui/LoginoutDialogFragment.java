@@ -21,7 +21,7 @@ public class LoginoutDialogFragment extends DialogFragment {
         try {
             listener = (LoginoutDialogFragmentListener) context;
         } catch (ClassCastException e) {
-            throw new ClassCastException(context + " must implement OnArticleSelectedListener");
+            throw new ClassCastException(context + " must implement LoginoutDialogFragmentListener");
         }
     }
 

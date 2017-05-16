@@ -64,6 +64,7 @@ public class MainActivity extends AppCompatActivity
 
     private TopicsPagerAdapter topicsPagerAdapter;
     private NodesPagerAdapter nodesPagerAdapter;
+    private long exitTime;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -77,6 +78,7 @@ public class MainActivity extends AppCompatActivity
         drawer.addDrawerListener(toggle);
         toggle.syncState();
         navigationView.setNavigationItemSelectedListener(this);
+        navigationView.getMenu().getItem(0).setChecked(true);
 
         photoContainer = (LinearLayout) navigationView.getHeaderView(0).findViewById(R.id.photo_container);
         photo = (CircleImageView) navigationView.getHeaderView(0).findViewById(R.id.photo);
@@ -196,7 +198,12 @@ public class MainActivity extends AppCompatActivity
         if (drawer.isDrawerOpen(GravityCompat.START)) {
             drawer.closeDrawer(GravityCompat.START);
         } else {
-            super.onBackPressed();
+            if ((System.currentTimeMillis() - exitTime) > 2000) {
+                Toast.makeText(this, "再按一次退出V2EX", Toast.LENGTH_SHORT).show();
+                exitTime = System.currentTimeMillis();
+            } else {
+                finish();
+            }
         }
     }
 
@@ -212,9 +219,11 @@ public class MainActivity extends AppCompatActivity
                 viewPager.setAdapter(nodesPagerAdapter);
                 setTitle("节点");
                 break;
-            case R.id.setting:
+            case R.id.about:
                 startActivity(new Intent(this, AboutActivity.class));
-                break;
+                return false;
+            case R.id.feedback:
+                return false;
         }
         drawer.closeDrawer(GravityCompat.START);
         return true;

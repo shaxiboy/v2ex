@@ -20,6 +20,8 @@ import retrofit2.Call;
 import retrofit2.Callback;
 import retrofit2.Response;
 
+import static android.R.attr.data;
+
 public class AboutActivity extends AppCompatActivity {
 
     private V2EXStatistics statistics;
@@ -49,9 +51,11 @@ public class AboutActivity extends AppCompatActivity {
         RetrofitSingleton.getInstance(this).getV2EXStatistics().enqueue(new Callback<V2EXStatistics>() {
             @Override
             public void onResponse(Call<V2EXStatistics> call, Response<V2EXStatistics> response) {
-                V2EXStatistics data = response.body();
-                if(data == null) data = new V2EXStatistics();
-                setStatisticsView(data);
+                if(AboutActivity.this.isDestroyed()) {
+                    V2EXStatistics data = response.body();
+                    if(data == null) data = new V2EXStatistics();
+                    setStatisticsView(data);
+                }
             }
 
             @Override
@@ -108,4 +112,5 @@ public class AboutActivity extends AppCompatActivity {
             }
         });
     }
+
 }

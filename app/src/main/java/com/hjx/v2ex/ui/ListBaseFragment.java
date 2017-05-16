@@ -29,7 +29,6 @@ import retrofit2.Response;
  */
 public abstract class ListBaseFragment<T> extends DataLoadingBaseFragment implements SwipeRefreshLayout.OnRefreshListener, FlexibleAdapter.EndlessScrollListener {
 
-    private static final String TAG = ListBaseFragment.class.getSimpleName();
     private FlexibleAdapter listAdapter;
     private int currentPage = 1;
 
@@ -70,44 +69,58 @@ public abstract class ListBaseFragment<T> extends DataLoadingBaseFragment implem
         return new Callback<T>() {
             @Override
             public void onResponse(Call<T> call, Response<T> response) {
-                swipeRefreshLayout.setRefreshing(false);
-                T data = response.body();
-                if (data != null) {
-                    PageData pageData = getPageData(data);
-                    if (currentPage == 1) {
-                        listAdapter.clear();
-                        successLoadingData();
-                        if (pageData.getTotalItems() != 0) {
-                            listAdapter.addItems(0, pageData.getCurrentPageItems());
-                            if (pageData.getTotalPage() >= 2) {
-                                listAdapter.setEndlessScrollListener(ListBaseFragment.this, new ProgressItem())
-                                        .setEndlessTargetCount(pageData.getTotalItems());
+                try {
+                    swipeRefreshLayout.setRefreshing(false);
+                    T data = response.body();
+                    if (data != null) {
+                        ListData listData = getListData(data);
+                        if (currentPage == 1) {
+                            listAdapter.clear();
+                            successLoadingData();
+                            if(listData.getHeader() != null) {
+                                listAdapter.addScrollableHeader(listData.getHeader());
+                                listAdapter.notifyDataSetChanged();
+                            }
+                            if (listData.getPageData().getTotalItems() != 0) {
+                                listAdapter.updateDataSet(listData.getPageData().getCurrentPageItems());
+                                if (listData.getPageData().getTotalPage() >= 2) {
+                                    listAdapter.setEndlessScrollListener(ListBaseFragment.this, new ProgressItem())
+                                            .setEndlessTargetCount(listData.getPageData().getTotalItems());
+                                }
+                            }
+                        } else {
+                            if (!listData.getPageData().getCurrentPageItems().isEmpty()) {
+                                listAdapter.onLoadMoreComplete(listData.getPageData().getCurrentPageItems(), 5000);
                             }
                         }
+                        if (!listData.getPageData().getCurrentPageItems().isEmpty()) {
+                            currentPage++;
+                        }
                     } else {
-                        if (!pageData.getCurrentPageItems().isEmpty()) {
-                            listAdapter.onLoadMoreComplete(pageData.getCurrentPageItems(), 5000);
+                        if (currentPage == 1) {
+                            listAdapter.clear();
+                            errorLoadingData();
                         }
                     }
-                    if (!pageData.getCurrentPageItems().isEmpty()) {
-                        currentPage++;
-                    }
-                } else {
-                    if (currentPage == 1) {
-                        listAdapter.clear();
-                        errorLoadingData();
-                    }
+                    getActivity().invalidateOptionsMenu();
+                } catch (Exception e) {
+                    e.printStackTrace();
                 }
             }
 
             @Override
             public void onFailure(Call<T> call, Throwable throwable) {
-                swipeRefreshLayout.setRefreshing(false);
-                if (currentPage == 1) {
-                    listAdapter.clear();
-                    errorLoadingData();
+                try {
+                    swipeRefreshLayout.setRefreshing(false);
+                    if (currentPage == 1) {
+                        listAdapter.clear();
+                        errorLoadingData();
+                    }
+                    getActivity().invalidateOptionsMenu();
+                    throwable.printStackTrace();
+                } catch (Exception e) {
+                    e.printStackTrace();
                 }
-                throwable.printStackTrace();
             }
         };
     }
@@ -128,7 +141,7 @@ public abstract class ListBaseFragment<T> extends DataLoadingBaseFragment implem
         loadData();
     }
 
-    abstract PageData<AbstractFlexibleItem> getPageData(T data);
+    abstract ListData getListData(T data);
 
     public PageData<AbstractFlexibleItem> getOnePageData(List items) {
         PageData<AbstractFlexibleItem> pageData = new PageData<>();
@@ -141,18 +154,31 @@ public abstract class ListBaseFragment<T> extends DataLoadingBaseFragment implem
         return pageData;
     }
 
-    public PageData<AbstractFlexibleItem> getFlexibleTopicPageData(TopicsPageData data) {
-        PageData<AbstractFlexibleItem> pageData = new PageData<>();
-        copyPageDataStatistics(data.getTopics(), pageData);
-        for(Topic topic : data.getTopics().getCurrentPageItems()) {
-            pageData.getCurrentPageItems().add(new TopicFlexibleItem(topic));
-        }
-        return pageData;
-    }
-
     public static void copyPageDataStatistics(PageData source, PageData target) {
         target.setCurrentPage(source.getCurrentPage());
         target.setTotalPage(source.getTotalPage());
         target.setTotalItems(source.getTotalItems());
+    }
+
+    static class ListData {
+
+        private AbstractFlexibleItem header;
+        private PageData<AbstractFlexibleItem> pageData;
+
+        public AbstractFlexibleItem getHeader() {
+            return header;
+        }
+
+        public void setHeader(AbstractFlexibleItem header) {
+            this.header = header;
+        }
+
+        public PageData<AbstractFlexibleItem> getPageData() {
+            return pageData;
+        }
+
+        public void setPageData(PageData<AbstractFlexibleItem> pageData) {
+            this.pageData = pageData;
+        }
     }
 }

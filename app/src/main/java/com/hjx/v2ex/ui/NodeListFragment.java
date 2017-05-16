@@ -78,7 +78,8 @@ public class NodeListFragment extends ListBaseFragment implements FlexibleAdapte
     }
 
     @Override
-    PageData<AbstractFlexibleItem> getPageData(Object data) {
+    ListData getListData(Object data) {
+        ListData listData = new ListData();
         if(getCurrentPage() == 1) {
             nodes.clear();
         }
@@ -110,7 +111,8 @@ public class NodeListFragment extends ListBaseFragment implements FlexibleAdapte
                 nodes.add(category);
             }
         }
-        return getOnePageData(nodes);
+        listData.setPageData(getOnePageData(nodes));
+        return listData;
     }
 
     @Override
