@@ -1,0 +1,4 @@
+jdbcUrl = jdbc:sqlite:v2ex.db
+user =
+password =
+devMode = true
