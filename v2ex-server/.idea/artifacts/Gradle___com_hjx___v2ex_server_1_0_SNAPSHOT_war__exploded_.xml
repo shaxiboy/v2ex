@@ -18,19 +18,19 @@
         </element>
         <element id="directory" name="lib">
           <element id="library" level="project" name="Gradle: com.jfinal:jfinal:3.1" />
-          <element id="library" level="project" name="Gradle: com.jfinal:jetty-server:8.1.8" />
           <element id="library" level="project" name="Gradle: org.xerial:sqlite-jdbc:3.16.1" />
           <element id="library" level="project" name="Gradle: com.alibaba:druid:1.0.29" />
           <element id="library" level="project" name="Gradle: cglib:cglib-nodep:3.1" />
-          <element id="library" level="project" name="Gradle: org.eclipse.jetty:jetty-xml:8.1.8.v20121106" />
-          <element id="library" level="project" name="Gradle: org.eclipse.jetty:jetty-servlet:8.1.8.v20121106" />
-          <element id="library" level="project" name="Gradle: org.eclipse.jetty:jetty-util:8.1.8.v20121106" />
-          <element id="library" level="project" name="Gradle: org.eclipse.jetty:jetty-security:8.1.8.v20121106" />
-          <element id="library" level="project" name="Gradle: org.eclipse.jetty:jetty-server:8.1.8.v20121106" />
-          <element id="library" level="project" name="Gradle: org.eclipse.jetty.orbit:javax.servlet:3.0.0.v201112011016" />
-          <element id="library" level="project" name="Gradle: org.eclipse.jetty:jetty-continuation:8.1.8.v20121106" />
-          <element id="library" level="project" name="Gradle: org.eclipse.jetty:jetty-http:8.1.8.v20121106" />
-          <element id="library" level="project" name="Gradle: org.eclipse.jetty:jetty-io:8.1.8.v20121106" />
+          <element id="file-copy" path="$USER_HOME$/.gradle/caches/modules-2/files-2.1/com.jfinal/jetty-server/8.1.8/f3888ea1cc484e88aba31f3c96ed89bea43d50a4/jetty-server-8.1.8.jar" />
+          <element id="file-copy" path="$USER_HOME$/.gradle/caches/modules-2/files-2.1/org.eclipse.jetty/jetty-xml/8.1.8.v20121106/1f03630eea10f58899442af3626ac0aba33d7ea2/jetty-xml-8.1.8.v20121106.jar" />
+          <element id="file-copy" path="$USER_HOME$/.gradle/caches/modules-2/files-2.1/org.eclipse.jetty/jetty-servlet/8.1.8.v20121106/285ea47746e9ab988a8291ea9fd6545b537e0ce9/jetty-servlet-8.1.8.v20121106.jar" />
+          <element id="file-copy" path="$USER_HOME$/.gradle/caches/modules-2/files-2.1/org.eclipse.jetty/jetty-util/8.1.8.v20121106/3174e8d53033e3c4d350eba3112efdc170b40dc/jetty-util-8.1.8.v20121106.jar" />
+          <element id="file-copy" path="$USER_HOME$/.gradle/caches/modules-2/files-2.1/org.eclipse.jetty/jetty-security/8.1.8.v20121106/b3efb0450900cf30932c9acf6e47deb936fac2d7/jetty-security-8.1.8.v20121106.jar" />
+          <element id="file-copy" path="$USER_HOME$/.gradle/caches/modules-2/files-2.1/org.eclipse.jetty/jetty-server/8.1.8.v20121106/61e7c2d0cb168d82696f8fabb8c4da834d736e78/jetty-server-8.1.8.v20121106.jar" />
+          <element id="file-copy" path="$USER_HOME$/.gradle/caches/modules-2/files-2.1/org.eclipse.jetty.orbit/javax.servlet/3.0.0.v201112011016/aaaa85845fb5c59da00193f06b8e5278d8bf3f8/javax.servlet-3.0.0.v201112011016.jar" />
+          <element id="file-copy" path="$USER_HOME$/.gradle/caches/modules-2/files-2.1/org.eclipse.jetty/jetty-continuation/8.1.8.v20121106/a237d7057c35ae73b821b0f601746dc9a578c361/jetty-continuation-8.1.8.v20121106.jar" />
+          <element id="file-copy" path="$USER_HOME$/.gradle/caches/modules-2/files-2.1/org.eclipse.jetty/jetty-http/8.1.8.v20121106/5f3f0a4b1dbc4a36f97649c9fee940134fe584ca/jetty-http-8.1.8.v20121106.jar" />
+          <element id="file-copy" path="$USER_HOME$/.gradle/caches/modules-2/files-2.1/org.eclipse.jetty/jetty-io/8.1.8.v20121106/b413448bb6d474b82bb3d988604d3df988a689e3/jetty-io-8.1.8.v20121106.jar" />
         </element>
       </element>
     </root>

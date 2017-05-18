@@ -13,4 +13,8 @@ public class UserReplyService {
     public Page<Userreply> paginate(int pageNumber, int pageSize) {
         return dao.paginate(pageNumber, pageSize, "select *", "from userreply order by id asc");
     }
+
+    public void deleteById(int id) {
+        dao.deleteById(id);
+    }
 }

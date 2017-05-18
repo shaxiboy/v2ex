@@ -14,10 +14,16 @@ public class UserReplyController extends Controller {
         setAttr("replyPage", service.paginate(getParaToInt(0, 1), 10));
         render("userreply.html");
     }
+
     public void save() {
         boolean success = false;
         success = getModel(Userreply.class, "").save();
         if(success) renderText("success");
         else renderText("failed");
+    }
+
+    public void delete() {
+        service.deleteById(getParaToInt());
+        redirect("/userreply");
     }
 }

@@ -22,18 +22,18 @@
     <orderEntry type="inheritedJdk" />
     <orderEntry type="sourceFolder" forTests="false" />
     <orderEntry type="library" name="Gradle: com.jfinal:jfinal:3.1" level="project" />
-    <orderEntry type="library" name="Gradle: com.jfinal:jetty-server:8.1.8" level="project" />
     <orderEntry type="library" name="Gradle: org.xerial:sqlite-jdbc:3.16.1" level="project" />
     <orderEntry type="library" name="Gradle: com.alibaba:druid:1.0.29" level="project" />
     <orderEntry type="library" name="Gradle: cglib:cglib-nodep:3.1" level="project" />
-    <orderEntry type="library" name="Gradle: org.eclipse.jetty:jetty-xml:8.1.8.v20121106" level="project" />
-    <orderEntry type="library" name="Gradle: org.eclipse.jetty:jetty-servlet:8.1.8.v20121106" level="project" />
-    <orderEntry type="library" name="Gradle: org.eclipse.jetty:jetty-util:8.1.8.v20121106" level="project" />
-    <orderEntry type="library" name="Gradle: org.eclipse.jetty:jetty-security:8.1.8.v20121106" level="project" />
-    <orderEntry type="library" name="Gradle: org.eclipse.jetty:jetty-server:8.1.8.v20121106" level="project" />
-    <orderEntry type="library" name="Gradle: org.eclipse.jetty.orbit:javax.servlet:3.0.0.v201112011016" level="project" />
-    <orderEntry type="library" name="Gradle: org.eclipse.jetty:jetty-continuation:8.1.8.v20121106" level="project" />
-    <orderEntry type="library" name="Gradle: org.eclipse.jetty:jetty-http:8.1.8.v20121106" level="project" />
-    <orderEntry type="library" name="Gradle: org.eclipse.jetty:jetty-io:8.1.8.v20121106" level="project" />
+    <orderEntry type="library" scope="RUNTIME" name="Gradle: com.jfinal:jetty-server:8.1.8" level="project" />
+    <orderEntry type="library" scope="RUNTIME" name="Gradle: org.eclipse.jetty:jetty-xml:8.1.8.v20121106" level="project" />
+    <orderEntry type="library" scope="RUNTIME" name="Gradle: org.eclipse.jetty:jetty-servlet:8.1.8.v20121106" level="project" />
+    <orderEntry type="library" scope="RUNTIME" name="Gradle: org.eclipse.jetty:jetty-util:8.1.8.v20121106" level="project" />
+    <orderEntry type="library" scope="RUNTIME" name="Gradle: org.eclipse.jetty:jetty-security:8.1.8.v20121106" level="project" />
+    <orderEntry type="library" scope="RUNTIME" name="Gradle: org.eclipse.jetty:jetty-server:8.1.8.v20121106" level="project" />
+    <orderEntry type="library" scope="RUNTIME" name="Gradle: org.eclipse.jetty.orbit:javax.servlet:3.0.0.v201112011016" level="project" />
+    <orderEntry type="library" scope="RUNTIME" name="Gradle: org.eclipse.jetty:jetty-continuation:8.1.8.v20121106" level="project" />
+    <orderEntry type="library" scope="RUNTIME" name="Gradle: org.eclipse.jetty:jetty-http:8.1.8.v20121106" level="project" />
+    <orderEntry type="library" scope="RUNTIME" name="Gradle: org.eclipse.jetty:jetty-io:8.1.8.v20121106" level="project" />
   </component>
 </module>

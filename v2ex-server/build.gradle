@@ -10,7 +10,7 @@ repositories {
 dependencies {
     testCompile group: 'junit', name: 'junit', version: '4.11'
     compile 'com.jfinal:jfinal:3.1'
-    compile 'com.jfinal:jetty-server:8.1.8'
+    runtime 'com.jfinal:jetty-server:8.1.8'
     compile 'org.xerial:sqlite-jdbc:3.16.1'
     compile 'com.alibaba:druid:1.0.29'
 }
