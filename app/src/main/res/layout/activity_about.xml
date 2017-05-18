@@ -62,7 +62,7 @@
         android:background="#ffe4e4e4"
         app:layout_constraintLeft_toLeftOf="parent"
         app:layout_constraintRight_toRightOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/textView2"
+        app:layout_constraintTop_toBottomOf="@+id/textView1"
         app:layout_constraintHorizontal_bias="0.0" />
 
     <FrameLayout
@@ -154,7 +154,7 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 app:layout_constraintLeft_toLeftOf="@+id/guideline"
-                app:layout_constraintTop_toTopOf="@+id/textView3"
+                app:layout_constraintTop_toTopOf="@+id/textView2"
                 tools:text="223903" />
 
             <TextView

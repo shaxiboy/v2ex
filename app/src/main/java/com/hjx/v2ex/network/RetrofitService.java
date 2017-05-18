@@ -173,4 +173,9 @@ public interface RetrofitService {
     @POST("new")
     @FormUrlEncoded
     Call<NewTopicResult> newTopic(@Field("title") String title, @Field("content") String content, @Field("node_name") String nodeName, @Field("once") int once);
+
+    //提交反馈
+    @POST("http://23.105.207.244:8080/v2ex/userreply/save")
+    @FormUrlEncoded
+    Call<ResponseBody> submitUserReply(@Field("contact") String contact, @Field("reply") String reply, @Field("appversion") String appVersion);
 }

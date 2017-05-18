@@ -60,7 +60,7 @@
         android:inputType="textMultiLine"
         android:maxLines="4"
         app:layout_constraintHorizontal_bias="0.0"
-        app:layout_constraintLeft_toRightOf="@+id/textView2"
+        app:layout_constraintLeft_toRightOf="@+id/textView1"
         app:layout_constraintRight_toRightOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/choose_node"
         tools:text="标题"
@@ -89,7 +89,7 @@
         android:inputType="textMultiLine"
         android:maxLines="8"
         app:layout_constraintHorizontal_bias="0.0"
-        app:layout_constraintLeft_toRightOf="@+id/textView3"
+        app:layout_constraintLeft_toRightOf="@+id/textView2"
         app:layout_constraintRight_toRightOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/title"
         tools:text="正文"
@@ -104,7 +104,7 @@
         android:layout_marginTop="8dp"
         android:text="发布主题"
         android:enabled="false"
-        app:layout_constraintLeft_toRightOf="@+id/textView3"
+        app:layout_constraintLeft_toRightOf="@+id/textView2"
         app:layout_constraintTop_toBottomOf="@+id/content"
         android:layout_marginStart="8dp" />
 

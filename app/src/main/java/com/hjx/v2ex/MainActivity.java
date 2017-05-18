@@ -32,6 +32,7 @@ import com.hjx.v2ex.ui.LoginoutDialogFragment;
 import com.hjx.v2ex.ui.MyFavoritesActivity;
 import com.hjx.v2ex.ui.NewTopicActivity;
 import com.hjx.v2ex.ui.NodeListFragment;
+import com.hjx.v2ex.ui.UserReplyActivity;
 import com.hjx.v2ex.util.V2EXUtil;
 
 import butterknife.BindView;
@@ -223,6 +224,7 @@ public class MainActivity extends AppCompatActivity
                 startActivity(new Intent(this, AboutActivity.class));
                 return false;
             case R.id.feedback:
+                startActivity(new Intent(this, UserReplyActivity.class));
                 return false;
         }
         drawer.closeDrawer(GravityCompat.START);
