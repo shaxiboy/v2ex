@@ -40,6 +40,7 @@ dependencies {
     compile 'org.jsoup:jsoup:1.10.2'
     compile 'eu.davidea:flexible-adapter:5.0.0-rc1'
     compile 'org.apmem.tools:layouts:1.10@aar'
+    compile 'org.greenrobot:eventbus:3.0.0'
 //    compile 'com.tencent.bugly:crashreport_upgrade:latest.release'
 //    compile 'com.tencent.bugly:nativecrashreport:latest.release'
 }

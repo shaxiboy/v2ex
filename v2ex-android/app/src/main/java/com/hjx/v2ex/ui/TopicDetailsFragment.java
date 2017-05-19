@@ -25,14 +25,23 @@ import com.hjx.v2ex.bean.ReplyTopicResult;
 import com.hjx.v2ex.bean.Topic;
 import com.hjx.v2ex.bean.TopicFavoriteResult;
 import com.hjx.v2ex.bean.TopicPage;
+import com.hjx.v2ex.event.AtMemberEvent;
+import com.hjx.v2ex.event.ShowMemberRepliesEvent;
 import com.hjx.v2ex.flexibleitem.TopicDetailsFlexibleItem;
 import com.hjx.v2ex.flexibleitem.TopicReplyFlexibleItem;
 import com.hjx.v2ex.network.RetrofitService;
 import com.hjx.v2ex.network.RetrofitSingleton;
 import com.hjx.v2ex.util.V2EXUtil;
 
+import org.greenrobot.eventbus.EventBus;
+import org.greenrobot.eventbus.Subscribe;
+
+import java.util.ArrayList;
+import java.util.List;
+
 import butterknife.BindView;
 import eu.davidea.flexibleadapter.items.AbstractFlexibleItem;
+import eu.davidea.flexibleadapter.items.IFlexible;
 import retrofit2.Call;
 import retrofit2.Callback;
 import retrofit2.Response;
@@ -66,6 +75,18 @@ public class TopicDetailsFragment extends ListBaseFragment<TopicPage> {
     public void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         topicId = getArguments().getInt(DataLoadingBaseActivity.ARG_TOPICID);
+    }
+
+    @Override
+    public void onStart() {
+        super.onStart();
+        EventBus.getDefault().register(this);
+    }
+
+    @Override
+    public void onStop() {
+        super.onStop();
+        EventBus.getDefault().unregister(this);
     }
 
     @Override
@@ -147,7 +168,7 @@ public class TopicDetailsFragment extends ListBaseFragment<TopicPage> {
                 favoriteTopic();
                 break;
             case R.id.menu_reply:
-                showReplyEditView();
+                showReplyEditView(ShowReplyEditViewType.CHANGE);
                 break;
         }
         return super.onOptionsItemSelected(item);
@@ -170,6 +191,24 @@ public class TopicDetailsFragment extends ListBaseFragment<TopicPage> {
         }
         listData.setPageData(pageData);
         return listData;
+    }
+
+    @Subscribe
+    public void onAtMemberEvent(AtMemberEvent event) {
+        replyEdt.append("@" + event.getMemberName());
+        showReplyEditView(ShowReplyEditViewType.SHOW);
+    }
+
+    @Subscribe
+    public void onShowMemberRepliesEvent(ShowMemberRepliesEvent event) {
+        ArrayList<TopicReplyFlexibleItem> replyFlexibleItems = new ArrayList<>();
+        for(int i = 1; i <= event.getTerminateIndex(); i++) {
+            TopicReplyFlexibleItem item = (TopicReplyFlexibleItem) getListAdapter().getItem(i);
+            if(item.getReply().getMember().getUsername().equals(event.getMemberName())) replyFlexibleItems.add(new TopicReplyFlexibleItem(item.getReply()));
+        }
+        if(!replyFlexibleItems.isEmpty()) {
+            MemberRepliesDialogFragment.newInstance(replyFlexibleItems).show(getChildFragmentManager(), "memberReplies");
+        }
     }
 
     private void loadTopicDetails() {
@@ -216,12 +255,12 @@ public class TopicDetailsFragment extends ListBaseFragment<TopicPage> {
         }
     }
 
-    private void showReplyEditView() {
+    private void showReplyEditView(ShowReplyEditViewType type) {
         InputMethodManager imm = (InputMethodManager) getContext().getSystemService(Context.INPUT_METHOD_SERVICE);
-        if (editContainer.getVisibility() == View.VISIBLE) {
+        if (editContainer.getVisibility() == View.VISIBLE && type != ShowReplyEditViewType.SHOW) {
             editContainer.setVisibility(View.GONE);
             imm.hideSoftInputFromWindow(editContainer.getWindowToken(), 0);
-        } else if (editContainer.getVisibility() == View.GONE) {
+        } else if (editContainer.getVisibility() == View.GONE && type != ShowReplyEditViewType.HIDE) {
             editContainer.setVisibility(View.VISIBLE);
             replyEdt.requestFocus();
             imm.showSoftInput(replyEdt, InputMethodManager.SHOW_IMPLICIT);
@@ -246,7 +285,7 @@ public class TopicDetailsFragment extends ListBaseFragment<TopicPage> {
                 if (success) {
                     Toast.makeText(getContext(), "回复成功", Toast.LENGTH_SHORT).show();
                     replyEdt.setText("");
-                    showReplyEditView();
+                    showReplyEditView(ShowReplyEditViewType.HIDE);
                     onRefresh();
                 } else {
                     Toast.makeText(getContext(), "回复失败，请重试", Toast.LENGTH_SHORT).show();
@@ -286,4 +325,7 @@ public class TopicDetailsFragment extends ListBaseFragment<TopicPage> {
         }
     }
 
+    public enum ShowReplyEditViewType {
+        CHANGE, SHOW, HIDE;
+    }
 }

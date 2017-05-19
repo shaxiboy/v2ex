@@ -83,7 +83,7 @@ public class TopicDetailsFlexibleItem extends AbstractFlexibleItem<TopicDetailsF
                 }
             }
             int maxWidth = V2EXUtil.getDisplayWidth(holder.itemView.getContext()) -  V2EXUtil.dp(holder.itemView.getContext(), 16);
-            holder.content.setText(V2EXUtil.fromHtml(topic.getContent() + appends, new TextViewImageGetter(holder.itemView.getContext(), holder.content, maxWidth), null));
+            holder.content.setText(V2EXUtil.fromHtml(topic.getContent() + appends, new TextViewImageGetter(holder.itemView.getContext(), holder.content, maxWidth), null, -1));
             holder.content.setMovementMethod(LinkMovementMethod.getInstance());
         }
     }

@@ -2,11 +2,13 @@ package com.hjx.v2ex.bean;
 
 import com.hjx.v2ex.bean.Member;
 
+import java.io.Serializable;
+
 /**
  * Created by shaxiboy on 2017/3/3 0003.
  */
 
-public class Reply {
+public class Reply implements Serializable{
 
     private String content;
     private Member member;

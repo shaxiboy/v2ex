@@ -1,6 +1,7 @@
 package com.hjx.v2ex.flexibleitem;
 
 import android.content.Context;
+import android.text.method.LinkMovementMethod;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -10,6 +11,8 @@ import com.hjx.v2ex.R;
 import com.hjx.v2ex.bean.Reply;
 import com.hjx.v2ex.bean.Topic;
 import com.hjx.v2ex.ui.DataLoadingBaseActivity;
+import com.hjx.v2ex.ui.TextViewImageGetter;
+import com.hjx.v2ex.util.V2EXUtil;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -21,6 +24,8 @@ import eu.davidea.flexibleadapter.FlexibleAdapter;
 import eu.davidea.flexibleadapter.items.AbstractSectionableItem;
 import eu.davidea.flexibleadapter.items.IHeader;
 import eu.davidea.viewholders.FlexibleViewHolder;
+
+import static android.R.attr.maxWidth;
 
 /**
  * Created by shaxiboy on 2017/4/15 0015.
@@ -66,7 +71,9 @@ public class MemberReplyFlexibleItem extends AbstractSectionableItem<MemberReply
                 DataLoadingBaseActivity.gotoTopicDetailsActivity(view.getContext(), topic.getId());
             }
         });
-        holder.reply.setText(reply.getContent());
+        int maxWidth = V2EXUtil.getDisplayWidth(context) - V2EXUtil.dp(context, 100);
+        holder.reply.setText(V2EXUtil.fromHtml(reply.getContent(), new TextViewImageGetter(context, holder.reply, maxWidth), null, -1));
+        holder.reply.setMovementMethod(LinkMovementMethod.getInstance());
     }
 
     @Override

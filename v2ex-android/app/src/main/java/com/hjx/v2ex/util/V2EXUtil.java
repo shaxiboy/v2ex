@@ -6,14 +6,20 @@ import android.content.res.Resources;
 import android.text.Html;
 import android.text.SpannableStringBuilder;
 import android.text.Spanned;
+import android.text.style.ClickableSpan;
 import android.text.style.ImageSpan;
 import android.text.style.URLSpan;
 import android.util.DisplayMetrics;
 import android.util.TypedValue;
+import android.view.View;
 import android.view.WindowManager;
 
 import com.hjx.v2ex.bean.SigninResult;
+import com.hjx.v2ex.event.AtMemberEvent;
+import com.hjx.v2ex.event.ShowMemberRepliesEvent;
 import com.hjx.v2ex.network.RetrofitService;
+
+import org.greenrobot.eventbus.EventBus;
 
 import java.io.File;
 import java.io.IOException;
@@ -70,7 +76,7 @@ public class V2EXUtil {
         return progressDialog;
     }
 
-    public static Spanned fromHtml(String html, Html.ImageGetter imageGetter, Html.TagHandler tagHandler){
+    public static Spanned fromHtml(String html, Html.ImageGetter imageGetter, Html.TagHandler tagHandler, final int replyPosition){
         Spanned result;
         if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.N) {
             result = Html.fromHtml(html,Html.FROM_HTML_MODE_LEGACY, imageGetter, tagHandler);
@@ -95,12 +101,19 @@ public class V2EXUtil {
         }
         URLSpan[] urlSpens = htmlSpannable.getSpans(0, htmlSpannable.length(), URLSpan.class);
         for(URLSpan urlSpan : urlSpens) {
-            String url = urlSpan.getURL();
+            final String url = urlSpan.getURL();
             if(url.startsWith("/member/")) {
                 int start = htmlSpannable.getSpanStart(urlSpan);
                 int end = htmlSpannable.getSpanEnd(urlSpan);
                 htmlSpannable.removeSpan(urlSpan);
-                htmlSpannable.setSpan(new URLSpan(RetrofitService.BASE_URL + url.substring(1)), start, end, Spanned.SPAN_EXCLUSIVE_EXCLUSIVE);
+                htmlSpannable.setSpan(new ClickableSpan() {
+                    @Override
+                    public void onClick(View view) {
+                        if(replyPosition != -1) {
+                            EventBus.getDefault().post(new ShowMemberRepliesEvent(url.split("/")[2], replyPosition));
+                        }
+                    }
+                }, start, end, Spanned.SPAN_EXCLUSIVE_EXCLUSIVE);
             }
         }
         return htmlSpannable;

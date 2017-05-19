@@ -166,14 +166,14 @@ public class MainActivity extends AppCompatActivity
                         Toast.makeText(MainActivity.this, "登出成功", Toast.LENGTH_SHORT).show();
                         setViewOnLogout();
                     } else {
-                        Toast.makeText(MainActivity.this, "登出失败", Toast.LENGTH_SHORT).show();
+                        Toast.makeText(MainActivity.this, "登出失败，请再试一次", Toast.LENGTH_SHORT).show();
                     }
                 }
 
                 @Override
                 public void onFailure(Call<SignoutResult> call, Throwable throwable) {
                     progressDialog.dismiss();
-                    Toast.makeText(MainActivity.this, "登出失败", Toast.LENGTH_SHORT).show();
+                    Toast.makeText(MainActivity.this, "登出失败，请再试一次", Toast.LENGTH_SHORT).show();
                     throwable.printStackTrace();
                 }
             });

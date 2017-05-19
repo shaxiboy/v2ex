@@ -10,10 +10,14 @@ import android.widget.TextView;
 import com.bumptech.glide.Glide;
 import com.hjx.v2ex.R;
 import com.hjx.v2ex.bean.Reply;
+import com.hjx.v2ex.event.AtMemberEvent;
 import com.hjx.v2ex.ui.TextViewImageGetter;
 import com.hjx.v2ex.ui.DataLoadingBaseActivity;
 import com.hjx.v2ex.util.V2EXUtil;
 
+import org.greenrobot.eventbus.EventBus;
+
+import java.io.Serializable;
 import java.util.List;
 
 import butterknife.BindView;
@@ -27,12 +31,16 @@ import eu.davidea.viewholders.FlexibleViewHolder;
  * Created by shaxiboy on 2017/4/15 0015.
  */
 
-public class TopicReplyFlexibleItem extends AbstractFlexibleItem<TopicReplyFlexibleItem.TopicReplyViewHolder> {
+public class TopicReplyFlexibleItem extends AbstractFlexibleItem<TopicReplyFlexibleItem.TopicReplyViewHolder> implements Serializable {
 
     private Reply reply;
 
     public TopicReplyFlexibleItem(Reply reply) {
         this.reply = reply;
+    }
+
+    public Reply getReply() {
+        return reply;
     }
 
     @Override
@@ -55,12 +63,24 @@ public class TopicReplyFlexibleItem extends AbstractFlexibleItem<TopicReplyFlexi
                 DataLoadingBaseActivity.gotoMemberDetailsActivity(context, reply.getMember().getUsername());
             }
         });
+        holder.photo.setOnLongClickListener(new View.OnLongClickListener() {
+            @Override
+            public boolean onLongClick(View view) {
+                if (V2EXUtil.isLogin(view.getContext())) {
+                    EventBus.getDefault().post(new AtMemberEvent(reply.getMember().getUsername()));
+                    return true;
+                }
+                return false;
+            }
+        });
         holder.author.setText(reply.getMember().getUsername());
         holder.time.setText(reply.getReplyTime());
-        int maxWidth = V2EXUtil.getDisplayWidth(context) -  V2EXUtil.dp(context, 100);
-        holder.content.setText(V2EXUtil.fromHtml(reply.getContent(), new TextViewImageGetter(context, holder.content, maxWidth), null));
+        int maxWidth = V2EXUtil.getDisplayWidth(context) - V2EXUtil.dp(context, 100);
+        holder.content.setText(V2EXUtil.fromHtml(reply.getContent(), new TextViewImageGetter(context, holder.content, maxWidth), null, position));
         holder.content.setMovementMethod(LinkMovementMethod.getInstance());
-        holder.floor.setText(holder.getAdapterPosition() + "楼");
+        if(!adapter.getScrollableHeaders().isEmpty()) {
+            holder.floor.setText(holder.getAdapterPosition() + "楼");
+        }
     }
 
     @Override

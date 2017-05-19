@@ -488,7 +488,7 @@ public class HTMLUtil {
 
                 Reply reply = new Reply();
                 reply.setReplyTime(topicDiv.getElementsByTag("span").first().text());
-                reply.setContent(topicDiv.nextElementSibling().text());
+                reply.setContent(topicDiv.nextElementSibling().html());
 
                 Map<Reply, Topic> replyMap = new HashMap<>();
                 replyMap.put(reply, topic);
