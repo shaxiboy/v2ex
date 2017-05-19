@@ -6,16 +6,12 @@ import android.content.res.Resources;
 import android.text.Html;
 import android.text.SpannableStringBuilder;
 import android.text.Spanned;
-import android.text.format.DateUtils;
-import android.text.style.ClickableSpan;
 import android.text.style.ImageSpan;
 import android.text.style.URLSpan;
 import android.util.DisplayMetrics;
 import android.util.TypedValue;
-import android.view.View;
 import android.view.WindowManager;
 
-import com.hjx.v2ex.MainActivity;
 import com.hjx.v2ex.bean.SigninResult;
 import com.hjx.v2ex.network.RetrofitService;
 
@@ -23,37 +19,12 @@ import java.io.File;
 import java.io.IOException;
 import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
-import java.util.ArrayList;
-
-import static java.security.AccessController.getContext;
 
 /**
  * Created by shaxiboy on 2017/3/13 0013.
  */
 
 public class V2EXUtil {
-
-    public static String parseTime(String time) {
-        if(time.contains("小时")) {
-            return time.subSequence(0, time.indexOf("小时")) + "小时前";
-        }
-        return time;
-    }
-
-    public static String parseTime(long longTime) {
-        if(longTime == -1) return "";
-        long created = longTime * 1000;
-        long now = System.currentTimeMillis();
-        long difference = now - created;
-        CharSequence text = (difference >= 0 && difference <= DateUtils.MINUTE_IN_MILLIS) ?
-                "刚刚" :
-                DateUtils.getRelativeTimeSpanString(
-                        created,
-                        now,
-                        DateUtils.MINUTE_IN_MILLIS,
-                        DateUtils.FORMAT_ABBREV_RELATIVE);
-        return text.toString();
-    }
 
     public static boolean isLogin(Context context) {
         if(readLoginResult(context) != null) {

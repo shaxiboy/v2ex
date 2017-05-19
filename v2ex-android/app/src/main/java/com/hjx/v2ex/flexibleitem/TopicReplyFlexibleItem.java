@@ -1,11 +1,6 @@
 package com.hjx.v2ex.flexibleitem;
 
 import android.content.Context;
-import android.graphics.Bitmap;
-import android.graphics.drawable.BitmapDrawable;
-import android.graphics.drawable.Drawable;
-import android.graphics.drawable.LevelListDrawable;
-import android.text.Html;
 import android.text.method.LinkMovementMethod;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -13,16 +8,11 @@ import android.view.ViewGroup;
 import android.widget.TextView;
 
 import com.bumptech.glide.Glide;
-import com.bumptech.glide.request.animation.GlideAnimation;
-import com.bumptech.glide.request.target.SimpleTarget;
 import com.hjx.v2ex.R;
 import com.hjx.v2ex.bean.Reply;
-import com.hjx.v2ex.network.TextViewImageGetter;
+import com.hjx.v2ex.ui.TextViewImageGetter;
 import com.hjx.v2ex.ui.DataLoadingBaseActivity;
 import com.hjx.v2ex.util.V2EXUtil;
-
-import org.sufficientlysecure.htmltextview.HtmlHttpImageGetter;
-import org.sufficientlysecure.htmltextview.HtmlTextView;
 
 import java.util.List;
 
@@ -32,8 +22,6 @@ import de.hdodenhof.circleimageview.CircleImageView;
 import eu.davidea.flexibleadapter.FlexibleAdapter;
 import eu.davidea.flexibleadapter.items.AbstractFlexibleItem;
 import eu.davidea.viewholders.FlexibleViewHolder;
-
-import static android.R.attr.bitmap;
 
 /**
  * Created by shaxiboy on 2017/4/15 0015.

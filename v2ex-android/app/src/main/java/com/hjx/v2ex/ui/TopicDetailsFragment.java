@@ -6,8 +6,6 @@ import android.content.Context;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
-import android.support.v4.widget.SwipeRefreshLayout;
-import android.support.v7.widget.RecyclerView;
 import android.text.Editable;
 import android.text.TextWatcher;
 import android.view.Menu;
@@ -22,26 +20,18 @@ import android.widget.Toast;
 
 import com.hjx.v2ex.R;
 import com.hjx.v2ex.bean.PageData;
+import com.hjx.v2ex.bean.Reply;
 import com.hjx.v2ex.bean.ReplyTopicResult;
 import com.hjx.v2ex.bean.Topic;
 import com.hjx.v2ex.bean.TopicFavoriteResult;
-import com.hjx.v2ex.flexibleitem.ProgressItem;
-import com.hjx.v2ex.bean.Reply;
-import com.hjx.v2ex.flexibleitem.TopicDetailsFlexibleItem;
 import com.hjx.v2ex.bean.TopicPage;
-import com.hjx.v2ex.flexibleitem.TopicFlexibleItem;
+import com.hjx.v2ex.flexibleitem.TopicDetailsFlexibleItem;
 import com.hjx.v2ex.flexibleitem.TopicReplyFlexibleItem;
 import com.hjx.v2ex.network.RetrofitService;
 import com.hjx.v2ex.network.RetrofitSingleton;
-import com.hjx.v2ex.util.LogUtil;
 import com.hjx.v2ex.util.V2EXUtil;
 
-import java.util.ArrayList;
-import java.util.List;
-
 import butterknife.BindView;
-import eu.davidea.flexibleadapter.FlexibleAdapter;
-import eu.davidea.flexibleadapter.common.SmoothScrollLinearLayoutManager;
 import eu.davidea.flexibleadapter.items.AbstractFlexibleItem;
 import retrofit2.Call;
 import retrofit2.Callback;

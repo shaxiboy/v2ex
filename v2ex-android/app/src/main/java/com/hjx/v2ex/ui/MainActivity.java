@@ -1,4 +1,4 @@
-package com.hjx.v2ex;
+package com.hjx.v2ex.ui;
 
 import android.app.Activity;
 import android.app.ProgressDialog;
@@ -20,21 +20,13 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import com.bumptech.glide.Glide;
+import com.hjx.v2ex.R;
 import com.hjx.v2ex.adapter.NodesPagerAdapter;
 import com.hjx.v2ex.adapter.TopicsPagerAdapter;
 import com.hjx.v2ex.bean.SigninResult;
 import com.hjx.v2ex.bean.SignoutResult;
 import com.hjx.v2ex.network.RetrofitSingleton;
-import com.hjx.v2ex.ui.AboutActivity;
-import com.hjx.v2ex.ui.DataLoadingBaseActivity;
-import com.hjx.v2ex.ui.LoginActivity;
-import com.hjx.v2ex.ui.LoginoutDialogFragment;
-import com.hjx.v2ex.ui.MyFavoritesActivity;
-import com.hjx.v2ex.ui.NewTopicActivity;
-import com.hjx.v2ex.ui.NodeListFragment;
-import com.hjx.v2ex.ui.UserReplyActivity;
 import com.hjx.v2ex.util.V2EXUtil;
-import com.tencent.bugly.crashreport.CrashReport;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;

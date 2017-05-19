@@ -1,4 +1,4 @@
-package com.hjx.v2ex.network;
+package com.hjx.v2ex.ui;
 
 import android.content.Context;
 import android.graphics.Bitmap;
