@@ -25,8 +25,12 @@ import com.hjx.v2ex.adapter.NodesPagerAdapter;
 import com.hjx.v2ex.adapter.TopicsPagerAdapter;
 import com.hjx.v2ex.bean.SigninResult;
 import com.hjx.v2ex.bean.SignoutResult;
+import com.hjx.v2ex.event.LogoutEvent;
 import com.hjx.v2ex.network.RetrofitSingleton;
 import com.hjx.v2ex.util.V2EXUtil;
+
+import org.greenrobot.eventbus.EventBus;
+import org.greenrobot.eventbus.Subscribe;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
@@ -36,7 +40,7 @@ import retrofit2.Callback;
 import retrofit2.Response;
 
 public class MainActivity extends AppCompatActivity
-        implements NavigationView.OnNavigationItemSelectedListener, LoginoutDialogFragment.LoginoutDialogFragmentListener {
+        implements NavigationView.OnNavigationItemSelectedListener {
 
     @BindView(R.id.toolbar)
     Toolbar toolbar;
@@ -119,6 +123,18 @@ public class MainActivity extends AppCompatActivity
 
     }
 
+    @Override
+    protected void onStart() {
+        super.onStart();
+        EventBus.getDefault().register(this);
+    }
+
+    @Override
+    protected void onStop() {
+        super.onStop();
+        EventBus.getDefault().unregister(this);
+    }
+
     private void setViewOnLogin() {
         SigninResult signinResult = V2EXUtil.readLoginResult(this);
         if(signinResult != null) {
@@ -141,8 +157,8 @@ public class MainActivity extends AppCompatActivity
         viewPager.setAdapter(topicsPagerAdapter);
     }
 
-    @Override
-    public void loginout() {
+    @Subscribe
+    public void loginout(LogoutEvent event) {
         final SigninResult signinResult = V2EXUtil.readLoginResult(MainActivity.this);
         if(signinResult != null && signinResult.getSessionId() != -1) {
             final ProgressDialog progressDialog = V2EXUtil.showProgressDialog(this, "正在登出");

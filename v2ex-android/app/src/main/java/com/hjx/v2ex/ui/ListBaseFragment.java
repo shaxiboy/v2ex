@@ -75,6 +75,7 @@ public abstract class ListBaseFragment<T> extends DataLoadingBaseFragment implem
                     if (data != null) {
                         ListData listData = getListData(data);
                         if (currentPage == 1) {
+                            listAdapter.clear();
                             successLoadingData();
                             if(listData.getHeader() != null) {
                                 listAdapter.addScrollableHeader(listData.getHeader());
