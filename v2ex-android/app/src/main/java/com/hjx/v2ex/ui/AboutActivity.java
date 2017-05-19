@@ -1,5 +1,6 @@
 package com.hjx.v2ex.ui;
 
+import android.content.pm.PackageManager;
 import android.support.constraint.ConstraintLayout;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
@@ -26,6 +27,8 @@ public class AboutActivity extends AppCompatActivity {
 
     private V2EXStatistics statistics;
 
+    @BindView(R.id.versionTV)
+    TextView versionTV;
     @BindView(R.id.scrollView)
     ScrollView scrollView;
     @BindView(R.id.introduction)
@@ -48,6 +51,13 @@ public class AboutActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_about);
         ButterKnife.bind(this);
+        String appVersion = null;
+        try {
+            appVersion = this.getPackageManager().getPackageInfo(this.getPackageName(), 0).versionName;
+        } catch (PackageManager.NameNotFoundException e) {
+            e.printStackTrace();
+        }
+        versionTV.setText("版本号：" + appVersion);
         RetrofitSingleton.getInstance(this).getV2EXStatistics().enqueue(new Callback<V2EXStatistics>() {
             @Override
             public void onResponse(Call<V2EXStatistics> call, Response<V2EXStatistics> response) {

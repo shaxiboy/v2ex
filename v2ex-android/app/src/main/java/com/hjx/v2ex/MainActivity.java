@@ -34,6 +34,7 @@ import com.hjx.v2ex.ui.NewTopicActivity;
 import com.hjx.v2ex.ui.NodeListFragment;
 import com.hjx.v2ex.ui.UserReplyActivity;
 import com.hjx.v2ex.util.V2EXUtil;
+import com.tencent.bugly.crashreport.CrashReport;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
