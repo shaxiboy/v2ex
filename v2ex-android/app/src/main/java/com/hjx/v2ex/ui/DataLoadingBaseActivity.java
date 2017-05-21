@@ -134,4 +134,11 @@ public class DataLoadingBaseActivity extends AppCompatActivity {
         intent.putExtra(DataLoadingBaseActivity.INTENT_EXTRA_FRAGENT_ARG_TWO, "nodes");
         context.startActivity(intent);
     }
+
+    public static void gotoNotificationsActivity(Context context) {
+        Intent intent = new Intent(context, DataLoadingBaseActivity.class);
+        intent.putExtra(DataLoadingBaseActivity.INTENT_EXTRA_ACTIVITY_TITLE, "我的提醒");
+        intent.putExtra(DataLoadingBaseActivity.INTENT_EXTRA_FRAGMENTNAME, NotificationFragment.class.getName());
+        context.startActivity(intent);
+    }
 }

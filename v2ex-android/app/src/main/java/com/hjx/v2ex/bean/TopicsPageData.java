@@ -1,7 +1,5 @@
 package com.hjx.v2ex.bean;
 
-import com.hjx.v2ex.ui.ListBaseFragment;
-
 /**
  * Created by shaxiboy on 2017/4/27 0027.
  */

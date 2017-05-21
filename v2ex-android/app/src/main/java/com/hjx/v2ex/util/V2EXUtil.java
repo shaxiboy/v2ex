@@ -25,12 +25,17 @@ import java.io.File;
 import java.io.IOException;
 import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
+import java.util.regex.Pattern;
 
 /**
  * Created by shaxiboy on 2017/3/13 0013.
  */
 
 public class V2EXUtil {
+
+    public static String getNumber(String text) {
+        return Pattern.compile("[^0-9]").matcher(text).replaceAll("");
+    }
 
     public static boolean isLogin(Context context) {
         if(readLoginResult(context) != null) {

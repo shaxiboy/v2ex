@@ -2,24 +2,25 @@ package com.hjx.v2ex.network;
 
 import com.hjx.v2ex.bean.FavoriteMembers;
 import com.hjx.v2ex.bean.FavoriteNodes;
+import com.hjx.v2ex.bean.Member;
+import com.hjx.v2ex.bean.MemberFavoriteResult;
+import com.hjx.v2ex.bean.MemberTopicReplies;
 import com.hjx.v2ex.bean.NewTopicOnce;
 import com.hjx.v2ex.bean.NewTopicResult;
-import com.hjx.v2ex.bean.NodesHottest;
-import com.hjx.v2ex.bean.MemberFavoriteResult;
 import com.hjx.v2ex.bean.NodeFavoriteResult;
-import com.hjx.v2ex.bean.NodesNavigation;
-import com.hjx.v2ex.bean.ReplyTopicResult;
-import com.hjx.v2ex.bean.TopicFavoriteResult;
-import com.hjx.v2ex.bean.HomePage;
-import com.hjx.v2ex.bean.Member;
-import com.hjx.v2ex.bean.MemberTopicReplies;
 import com.hjx.v2ex.bean.NodePage;
 import com.hjx.v2ex.bean.NodesAll;
+import com.hjx.v2ex.bean.NodesHottest;
+import com.hjx.v2ex.bean.NodesNavigation;
+import com.hjx.v2ex.bean.NotificationsPageData;
+import com.hjx.v2ex.bean.ReplyTopicResult;
 import com.hjx.v2ex.bean.SigninParams;
 import com.hjx.v2ex.bean.SigninResult;
 import com.hjx.v2ex.bean.SignoutResult;
+import com.hjx.v2ex.bean.TopicFavoriteResult;
 import com.hjx.v2ex.bean.TopicPage;
 import com.hjx.v2ex.bean.TopicsPageData;
+import com.hjx.v2ex.bean.UnReadNotificationNum;
 import com.hjx.v2ex.bean.V2EXIntroduction;
 import com.hjx.v2ex.bean.V2EXStatistics;
 
@@ -59,10 +60,6 @@ public interface RetrofitService {
     //获取V2EX网站节点总数
     @GET("planes")
     Call<V2EXStatistics> getV2EXNodesSum();
-
-    //tab标签对应的主页
-    @GET(".")
-    Call<HomePage> homePage(@Query("tab") String tab);
 
     //获取tab标签下的主题
     @GET(".")
@@ -173,6 +170,14 @@ public interface RetrofitService {
     @POST("new")
     @FormUrlEncoded
     Call<NewTopicResult> newTopic(@Field("title") String title, @Field("content") String content, @Field("node_name") String nodeName, @Field("once") int once);
+
+    //获取未读提醒
+    @GET("about")
+    Call<UnReadNotificationNum> getUnReadNotificationNum();
+
+    //获取提醒信息
+    @GET("notifications")
+    Call<NotificationsPageData> getNotifications(@Query("p") int page);
 
     //提交反馈
     @POST("http://23.105.207.244:8080/v2ex/userreply/save")

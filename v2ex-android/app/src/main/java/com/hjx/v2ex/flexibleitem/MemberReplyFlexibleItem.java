@@ -25,8 +25,6 @@ import eu.davidea.flexibleadapter.items.AbstractSectionableItem;
 import eu.davidea.flexibleadapter.items.IHeader;
 import eu.davidea.viewholders.FlexibleViewHolder;
 
-import static android.R.attr.maxWidth;
-
 /**
  * Created by shaxiboy on 2017/4/15 0015.
  */
@@ -42,7 +40,7 @@ public class MemberReplyFlexibleItem extends AbstractSectionableItem<MemberReply
 
     @Override
     public int getLayoutRes() {
-        return R.layout.recycler_item_member_reply;
+        return R.layout.recycler_item_member_reply_notification;
     }
 
     @Override

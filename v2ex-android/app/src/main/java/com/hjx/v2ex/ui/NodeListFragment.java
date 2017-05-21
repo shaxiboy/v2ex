@@ -15,14 +15,12 @@ import android.widget.SearchView;
 
 import com.hjx.v2ex.R;
 import com.hjx.v2ex.bean.FavoriteNodes;
-import com.hjx.v2ex.bean.HomePage;
 import com.hjx.v2ex.bean.Node;
+import com.hjx.v2ex.bean.NodesAll;
 import com.hjx.v2ex.bean.NodesHottest;
 import com.hjx.v2ex.bean.NodesNavigation;
-import com.hjx.v2ex.bean.PageData;
 import com.hjx.v2ex.flexibleitem.NodeCategoryFlexibleHeaderItem;
 import com.hjx.v2ex.flexibleitem.NodeFlexibleItem;
-import com.hjx.v2ex.bean.NodesAll;
 import com.hjx.v2ex.flexibleitem.ViewMoreFlexibleItem;
 import com.hjx.v2ex.network.RetrofitSingleton;
 
@@ -30,15 +28,9 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
-import butterknife.BindView;
 import eu.davidea.flexibleadapter.FlexibleAdapter;
 import eu.davidea.flexibleadapter.common.SmoothScrollGridLayoutManager;
 import eu.davidea.flexibleadapter.items.AbstractFlexibleItem;
-import retrofit2.Call;
-import retrofit2.Callback;
-import retrofit2.Response;
-
-import static android.R.attr.data;
 
 /**
  * Created by shaxiboy on 2017/4/12 0012.

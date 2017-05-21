@@ -4,6 +4,8 @@ import android.app.Activity;
 import android.app.ProgressDialog;
 import android.content.Intent;
 import android.os.Bundle;
+import android.os.Handler;
+import android.os.Message;
 import android.support.design.widget.TabLayout;
 import android.support.v4.view.ViewPager;
 import android.support.design.widget.NavigationView;
@@ -15,6 +17,8 @@ import android.support.v7.widget.Toolbar;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.Button;
+import android.widget.FrameLayout;
+import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.TextView;
 import android.widget.Toast;
@@ -25,12 +29,16 @@ import com.hjx.v2ex.adapter.NodesPagerAdapter;
 import com.hjx.v2ex.adapter.TopicsPagerAdapter;
 import com.hjx.v2ex.bean.SigninResult;
 import com.hjx.v2ex.bean.SignoutResult;
+import com.hjx.v2ex.bean.UnReadNotificationNum;
 import com.hjx.v2ex.event.LogoutEvent;
 import com.hjx.v2ex.network.RetrofitSingleton;
 import com.hjx.v2ex.util.V2EXUtil;
 
 import org.greenrobot.eventbus.EventBus;
 import org.greenrobot.eventbus.Subscribe;
+
+import java.util.Timer;
+import java.util.TimerTask;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
@@ -52,6 +60,12 @@ public class MainActivity extends AppCompatActivity
     TabLayout tabLayout;
     @BindView(R.id.pager)
     ViewPager viewPager;
+    @BindView(R.id.notification_container)
+    FrameLayout notificationContainer;
+    @BindView(R.id.notification_image)
+    ImageView notificationImage;
+    @BindView(R.id.notification_text)
+    TextView notificationText;
 
     LinearLayout photoContainer;
     CircleImageView photo;
@@ -63,6 +77,8 @@ public class MainActivity extends AppCompatActivity
     private TopicsPagerAdapter topicsPagerAdapter;
     private NodesPagerAdapter nodesPagerAdapter;
     private long exitTime;
+    private Timer timer;
+    private Handler handler;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -112,15 +128,50 @@ public class MainActivity extends AppCompatActivity
                 startActivity(new Intent(MainActivity.this, NewTopicActivity.class));
             }
         });
-        if(V2EXUtil.isLogin(this)) {
-            setViewOnLogin();
-        }
 
         tabLayout.setupWithViewPager(viewPager, false);
         topicsPagerAdapter = new TopicsPagerAdapter(getSupportFragmentManager(), this);
         nodesPagerAdapter = new NodesPagerAdapter(getSupportFragmentManager(), NodeListFragment.NODEACTIONTYPE_VIEW);
         viewPager.setAdapter(topicsPagerAdapter);
 
+        notificationContainer.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                notificationImage.setImageDrawable(MainActivity.this.getDrawable(R.drawable.notification_white));
+                notificationText.setVisibility(View.GONE);
+                DataLoadingBaseActivity.gotoNotificationsActivity(MainActivity.this);
+            }
+        });
+
+        handler = new Handler() {
+            @Override
+            public void handleMessage(Message msg) {
+                RetrofitSingleton.getInstance(MainActivity.this).getUnReadNotificationNum().enqueue(new retrofit2.Callback<UnReadNotificationNum>() {
+                    @Override
+                    public void onResponse(Call<UnReadNotificationNum> call, Response<UnReadNotificationNum> response) {
+                        try {
+                            int num = response.body().getNum();
+                            if(num != 0) {
+                                notificationImage.setImageDrawable(MainActivity.this.getDrawable(R.drawable.notification_red));
+                                notificationText.setText(num + "");
+                                notificationText.setVisibility(View.VISIBLE);
+                            } else {
+                                notificationImage.setImageDrawable(MainActivity.this.getDrawable(R.drawable.notification_white));
+                                notificationText.setVisibility(View.GONE);
+                            }
+                        } catch (Exception e) {
+                            e.printStackTrace();
+                        }
+                    }
+
+                    @Override
+                    public void onFailure(Call<UnReadNotificationNum> call, Throwable t) {
+                        t.printStackTrace();
+                    }
+                });
+            }
+        };
+        if(V2EXUtil.isLogin(this)) onLogin();
     }
 
     @Override
@@ -135,6 +186,23 @@ public class MainActivity extends AppCompatActivity
         EventBus.getDefault().unregister(this);
     }
 
+    @Override
+    protected void onDestroy() {
+        super.onDestroy();
+        timer.cancel();
+    }
+
+    private void onLogin() {
+        setViewOnLogin();
+        timer = new Timer();
+        timer.schedule(new TimerTask() {
+            @Override
+            public void run() {
+                handler.sendMessage(Message.obtain());
+            }
+        }, 0, 30 * 1000);
+    }
+
     private void setViewOnLogin() {
         SigninResult signinResult = V2EXUtil.readLoginResult(this);
         if(signinResult != null) {
@@ -145,7 +213,13 @@ public class MainActivity extends AppCompatActivity
             favoriteBtn.setVisibility(View.VISIBLE);
             newBtn.setVisibility(View.VISIBLE);
             viewPager.setAdapter(topicsPagerAdapter);
+            notificationContainer.setVisibility(View.VISIBLE);
         }
+    }
+
+    private void onLogout() {
+        setViewOnLogout();
+        timer.cancel();
     }
 
     private void setViewOnLogout() {
@@ -155,6 +229,7 @@ public class MainActivity extends AppCompatActivity
         favoriteBtn.setVisibility(View.GONE);
         newBtn.setVisibility(View.GONE);
         viewPager.setAdapter(topicsPagerAdapter);
+        notificationContainer.setVisibility(View.GONE);
     }
 
     @Subscribe
@@ -180,7 +255,7 @@ public class MainActivity extends AppCompatActivity
                     }
                     if(success) {
                         Toast.makeText(MainActivity.this, "登出成功", Toast.LENGTH_SHORT).show();
-                        setViewOnLogout();
+                        onLogout();
                     } else {
                         Toast.makeText(MainActivity.this, "登出失败，请再试一次", Toast.LENGTH_SHORT).show();
                     }
@@ -199,7 +274,7 @@ public class MainActivity extends AppCompatActivity
     @Override
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
         if (resultCode == Activity.RESULT_OK && requestCode == 1) {
-            setViewOnLogin();
+            onLogin();
         }
     }
 
@@ -223,10 +298,12 @@ public class MainActivity extends AppCompatActivity
         switch (item.getItemId()) {
             case R.id.topic:
                 viewPager.setAdapter(topicsPagerAdapter);
+                if(V2EXUtil.isLogin(this)) notificationContainer.setVisibility(View.VISIBLE);
                 setTitle("V2EX");
                 break;
             case R.id.node:
                 viewPager.setAdapter(nodesPagerAdapter);
+                notificationContainer.setVisibility(View.GONE);
                 setTitle("节点");
                 break;
             case R.id.about:
