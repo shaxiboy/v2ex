@@ -1,11 +1,11 @@
 package com.hjx.v2ex.adapter;
 
+
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentStatePagerAdapter;
 
 import com.hjx.v2ex.ui.NodeListFragment;
-import com.hjx.v2ex.ui.TopicListFragment;
 
 /**
  * Created by shaxiboy on 2017/4/12 0012.

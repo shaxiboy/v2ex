@@ -16,6 +16,7 @@ import com.hjx.v2ex.bean.NotificationsPageData;
 import com.hjx.v2ex.bean.ReplyTopicResult;
 import com.hjx.v2ex.bean.SigninParams;
 import com.hjx.v2ex.bean.SigninResult;
+import com.hjx.v2ex.bean.SignoutOnce;
 import com.hjx.v2ex.bean.SignoutResult;
 import com.hjx.v2ex.bean.TopicFavoriteResult;
 import com.hjx.v2ex.bean.TopicPage;
@@ -111,11 +112,15 @@ public interface RetrofitService {
 
     //登陆
     @Headers({
-            "Referer: https://www.v2ex.com/signin"
+            "referer: https://www.v2ex.com/signin"
     })
     @POST("signin")
     @FormUrlEncoded
     Call<SigninResult> signin(@FieldMap Map<String, String> map);
+
+    //获取登出once
+    @GET("mission")
+    Call<SignoutOnce> getSignoutOnce();
 
     //登出
     @Headers({

@@ -2,13 +2,12 @@ package com.hjx.v2ex.ui;
 
 import android.os.Bundle;
 import android.support.annotation.Nullable;
-import android.util.Log;
 
 import com.hjx.v2ex.bean.PageData;
 import com.hjx.v2ex.bean.Topic;
 import com.hjx.v2ex.bean.TopicsPageData;
 import com.hjx.v2ex.flexibleitem.TopicFlexibleItem;
-import com.hjx.v2ex.network.RetrofitSingleton;
+import com.hjx.v2ex.network.RetrofitServiceSingleton;
 
 import eu.davidea.flexibleadapter.items.AbstractFlexibleItem;
 
@@ -55,19 +54,19 @@ public class TopicListFragment extends ListBaseFragment<TopicsPageData> {
     protected void loadData() {
         switch (topicType) {
             case TOPICTYPE_TABTOPIC:
-                RetrofitSingleton.getInstance(getContext()).getTabTopics(arg).enqueue(getListBaseFragmentCallBack());
+                RetrofitServiceSingleton.getInstance(getContext()).getTabTopics(arg).enqueue(getListBaseFragmentCallBack());
                 break;
             case TOPICTYPE_RECENTTOPIC:
-                RetrofitSingleton.getInstance(getContext()).getRecentTopics(getCurrentPage()).enqueue(getListBaseFragmentCallBack());
+                RetrofitServiceSingleton.getInstance(getContext()).getRecentTopics(getCurrentPage()).enqueue(getListBaseFragmentCallBack());
                 break;
             case TOPICTYPE_FAVORITETOPIC:
-                RetrofitSingleton.getInstance(getContext()).getFavoriteTopics(getCurrentPage()).enqueue(getListBaseFragmentCallBack());
+                RetrofitServiceSingleton.getInstance(getContext()).getFavoriteTopics(getCurrentPage()).enqueue(getListBaseFragmentCallBack());
                 break;
             case TOPICTYPE_MEMBERTOPIC:
-                RetrofitSingleton.getInstance(getContext()).getMemberTopics(arg, getCurrentPage()).enqueue(getListBaseFragmentCallBack());
+                RetrofitServiceSingleton.getInstance(getContext()).getMemberTopics(arg, getCurrentPage()).enqueue(getListBaseFragmentCallBack());
                 break;
             case TOPICTYPE_FAVORITEMEMBERSTOPIC:
-                RetrofitSingleton.getInstance(getContext()).getFavoriteMembersTopics(getCurrentPage()).enqueue(getListBaseFragmentCallBack());
+                RetrofitServiceSingleton.getInstance(getContext()).getFavoriteMembersTopics(getCurrentPage()).enqueue(getListBaseFragmentCallBack());
         }
     }
 

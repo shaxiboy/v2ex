@@ -8,6 +8,7 @@ public class ReplyTopicResult {
 
     private boolean success = true;
     private int replyOnce = -1;
+    private String failedMsg;
 
     public boolean isSuccess() {
         return success;
@@ -23,5 +24,13 @@ public class ReplyTopicResult {
 
     public void setReplyOnce(int replyOnce) {
         this.replyOnce = replyOnce;
+    }
+
+    public String getFailedMsg() {
+        return failedMsg;
+    }
+
+    public void setFailedMsg(String failedMsg) {
+        this.failedMsg = failedMsg;
     }
 }

@@ -12,7 +12,7 @@ import android.widget.TextView;
 import com.hjx.v2ex.R;
 import com.hjx.v2ex.bean.V2EXStatistics;
 import com.hjx.v2ex.bean.V2EXIntroduction;
-import com.hjx.v2ex.network.RetrofitSingleton;
+import com.hjx.v2ex.network.RetrofitServiceSingleton;
 import com.hjx.v2ex.util.V2EXUtil;
 
 import butterknife.BindView;
@@ -20,8 +20,6 @@ import butterknife.ButterKnife;
 import retrofit2.Call;
 import retrofit2.Callback;
 import retrofit2.Response;
-
-import static android.R.attr.data;
 
 public class AboutActivity extends AppCompatActivity {
 
@@ -58,7 +56,7 @@ public class AboutActivity extends AppCompatActivity {
             e.printStackTrace();
         }
         versionTV.setText("版本号：" + appVersion);
-        RetrofitSingleton.getInstance(this).getV2EXStatistics().enqueue(new Callback<V2EXStatistics>() {
+        RetrofitServiceSingleton.getInstance(this).getV2EXStatistics().enqueue(new Callback<V2EXStatistics>() {
             @Override
             public void onResponse(Call<V2EXStatistics> call, Response<V2EXStatistics> response) {
                 V2EXStatistics data = response.body();
@@ -73,7 +71,7 @@ public class AboutActivity extends AppCompatActivity {
             }
         });
 
-        RetrofitSingleton.getInstance(this).getV2EXNodesSum().enqueue(new Callback<V2EXStatistics>() {
+        RetrofitServiceSingleton.getInstance(this).getV2EXNodesSum().enqueue(new Callback<V2EXStatistics>() {
             @Override
             public void onResponse(Call<V2EXStatistics> call, Response<V2EXStatistics> response) {
                 V2EXStatistics data = response.body();
@@ -108,7 +106,7 @@ public class AboutActivity extends AppCompatActivity {
     public void showMore(View view) {
         constraintLayout.setVisibility(View.INVISIBLE);
         scrollView.setVisibility(View.VISIBLE);
-        RetrofitSingleton.getInstance(this).getV2EXIntroduction().enqueue(new Callback<V2EXIntroduction>() {
+        RetrofitServiceSingleton.getInstance(this).getV2EXIntroduction().enqueue(new Callback<V2EXIntroduction>() {
             @Override
             public void onResponse(Call<V2EXIntroduction> call, Response<V2EXIntroduction> response) {
                 introduction.setText(V2EXUtil.fromHtml(response.body().getIntroduction(), null, null, -1));

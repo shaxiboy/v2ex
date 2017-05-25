@@ -9,7 +9,7 @@ public class SigninParams {
     private String name;
     private String password;
     private String once;
-    private String next = "/";
+    private String next = "https://www.v2ex.com/mission";
 
     public String getName() {
         return name;

@@ -30,7 +30,7 @@ import com.hjx.v2ex.event.ShowMemberRepliesEvent;
 import com.hjx.v2ex.flexibleitem.TopicDetailsFlexibleItem;
 import com.hjx.v2ex.flexibleitem.TopicReplyFlexibleItem;
 import com.hjx.v2ex.network.RetrofitService;
-import com.hjx.v2ex.network.RetrofitSingleton;
+import com.hjx.v2ex.network.RetrofitServiceSingleton;
 import com.hjx.v2ex.util.V2EXUtil;
 
 import org.greenrobot.eventbus.EventBus;
@@ -181,6 +181,7 @@ public class TopicDetailsFragment extends ListBaseFragment<TopicPage> {
     @Override
     ListData getListData(TopicPage data) {
         ListData listData = new ListData();
+        topic = data.getTopic();
         listData.setHeader(new TopicDetailsFlexibleItem(data.getTopic()));
         PageData<AbstractFlexibleItem> pageData = new PageData<>();
         copyPageDataStatistics(data.getReplies(), pageData);
@@ -193,7 +194,7 @@ public class TopicDetailsFragment extends ListBaseFragment<TopicPage> {
 
     @Subscribe
     public void onAtMemberEvent(AtMemberEvent event) {
-        replyEdt.append("@" + event.getMemberName());
+        replyEdt.append("@" + event.getMemberName() + " ");
         showReplyEditView(ShowReplyEditViewType.SHOW);
     }
 
@@ -210,7 +211,7 @@ public class TopicDetailsFragment extends ListBaseFragment<TopicPage> {
     }
 
     private void loadTopicDetails() {
-        RetrofitSingleton.getInstance(getContext()).getTopicPage(topicId, getCurrentPage()).enqueue(getListBaseFragmentCallBack());
+        RetrofitServiceSingleton.getInstance(getContext()).getTopicPage(topicId, getCurrentPage()).enqueue(getListBaseFragmentCallBack());
     }
 
     private void favoriteTopic() {
@@ -219,7 +220,7 @@ public class TopicDetailsFragment extends ListBaseFragment<TopicPage> {
         if (type != null) {
             String referer = RetrofitService.BASE_URL + "t/" + topicId;
             final ProgressDialog progressDialog = showProgressDialog(getContext(), "正在" + type);
-            RetrofitSingleton.getInstance(getContext()).favoriteTopic(favoriteURL, referer).enqueue(new Callback<TopicFavoriteResult>() {
+            RetrofitServiceSingleton.getInstance(getContext()).favoriteTopic(favoriteURL, referer).enqueue(new Callback<TopicFavoriteResult>() {
                 @Override
                 public void onResponse(Call<TopicFavoriteResult> call, Response<TopicFavoriteResult> response) {
                     progressDialog.dismiss();
@@ -268,7 +269,7 @@ public class TopicDetailsFragment extends ListBaseFragment<TopicPage> {
     private void replyTopic() {
         final ProgressDialog dialog = V2EXUtil.showProgressDialog(getContext(), "正在发送回复");
         final String referer = RetrofitService.BASE_URL + "t/" + topicId;
-        RetrofitSingleton.getInstance(getContext()).replyTopic(referer, topicId, replyEdt.getText().toString().trim(), topic.getReplyOnce()).enqueue(new Callback<ReplyTopicResult>() {
+        RetrofitServiceSingleton.getInstance(getContext()).replyTopic(referer, topicId, replyEdt.getText().toString().trim(), topic.getReplyOnce()).enqueue(new Callback<ReplyTopicResult>() {
             @Override
             public void onResponse(Call<ReplyTopicResult> call, Response<ReplyTopicResult> response) {
                 dialog.dismiss();
@@ -286,7 +287,10 @@ public class TopicDetailsFragment extends ListBaseFragment<TopicPage> {
                     showReplyEditView(ShowReplyEditViewType.HIDE);
                     onRefresh();
                 } else {
-                    Toast.makeText(getContext(), "回复失败，请重试", Toast.LENGTH_SHORT).show();
+                    String msg = "回复失败";
+                    if(result.getFailedMsg() != null) msg += "：" + result.getFailedMsg();
+                    else msg += "，请重试";
+                    Toast.makeText(getContext(), msg, Toast.LENGTH_SHORT).show();
                 }
             }
 

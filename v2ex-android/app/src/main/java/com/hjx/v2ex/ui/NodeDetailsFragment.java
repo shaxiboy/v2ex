@@ -5,8 +5,6 @@ import android.app.ProgressDialog;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
-import android.support.v4.widget.SwipeRefreshLayout;
-import android.support.v7.widget.RecyclerView;
 import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
@@ -17,20 +15,12 @@ import com.hjx.v2ex.bean.NodeFavoriteResult;
 import com.hjx.v2ex.bean.NodePage;
 import com.hjx.v2ex.bean.PageData;
 import com.hjx.v2ex.bean.Topic;
-import com.hjx.v2ex.bean.TopicsPageData;
 import com.hjx.v2ex.flexibleitem.NodeDetailsFlexibleItem;
-import com.hjx.v2ex.flexibleitem.ProgressItem;
 import com.hjx.v2ex.flexibleitem.TopicFlexibleItem;
 import com.hjx.v2ex.network.RetrofitService;
-import com.hjx.v2ex.network.RetrofitSingleton;
+import com.hjx.v2ex.network.RetrofitServiceSingleton;
 import com.hjx.v2ex.util.V2EXUtil;
 
-import java.util.ArrayList;
-import java.util.List;
-
-import butterknife.BindView;
-import eu.davidea.flexibleadapter.FlexibleAdapter;
-import eu.davidea.flexibleadapter.common.SmoothScrollLinearLayoutManager;
 import eu.davidea.flexibleadapter.items.AbstractFlexibleItem;
 import retrofit2.Call;
 import retrofit2.Callback;
@@ -115,7 +105,7 @@ public class NodeDetailsFragment extends ListBaseFragment<NodePage> {
 
 
     private void loadNodePage() {
-        RetrofitSingleton.getInstance(getContext()).getNodePage(nodeName, getCurrentPage()).enqueue(getListBaseFragmentCallBack());
+        RetrofitServiceSingleton.getInstance(getContext()).getNodePage(nodeName, getCurrentPage()).enqueue(getListBaseFragmentCallBack());
     }
 
     private void favoriteNode() {
@@ -124,7 +114,7 @@ public class NodeDetailsFragment extends ListBaseFragment<NodePage> {
         if (type != null) {
             String referer = RetrofitService.BASE_URL + "go/" + nodeName;
             final ProgressDialog progressDialog = V2EXUtil.showProgressDialog(getContext(), "正在" + type);
-            RetrofitSingleton.getInstance(getContext()).favoriteNode(favoriteURL, referer).enqueue(new Callback<NodeFavoriteResult>() {
+            RetrofitServiceSingleton.getInstance(getContext()).favoriteNode(favoriteURL, referer).enqueue(new Callback<NodeFavoriteResult>() {
                 @Override
                 public void onResponse(Call<NodeFavoriteResult> call, Response<NodeFavoriteResult> response) {
                     progressDialog.dismiss();

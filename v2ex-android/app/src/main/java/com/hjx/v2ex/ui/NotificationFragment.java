@@ -4,7 +4,7 @@ import com.hjx.v2ex.bean.Notification;
 import com.hjx.v2ex.bean.NotificationsPageData;
 import com.hjx.v2ex.bean.PageData;
 import com.hjx.v2ex.flexibleitem.NotificationFlexibleItem;
-import com.hjx.v2ex.network.RetrofitSingleton;
+import com.hjx.v2ex.network.RetrofitServiceSingleton;
 
 import eu.davidea.flexibleadapter.items.AbstractFlexibleItem;
 
@@ -16,7 +16,7 @@ public class NotificationFragment extends ListBaseFragment<NotificationsPageData
 
     @Override
     protected void loadData() {
-        RetrofitSingleton.getInstance(getContext()).getNotifications(getCurrentPage()).enqueue(getListBaseFragmentCallBack());
+        RetrofitServiceSingleton.getInstance(getContext()).getNotifications(getCurrentPage()).enqueue(getListBaseFragmentCallBack());
     }
 
     @Override

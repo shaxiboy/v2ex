@@ -5,10 +5,7 @@ import android.os.Bundle;
 import android.support.v4.app.DialogFragment;
 import android.support.v7.app.AlertDialog;
 import android.support.v7.widget.RecyclerView;
-import android.view.LayoutInflater;
-import android.widget.Button;
 
-import com.hjx.v2ex.R;
 import com.hjx.v2ex.flexibleitem.TopicReplyFlexibleItem;
 
 import java.util.ArrayList;
@@ -38,7 +35,7 @@ public class MemberRepliesDialogFragment extends DialogFragment {
         RecyclerView recyclerView = new RecyclerView(getContext());
         recyclerView.setAdapter(adapter);
         recyclerView.setLayoutManager(new SmoothScrollLinearLayoutManager(getContext()));
-        AlertDialog.Builder builder = new AlertDialog.Builder(getActivity());
+        AlertDialog.Builder builder = new AlertDialog.Builder(getContext());
         builder.setView(recyclerView);
         return builder.create();
     }

@@ -12,7 +12,7 @@ import com.bumptech.glide.Glide;
 import com.hjx.v2ex.R;
 import com.hjx.v2ex.bean.Topic;
 import com.hjx.v2ex.ui.DataLoadingBaseActivity;
-import com.hjx.v2ex.ui.TextViewImageGetter;
+import com.hjx.v2ex.util.TextViewImageGetter;
 import com.hjx.v2ex.util.V2EXUtil;
 import com.jauker.widget.BadgeView;
 

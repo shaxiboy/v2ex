@@ -5,9 +5,7 @@ import android.app.ProgressDialog;
 import android.content.Context;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
-import android.text.Editable;
 import android.text.TextUtils;
-import android.text.TextWatcher;
 import android.view.View;
 import android.view.inputmethod.InputMethodManager;
 import android.widget.Button;
@@ -18,7 +16,7 @@ import android.widget.Toast;
 import com.hjx.v2ex.R;
 import com.hjx.v2ex.bean.SigninParams;
 import com.hjx.v2ex.bean.SigninResult;
-import com.hjx.v2ex.network.RetrofitSingleton;
+import com.hjx.v2ex.network.RetrofitServiceSingleton;
 import com.hjx.v2ex.util.V2EXUtil;
 
 import java.util.HashMap;
@@ -28,12 +26,9 @@ import butterknife.BindView;
 import butterknife.ButterKnife;
 import butterknife.OnClick;
 import butterknife.OnFocusChange;
-import butterknife.OnTextChanged;
 import retrofit2.Call;
 import retrofit2.Callback;
 import retrofit2.Response;
-
-import static android.R.attr.type;
 
 public class LoginActivity extends AppCompatActivity {
 
@@ -72,7 +67,7 @@ public class LoginActivity extends AppCompatActivity {
             return;
         }
         final ProgressDialog progressDialog = V2EXUtil.showProgressDialog(this, "正在登录");
-        RetrofitSingleton.getInstance(this).getSigninParams().enqueue(new Callback<SigninParams>() {
+        RetrofitServiceSingleton.getInstance(this).getSigninParams().enqueue(new Callback<SigninParams>() {
             @Override
             public void onResponse(Call<SigninParams> call, Response<SigninParams> response) {
                 SigninParams signinParams = response.body();
@@ -82,7 +77,7 @@ public class LoginActivity extends AppCompatActivity {
                     params.put(signinParams.getPassword(), password.getText().toString());
                     params.put("once", signinParams.getOnce());
                     params.put("next", signinParams.getNext());
-                    RetrofitSingleton.getInstance(LoginActivity.this).signin(params).enqueue(new Callback<SigninResult>() {
+                    RetrofitServiceSingleton.getInstance(LoginActivity.this).signin(params).enqueue(new Callback<SigninResult>() {
                         @Override
                         public void onResponse(Call<SigninResult> call, Response<SigninResult> response) {
                             progressDialog.dismiss();

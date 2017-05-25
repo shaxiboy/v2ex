@@ -24,13 +24,13 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_gravity="center_vertical|end"
-                android:layout_marginEnd="10dp"
+                android:layout_marginRight="10dp"
                 android:visibility="gone">
 
                 <ImageView
                     android:id="@+id/notification_image"
-                    android:layout_width="30dp"
-                    android:layout_height="30dp"
+                    android:layout_width="25dp"
+                    android:layout_height="25dp"
                     android:src="@drawable/notification_white" />
 
                 <TextView
@@ -38,7 +38,6 @@
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_gravity="center"
-                    android:text="5"
                     android:textSize="10sp"
                     android:textStyle="bold"
                     android:visibility="gone" />

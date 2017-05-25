@@ -22,7 +22,7 @@ import com.hjx.v2ex.bean.NodesNavigation;
 import com.hjx.v2ex.flexibleitem.NodeCategoryFlexibleHeaderItem;
 import com.hjx.v2ex.flexibleitem.NodeFlexibleItem;
 import com.hjx.v2ex.flexibleitem.ViewMoreFlexibleItem;
-import com.hjx.v2ex.network.RetrofitSingleton;
+import com.hjx.v2ex.network.RetrofitServiceSingleton;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -140,19 +140,19 @@ public class NodeListFragment extends ListBaseFragment implements FlexibleAdapte
 
     private void loadNodes() {
         if (tab.equals("最热")) {
-            RetrofitSingleton.getInstance(getContext()).getHottestNodes().enqueue(getListBaseFragmentCallBack());
+            RetrofitServiceSingleton.getInstance(getContext()).getHottestNodes().enqueue(getListBaseFragmentCallBack());
         } else if (tab.equals("导航")) {
-            RetrofitSingleton.getInstance(getContext()).getNavigationNodes().enqueue(getListBaseFragmentCallBack());
+            RetrofitServiceSingleton.getInstance(getContext()).getNavigationNodes().enqueue(getListBaseFragmentCallBack());
         } else if (tab.equals("全部")) {
-            RetrofitSingleton.getInstance(getContext()).getAllNodes().enqueue(getListBaseFragmentCallBack());
+            RetrofitServiceSingleton.getInstance(getContext()).getAllNodes().enqueue(getListBaseFragmentCallBack());
         } else if(tab.equals("收藏")) {
-            RetrofitSingleton.getInstance(getContext()).getFavoriteNodes().enqueue(getListBaseFragmentCallBack());
+            RetrofitServiceSingleton.getInstance(getContext()).getFavoriteNodes().enqueue(getListBaseFragmentCallBack());
         }
     }
 
     @Override
     RecyclerView.LayoutManager getLayoutManager() {
-        GridLayoutManager layoutManager = new SmoothScrollGridLayoutManager(getActivity(), 3);
+        GridLayoutManager layoutManager = new SmoothScrollGridLayoutManager(getContext(), 3);
         layoutManager.setSpanSizeLookup(new GridLayoutManager.SpanSizeLookup() {
             @Override
             public int getSpanSize(int position) {

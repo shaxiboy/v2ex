@@ -1,7 +1,5 @@
 package com.hjx.v2ex.bean;
 
-import com.hjx.v2ex.ui.ListBaseFragment;
-
 import java.util.ArrayList;
 import java.util.List;
 

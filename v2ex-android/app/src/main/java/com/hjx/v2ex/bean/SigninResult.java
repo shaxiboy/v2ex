@@ -9,7 +9,7 @@ import java.io.Serializable;
 public class SigninResult implements Serializable{
 
     private boolean sigin;
-    private int sessionId = -1;
+    private int signoutOnce = -1;
     private String name;
     private String photo;
     private String errorMsg;
@@ -22,12 +22,12 @@ public class SigninResult implements Serializable{
         this.sigin = sigin;
     }
 
-    public int getSessionId() {
-        return sessionId;
+    public int getSignoutOnce() {
+        return signoutOnce;
     }
 
-    public void setSessionId(int sessionId) {
-        this.sessionId = sessionId;
+    public void setSignoutOnce(int signoutOnce) {
+        this.signoutOnce = signoutOnce;
     }
 
     public String getName() {

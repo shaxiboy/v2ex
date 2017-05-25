@@ -560,45 +560,43 @@ public class HTMLUtil {
         SigninResult result = new SigninResult();
         Document doc = Jsoup.parse(html);
         int sessionId = -1;
-        Element topEle = doc.getElementById("Top");
-        if (topEle != null) {
-            for (Element aEle : topEle.getElementsByTag("a")) {
-                if (aEle.text().equals("登出")) {
-                    sessionId = Integer.parseInt(aEle.attr("onclick").split("once=")[1].split("'")[0]);
-                }
-            }
-        }
+        sessionId = parseSignoutOnce(doc);
         if(sessionId != -1) {
             result.setSigin(true);
-            result.setSessionId(sessionId);
+            result.setSignoutOnce(sessionId);
             Element imgEle = doc.getElementById("Rightbar").getElementsByClass("box").first().getElementsByTag("img").first();
             result.setPhoto("https:" + imgEle.attr("src"));
             result.setName(imgEle.parent().attr("href").split("/")[2]);
         } else {
             result.setSigin(false);
-            result.setErrorMsg(parseSigninFailedMsg(html));
+            result.setErrorMsg(parseSigninFailedMsg(doc));
         }
         return result;
     }
 
-    public static String parseSigninFailedMsg(String html) {
-        Element problemEle = Jsoup.parse(html).getElementsByClass("problem").first();
+    public static String parseSigninFailedMsg(Document doc) {
+        Element problemEle = doc.getElementsByClass("problem").first();
         if (problemEle != null) {
             return problemEle.getElementsByTag("li").first().text();
         }
         return null;
     }
 
-    public static int parseSessionId(String html) {
-        Element topEle = Jsoup.parse(html).getElementById("Top");
+    public static int parseSignoutOnce(String html) {
+        return parseSignoutOnce(Jsoup.parse(html));
+    }
+
+    private static int parseSignoutOnce(Document doc) {
+        int once = -1;
+        Element topEle = doc.getElementById("Top");
         if (topEle != null) {
             for (Element aEle : topEle.getElementsByTag("a")) {
                 if (aEle.text().equals("登出")) {
-                    return parseInt(aEle.attr("onclick").split("once=")[1].split("'; }")[0]);
+                    once = Integer.parseInt(aEle.attr("onclick").split("once=")[1].split("'")[0]);
                 }
             }
         }
-        return -1;
+        return once;
     }
 
     public static SignoutResult parseSignoutResult(String html) {
@@ -608,7 +606,7 @@ public class HTMLUtil {
         if (buttonEle != null) {
             if(buttonEle.attr("value").equals("Retry Sign Out")) {
                 result.setSignout(false);
-                result.setNewSessionId(Integer.parseInt(buttonEle.attr("onclick").split("once=")[1].split("'")[0]));
+                result.setNewSignoutOnce(Integer.parseInt(buttonEle.attr("onclick").split("once=")[1].split("'")[0]));
             }
         }
         return result;
@@ -686,6 +684,10 @@ public class HTMLUtil {
             if(inputEle.attr("name").equals("once")) {
                 result.setReplyOnce(Integer.parseInt(inputEle.attr("value")));
             }
+        }
+        if(!result.isSuccess()) {
+            Element liEle = mainEle.getElementsByTag("li").first();
+            if(liEle != null) result.setFailedMsg(liEle.text());
         }
         return result;
     }

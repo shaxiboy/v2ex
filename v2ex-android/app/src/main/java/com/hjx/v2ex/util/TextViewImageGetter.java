@@ -1,10 +1,11 @@
-package com.hjx.v2ex.ui;
+package com.hjx.v2ex.util;
 
 import android.content.Context;
 import android.graphics.Bitmap;
 import android.graphics.drawable.BitmapDrawable;
 import android.graphics.drawable.Drawable;
 import android.graphics.drawable.LevelListDrawable;
+import android.support.v4.content.ContextCompat;
 import android.text.Html;
 import android.widget.TextView;
 
@@ -33,7 +34,7 @@ public class TextViewImageGetter implements Html.ImageGetter{
     @Override
     public Drawable getDrawable(String url) {
         final LevelListDrawable levelListDrawable = new LevelListDrawable();
-        Drawable empty = context.getResources().getDrawable(R.drawable.ic_sync_white_24dp, context.getTheme());
+        Drawable empty = ContextCompat.getDrawable(context, R.drawable.ic_sync_white_24dp);
         levelListDrawable.addLevel(0, 0, empty);
         levelListDrawable.setBounds(0, 0, 50, 50);
         Glide.with(context)

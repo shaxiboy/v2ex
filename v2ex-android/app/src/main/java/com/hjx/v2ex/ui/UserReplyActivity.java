@@ -13,9 +13,7 @@ import android.widget.Spinner;
 import android.widget.Toast;
 
 import com.hjx.v2ex.R;
-import com.hjx.v2ex.bean.NewTopicResult;
-import com.hjx.v2ex.bean.Node;
-import com.hjx.v2ex.network.RetrofitSingleton;
+import com.hjx.v2ex.network.RetrofitServiceSingleton;
 import com.hjx.v2ex.util.V2EXUtil;
 
 import java.io.IOException;
@@ -26,8 +24,6 @@ import okhttp3.ResponseBody;
 import retrofit2.Call;
 import retrofit2.Callback;
 import retrofit2.Response;
-
-import static android.R.attr.data;
 
 public class UserReplyActivity extends AppCompatActivity {
 
@@ -82,7 +78,7 @@ public class UserReplyActivity extends AppCompatActivity {
         } catch (PackageManager.NameNotFoundException e) {
             e.printStackTrace();
         }
-        RetrofitSingleton.getInstance(this).submitUserReply(contact, reply, appVersion).enqueue(new Callback<ResponseBody>() {
+        RetrofitServiceSingleton.getInstance(this).submitUserReply(contact, reply, appVersion).enqueue(new Callback<ResponseBody>() {
             @Override
             public void onResponse(Call<ResponseBody> call, Response<ResponseBody> response) {
                 dialog.dismiss();

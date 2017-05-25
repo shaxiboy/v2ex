@@ -9,15 +9,11 @@ import android.widget.TextView;
 
 import com.hjx.v2ex.R;
 import com.hjx.v2ex.bean.Notification;
-import com.hjx.v2ex.bean.Reply;
-import com.hjx.v2ex.bean.Topic;
 import com.hjx.v2ex.ui.DataLoadingBaseActivity;
-import com.hjx.v2ex.ui.TextViewImageGetter;
+import com.hjx.v2ex.util.TextViewImageGetter;
 import com.hjx.v2ex.util.V2EXUtil;
 
-import java.util.ArrayList;
 import java.util.List;
-import java.util.Map;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;

@@ -17,7 +17,7 @@ import com.hjx.v2ex.R;
 import com.hjx.v2ex.bean.NewTopicOnce;
 import com.hjx.v2ex.bean.NewTopicResult;
 import com.hjx.v2ex.bean.Node;
-import com.hjx.v2ex.network.RetrofitSingleton;
+import com.hjx.v2ex.network.RetrofitServiceSingleton;
 import com.hjx.v2ex.util.V2EXUtil;
 
 import butterknife.BindView;
@@ -89,7 +89,7 @@ public class NewTopicActivity extends AppCompatActivity {
     }
 
     private void getNewTopicOnce() {
-        RetrofitSingleton.getInstance(this).getNewTopicOnce().enqueue(new Callback<NewTopicOnce>() {
+        RetrofitServiceSingleton.getInstance(this).getNewTopicOnce().enqueue(new Callback<NewTopicOnce>() {
             @Override
             public void onResponse(Call<NewTopicOnce> call, Response<NewTopicOnce> response) {
                 NewTopicOnce data = response.body();
@@ -107,7 +107,7 @@ public class NewTopicActivity extends AppCompatActivity {
 
     private void sendNewTopic() {
         final ProgressDialog dialog = V2EXUtil.showProgressDialog(this, "正在发布新主题");
-        RetrofitSingleton.getInstance(this).newTopic(titleEdt.getText().toString().trim(), contentEdt.getText().toString().trim(), ((Node) nodeTV.getTag()).getName(), newTopicOnce).enqueue(new Callback<NewTopicResult>() {
+        RetrofitServiceSingleton.getInstance(this).newTopic(titleEdt.getText().toString().trim(), contentEdt.getText().toString().trim(), ((Node) nodeTV.getTag()).getName(), newTopicOnce).enqueue(new Callback<NewTopicResult>() {
             @Override
             public void onResponse(Call<NewTopicResult> call, Response<NewTopicResult> response) {
                 dialog.dismiss();

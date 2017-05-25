@@ -10,7 +10,7 @@ import com.hjx.v2ex.flexibleitem.MemberReplyFlexibleItem;
 import com.hjx.v2ex.bean.MemberTopicReplies;
 import com.hjx.v2ex.bean.Reply;
 import com.hjx.v2ex.bean.Topic;
-import com.hjx.v2ex.network.RetrofitSingleton;
+import com.hjx.v2ex.network.RetrofitServiceSingleton;
 
 import java.util.Map;
 
@@ -40,7 +40,7 @@ public class MemberRepliesFragment extends ListBaseFragment<MemberTopicReplies> 
 
     @Override
     protected void loadData() {
-        RetrofitSingleton.getInstance(getContext()).getMemberTopicReplies(memberName, getCurrentPage()).enqueue(getListBaseFragmentCallBack());
+        RetrofitServiceSingleton.getInstance(getContext()).getMemberTopicReplies(memberName, getCurrentPage()).enqueue(getListBaseFragmentCallBack());
     }
 
     @Override
