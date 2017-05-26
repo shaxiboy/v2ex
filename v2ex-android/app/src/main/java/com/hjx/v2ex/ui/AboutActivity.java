@@ -14,6 +14,7 @@ import com.hjx.v2ex.bean.V2EXStatistics;
 import com.hjx.v2ex.bean.V2EXIntroduction;
 import com.hjx.v2ex.network.RetrofitServiceSingleton;
 import com.hjx.v2ex.util.V2EXUtil;
+import com.tencent.bugly.beta.Beta;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
@@ -27,6 +28,8 @@ public class AboutActivity extends AppCompatActivity {
 
     @BindView(R.id.versionTV)
     TextView versionTV;
+    @BindView(R.id.check_versionTV)
+    TextView checkVersionTV;
     @BindView(R.id.scrollView)
     ScrollView scrollView;
     @BindView(R.id.introduction)
@@ -56,6 +59,12 @@ public class AboutActivity extends AppCompatActivity {
             e.printStackTrace();
         }
         versionTV.setText("版本号：" + appVersion);
+        checkVersionTV.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                Beta.checkUpgrade();
+            }
+        });
         RetrofitServiceSingleton.getInstance(getApplication()).getV2EXStatistics().enqueue(new Callback<V2EXStatistics>() {
             @Override
             public void onResponse(Call<V2EXStatistics> call, Response<V2EXStatistics> response) {
