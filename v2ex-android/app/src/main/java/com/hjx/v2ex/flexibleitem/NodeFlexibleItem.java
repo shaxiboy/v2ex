@@ -7,7 +7,6 @@ import android.widget.TextView;
 
 import com.hjx.v2ex.R;
 import com.hjx.v2ex.bean.Node;
-import com.hjx.v2ex.ui.DataLoadingBaseActivity;
 
 import java.util.List;
 

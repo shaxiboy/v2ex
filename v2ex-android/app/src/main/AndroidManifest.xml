@@ -19,7 +19,7 @@
         android:theme="@style/AppTheme">
         <activity
             android:name=".ui.MainActivity"
-            android:label="@string/title_activity_main"
+            android:label="V2EX"
             android:launchMode="singleTop"
             android:theme="@style/AppTheme.NoActionBar">
             <intent-filter>
@@ -29,7 +29,7 @@
         </activity>
         <activity
             android:name=".ui.AboutActivity"
-            android:label="@string/title_activity_about" />
+            android:label="关于V2EX" />
         <activity
             android:name=".ui.DataLoadingBaseActivity"
             android:parentActivityName=".ui.MainActivity">
@@ -39,7 +39,7 @@
         </activity>
         <activity
             android:name=".ui.LoginActivity"
-            android:label="@string/title_activity_login" />
+            android:label="登录" />
         <activity
             android:name=".ui.MyFavoritesActivity"
             android:label="我的收藏"

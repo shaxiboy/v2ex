@@ -89,7 +89,7 @@ public class NewTopicActivity extends AppCompatActivity {
     }
 
     private void getNewTopicOnce() {
-        RetrofitServiceSingleton.getInstance(this).getNewTopicOnce().enqueue(new Callback<NewTopicOnce>() {
+        RetrofitServiceSingleton.getInstance(getApplication()).getNewTopicOnce().enqueue(new Callback<NewTopicOnce>() {
             @Override
             public void onResponse(Call<NewTopicOnce> call, Response<NewTopicOnce> response) {
                 NewTopicOnce data = response.body();
@@ -107,7 +107,7 @@ public class NewTopicActivity extends AppCompatActivity {
 
     private void sendNewTopic() {
         final ProgressDialog dialog = V2EXUtil.showProgressDialog(this, "正在发布新主题");
-        RetrofitServiceSingleton.getInstance(this).newTopic(titleEdt.getText().toString().trim(), contentEdt.getText().toString().trim(), ((Node) nodeTV.getTag()).getName(), newTopicOnce).enqueue(new Callback<NewTopicResult>() {
+        RetrofitServiceSingleton.getInstance(getApplication()).newTopic(titleEdt.getText().toString().trim(), contentEdt.getText().toString().trim(), ((Node) nodeTV.getTag()).getName(), newTopicOnce).enqueue(new Callback<NewTopicResult>() {
             @Override
             public void onResponse(Call<NewTopicResult> call, Response<NewTopicResult> response) {
                 dialog.dismiss();

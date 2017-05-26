@@ -40,7 +40,7 @@ public class MemberRepliesFragment extends ListBaseFragment<MemberTopicReplies> 
 
     @Override
     protected void loadData() {
-        RetrofitServiceSingleton.getInstance(getContext()).getMemberTopicReplies(memberName, getCurrentPage()).enqueue(getListBaseFragmentCallBack());
+        RetrofitServiceSingleton.getInstance(getActivity().getApplication()).getMemberTopicReplies(memberName, getCurrentPage()).enqueue(getListBaseFragmentCallBack());
     }
 
     @Override

@@ -17,10 +17,8 @@ import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
 import android.view.MenuItem;
 import android.view.View;
-import android.widget.Button;
 import android.widget.FrameLayout;
 import android.widget.ImageView;
-import android.widget.LinearLayout;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -69,12 +67,8 @@ public class MainActivity extends AppCompatActivity
     @BindView(R.id.notification_text)
     TextView notificationText;
 
-    private LinearLayout photoContainer;
     private CircleImageView photo;
     private TextView name;
-    private Button loginBtn;
-    private Button favoriteBtn;
-    private Button newBtn;
 
     private TopicsPagerAdapter topicsPagerAdapter;
     private NodesPagerAdapter nodesPagerAdapter;
@@ -175,11 +169,27 @@ public class MainActivity extends AppCompatActivity
                 notificationContainer.setVisibility(View.GONE);
                 setTitle("节点");
                 break;
+            case R.id.favorite:
+                if(V2EXUtil.isLogin(this)) startActivity(new Intent(MainActivity.this, MyFavoritesActivity.class));
+                else startActivityForResult(new Intent(MainActivity.this, LoginActivity.class), 1);
+                drawer.closeDrawer(GravityCompat.START);
+                return false;
+            case R.id.new_topic:
+                if(V2EXUtil.isLogin(this)) startActivity(new Intent(MainActivity.this, NewTopicActivity.class));
+                else startActivityForResult(new Intent(MainActivity.this, LoginActivity.class), 1);
+                drawer.closeDrawer(GravityCompat.START);
+                return false;
+            case R.id.signout:
+                new LoginoutDialogFragment().show(getSupportFragmentManager(), "loginout");
+                drawer.closeDrawer(GravityCompat.START);
+                return false;
             case R.id.about:
                 startActivity(new Intent(this, AboutActivity.class));
+                drawer.closeDrawer(GravityCompat.START);
                 return false;
             case R.id.feedback:
                 startActivity(new Intent(this, UserReplyActivity.class));
+                drawer.closeDrawer(GravityCompat.START);
                 return false;
         }
         drawer.closeDrawer(GravityCompat.START);
@@ -194,40 +204,15 @@ public class MainActivity extends AppCompatActivity
         navigationView.setNavigationItemSelectedListener(this);
         navigationView.getMenu().getItem(0).setChecked(true);
 
-        photoContainer = (LinearLayout) navigationView.getHeaderView(0).findViewById(R.id.photo_container);
         photo = (CircleImageView) navigationView.getHeaderView(0).findViewById(R.id.photo);
         photo.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                DataLoadingBaseActivity.gotoMemberDetailsActivity(MainActivity.this, name.getText().toString());
+                if(V2EXUtil.isLogin(MainActivity.this)) DataLoadingBaseActivity.gotoMemberDetailsActivity(MainActivity.this, name.getText().toString());
+                else startActivityForResult(new Intent(MainActivity.this, LoginActivity.class), 1);
             }
         });
         name = (TextView) navigationView.getHeaderView(0).findViewById(R.id.name);
-        loginBtn = (Button) navigationView.getHeaderView(0).findViewById(R.id.loginBtn);
-        loginBtn.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                if (loginBtn.getText().equals("登录")) {
-                    startActivityForResult(new Intent(MainActivity.this, LoginActivity.class), 1);
-                } else if (loginBtn.getText().equals("登出")) {
-                    new LoginoutDialogFragment().show(getSupportFragmentManager(), "loginout");
-                }
-            }
-        });
-        favoriteBtn = (Button) navigationView.getHeaderView(0).findViewById(R.id.favoriteBtn);
-        favoriteBtn.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                startActivity(new Intent(MainActivity.this, MyFavoritesActivity.class));
-            }
-        });
-        newBtn = (Button) navigationView.getHeaderView(0).findViewById(R.id.newBtn);
-        newBtn.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                startActivity(new Intent(MainActivity.this, NewTopicActivity.class));
-            }
-        });
     }
 
     private void onSignin() {
@@ -244,13 +229,11 @@ public class MainActivity extends AppCompatActivity
     private void setViewOnSignin() {
         SigninResult signinResult = V2EXUtil.readLoginResult(this);
         if (signinResult != null) {
-            photoContainer.setVisibility(View.VISIBLE);
             Glide.with(this).load(signinResult.getPhoto()).into(photo);
             name.setText(signinResult.getName());
-            loginBtn.setText("登出");
-            favoriteBtn.setVisibility(View.VISIBLE);
-            newBtn.setVisibility(View.VISIBLE);
+            navigationView.getMenu().findItem(R.id.signout).setVisible(true);
             viewPager.setAdapter(topicsPagerAdapter);
+            navigationView.getMenu().getItem(0).setChecked(true);
             notificationContainer.setVisibility(View.VISIBLE);
         }
     }
@@ -262,16 +245,16 @@ public class MainActivity extends AppCompatActivity
 
     private void setViewOnSignout() {
         V2EXUtil.clearLoginResult(MainActivity.this);
-        photoContainer.setVisibility(View.GONE);
-        loginBtn.setText("登录");
-        favoriteBtn.setVisibility(View.GONE);
-        newBtn.setVisibility(View.GONE);
+        Glide.with(this).load(R.drawable.member).into(photo);
+        name.setText("点击头像登录");
+        navigationView.getMenu().findItem(R.id.signout).setVisible(false);
         viewPager.setAdapter(topicsPagerAdapter);
+        navigationView.getMenu().getItem(0).setChecked(true);
         notificationContainer.setVisibility(View.GONE);
     }
 
     private void getUnReadNotifications() {
-        RetrofitServiceSingleton.getInstance(MainActivity.this).getUnReadNotificationNum().enqueue(new retrofit2.Callback<UnReadNotificationNum>() {
+        RetrofitServiceSingleton.getInstance(MainActivity.this.getApplication()).getUnReadNotificationNum().enqueue(new retrofit2.Callback<UnReadNotificationNum>() {
             @Override
             public void onResponse(Call<UnReadNotificationNum> call, Response<UnReadNotificationNum> response) {
                 try {
@@ -297,7 +280,7 @@ public class MainActivity extends AppCompatActivity
     }
 
     private void getNewSignoutOnce() {
-        RetrofitServiceSingleton.getInstance(this).getSignoutOnce().enqueue(new Callback<SignoutOnce>() {
+        RetrofitServiceSingleton.getInstance(getApplication()).getSignoutOnce().enqueue(new Callback<SignoutOnce>() {
             @Override
             public void onResponse(Call<SignoutOnce> call, Response<SignoutOnce> response) {
                 try {
@@ -324,7 +307,7 @@ public class MainActivity extends AppCompatActivity
         final SigninResult signinResult = V2EXUtil.readLoginResult(MainActivity.this);
         if (signinResult != null && signinResult.getSignoutOnce() != -1) {
             final ProgressDialog progressDialog = V2EXUtil.showProgressDialog(this, "正在登出");
-            RetrofitServiceSingleton.getInstance(MainActivity.this).signout(signinResult.getSignoutOnce()).enqueue(new Callback<SignoutResult>() {
+            RetrofitServiceSingleton.getInstance(MainActivity.this.getApplication()).signout(signinResult.getSignoutOnce()).enqueue(new Callback<SignoutResult>() {
                 @Override
                 public void onResponse(Call<SignoutResult> call, Response<SignoutResult> response) {
                     progressDialog.dismiss();

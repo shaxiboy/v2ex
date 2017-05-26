@@ -101,9 +101,9 @@ public class MemberDetailsFragment extends DataLoadingBaseFragment implements Sw
             FavoriteMemberType type = getFavoriteMemberType(favoriteURL);
             if (type != null) {
                 if (type == FavoriteMemberType.UNFAVORITE) {
-                    favoriteItem.setIcon(R.drawable.ic_menu_favorite);
+                    favoriteItem.setIcon(R.drawable.favorite_red);
                 } else if (type == FavoriteMemberType.FAVORITE) {
-                    favoriteItem.setIcon(R.drawable.ic_menu_unfavorite);
+                    favoriteItem.setIcon(R.drawable.favorite_white);
                 }
                 favoriteItem.setVisible(true);
             } else {
@@ -130,7 +130,7 @@ public class MemberDetailsFragment extends DataLoadingBaseFragment implements Sw
         if (type != null) {
             String referer = RetrofitService.BASE_URL + "member/" + memberName;
             final ProgressDialog progressDialog = V2EXUtil.showProgressDialog(getContext(), "正在" + type + memberName);
-            RetrofitServiceSingleton.getInstance(getContext()).favoriteMember(favoriteURL, referer).enqueue(new Callback<MemberFavoriteResult>() {
+            RetrofitServiceSingleton.getInstance(getActivity().getApplication()).favoriteMember(favoriteURL, referer).enqueue(new Callback<MemberFavoriteResult>() {
                 @Override
                 public void onResponse(Call<MemberFavoriteResult> call, Response<MemberFavoriteResult> response) {
                     progressDialog.dismiss();
@@ -173,7 +173,7 @@ public class MemberDetailsFragment extends DataLoadingBaseFragment implements Sw
     }
 
     private void loadMemberDetails() {
-        RetrofitServiceSingleton.getInstance(getContext()).getMember(memberName).enqueue(new Callback<Member>() {
+        RetrofitServiceSingleton.getInstance(getActivity().getApplication()).getMember(memberName).enqueue(new Callback<Member>() {
             @Override
             public void onResponse(Call<Member> call, Response<Member> response) {
                 try {
@@ -214,7 +214,7 @@ public class MemberDetailsFragment extends DataLoadingBaseFragment implements Sw
     }
 
     private void loadMemberTopics() {
-        RetrofitServiceSingleton.getInstance(getContext()).getMemberTopics(memberName, 1).enqueue(new Callback<TopicsPageData>() {
+        RetrofitServiceSingleton.getInstance(getActivity().getApplication()).getMemberTopics(memberName, 1).enqueue(new Callback<TopicsPageData>() {
             @Override
             public void onResponse(Call<TopicsPageData> call, Response<TopicsPageData> response) {
                 topics = response.body().getTopics().getCurrentPageItems();
@@ -254,7 +254,7 @@ public class MemberDetailsFragment extends DataLoadingBaseFragment implements Sw
     }
 
     private void loadMemberReplies() {
-        RetrofitServiceSingleton.getInstance(getContext()).getMemberTopicReplies(memberName, 1).enqueue(new Callback<MemberTopicReplies>() {
+        RetrofitServiceSingleton.getInstance(getActivity().getApplication()).getMemberTopicReplies(memberName, 1).enqueue(new Callback<MemberTopicReplies>() {
             @Override
             public void onResponse(Call<MemberTopicReplies> call, Response<MemberTopicReplies> response) {
                 MemberTopicReplies memberTopicReplies = response.body();

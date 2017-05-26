@@ -78,7 +78,7 @@ public class UserReplyActivity extends AppCompatActivity {
         } catch (PackageManager.NameNotFoundException e) {
             e.printStackTrace();
         }
-        RetrofitServiceSingleton.getInstance(this).submitUserReply(contact, reply, appVersion).enqueue(new Callback<ResponseBody>() {
+        RetrofitServiceSingleton.getInstance(getApplication()).submitUserReply(contact, reply, appVersion).enqueue(new Callback<ResponseBody>() {
             @Override
             public void onResponse(Call<ResponseBody> call, Response<ResponseBody> response) {
                 dialog.dismiss();

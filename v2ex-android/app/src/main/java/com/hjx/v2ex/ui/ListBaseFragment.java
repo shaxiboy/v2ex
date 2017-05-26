@@ -4,14 +4,10 @@ package com.hjx.v2ex.ui;
 import android.support.v4.app.Fragment;
 import android.support.v4.widget.SwipeRefreshLayout;
 import android.support.v7.widget.RecyclerView;
-import android.util.Log;
 
 import com.hjx.v2ex.R;
 import com.hjx.v2ex.bean.PageData;
-import com.hjx.v2ex.bean.Topic;
-import com.hjx.v2ex.bean.TopicsPageData;
 import com.hjx.v2ex.flexibleitem.ProgressItem;
-import com.hjx.v2ex.flexibleitem.TopicFlexibleItem;
 
 import java.util.ArrayList;
 import java.util.List;

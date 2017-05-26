@@ -144,9 +144,9 @@ public class TopicDetailsFragment extends ListBaseFragment<TopicPage> {
             FavoriteTopicType type = getFavoriteTopicType(favoriteURL);
             if (type != null) {
                 if (type == FavoriteTopicType.UNFAVORITE) {
-                    favoriteItem.setIcon(R.drawable.ic_menu_favorite);
+                    favoriteItem.setIcon(R.drawable.favorite_red);
                 } else if (type == FavoriteTopicType.FAVORITE) {
-                    favoriteItem.setIcon(R.drawable.ic_menu_unfavorite);
+                    favoriteItem.setIcon(R.drawable.favorite_white);
                 }
                 favoriteItem.setVisible(true);
             } else {
@@ -211,7 +211,7 @@ public class TopicDetailsFragment extends ListBaseFragment<TopicPage> {
     }
 
     private void loadTopicDetails() {
-        RetrofitServiceSingleton.getInstance(getContext()).getTopicPage(topicId, getCurrentPage()).enqueue(getListBaseFragmentCallBack());
+        RetrofitServiceSingleton.getInstance(getActivity().getApplication()).getTopicPage(topicId, getCurrentPage()).enqueue(getListBaseFragmentCallBack());
     }
 
     private void favoriteTopic() {
@@ -220,7 +220,7 @@ public class TopicDetailsFragment extends ListBaseFragment<TopicPage> {
         if (type != null) {
             String referer = RetrofitService.BASE_URL + "t/" + topicId;
             final ProgressDialog progressDialog = showProgressDialog(getContext(), "正在" + type);
-            RetrofitServiceSingleton.getInstance(getContext()).favoriteTopic(favoriteURL, referer).enqueue(new Callback<TopicFavoriteResult>() {
+            RetrofitServiceSingleton.getInstance(getActivity().getApplication()).favoriteTopic(favoriteURL, referer).enqueue(new Callback<TopicFavoriteResult>() {
                 @Override
                 public void onResponse(Call<TopicFavoriteResult> call, Response<TopicFavoriteResult> response) {
                     progressDialog.dismiss();
@@ -269,7 +269,7 @@ public class TopicDetailsFragment extends ListBaseFragment<TopicPage> {
     private void replyTopic() {
         final ProgressDialog dialog = V2EXUtil.showProgressDialog(getContext(), "正在发送回复");
         final String referer = RetrofitService.BASE_URL + "t/" + topicId;
-        RetrofitServiceSingleton.getInstance(getContext()).replyTopic(referer, topicId, replyEdt.getText().toString().trim(), topic.getReplyOnce()).enqueue(new Callback<ReplyTopicResult>() {
+        RetrofitServiceSingleton.getInstance(getActivity().getApplication()).replyTopic(referer, topicId, replyEdt.getText().toString().trim(), topic.getReplyOnce()).enqueue(new Callback<ReplyTopicResult>() {
             @Override
             public void onResponse(Call<ReplyTopicResult> call, Response<ReplyTopicResult> response) {
                 dialog.dismiss();
@@ -328,6 +328,6 @@ public class TopicDetailsFragment extends ListBaseFragment<TopicPage> {
     }
 
     public enum ShowReplyEditViewType {
-        CHANGE, SHOW, HIDE;
+        CHANGE, SHOW, HIDE
     }
 }

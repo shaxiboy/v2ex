@@ -13,7 +13,6 @@ import com.bumptech.glide.Glide;
 import com.bumptech.glide.request.animation.GlideAnimation;
 import com.bumptech.glide.request.target.SimpleTarget;
 import com.hjx.v2ex.R;
-import com.hjx.v2ex.util.V2EXUtil;
 
 /**
  * Created by shaxiboy on 2017/5/7 0007.
@@ -34,7 +33,7 @@ public class TextViewImageGetter implements Html.ImageGetter{
     @Override
     public Drawable getDrawable(String url) {
         final LevelListDrawable levelListDrawable = new LevelListDrawable();
-        Drawable empty = ContextCompat.getDrawable(context, R.drawable.ic_sync_white_24dp);
+        Drawable empty = ContextCompat.getDrawable(context, R.drawable.pic_sync);
         levelListDrawable.addLevel(0, 0, empty);
         levelListDrawable.setBounds(0, 0, 50, 50);
         Glide.with(context)

@@ -1,5 +1,6 @@
 package com.hjx.v2ex.network;
 
+import android.app.Application;
 import android.content.Context;
 
 import com.franmontiel.persistentcookiejar.ClearableCookieJar;
@@ -18,7 +19,7 @@ import retrofit2.Retrofit;
 
 public class RetrofitServiceSingleton {
 
-    private static Context ctx;
+    private static Application application;
 
     private static RetrofitService getRetrofitService() {
         HttpLoggingInterceptor interceptor = new HttpLoggingInterceptor();
@@ -28,7 +29,7 @@ public class RetrofitServiceSingleton {
             interceptor.setLevel(HttpLoggingInterceptor.Level.NONE);
         }
         ClearableCookieJar cookieJar =
-                new PersistentCookieJar(new SetCookieCache(), new SharedPrefsCookiePersistor(ctx));
+                new PersistentCookieJar(new SetCookieCache(), new SharedPrefsCookiePersistor(application));
         OkHttpClient client = new OkHttpClient.Builder()
                 .addInterceptor(interceptor)
                 .cookieJar(cookieJar)
@@ -41,8 +42,8 @@ public class RetrofitServiceSingleton {
         return retrofit.create(RetrofitService.class);
     }
 
-    public static RetrofitService getInstance(Context context) {
-        if(ctx == null) ctx = context;
+    public static RetrofitService getInstance(Application app) {
+        if(application == null) application = app;
         return SingletonHolder.singleton;
     }
 

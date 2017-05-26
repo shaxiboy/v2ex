@@ -54,19 +54,19 @@ public class TopicListFragment extends ListBaseFragment<TopicsPageData> {
     protected void loadData() {
         switch (topicType) {
             case TOPICTYPE_TABTOPIC:
-                RetrofitServiceSingleton.getInstance(getContext()).getTabTopics(arg).enqueue(getListBaseFragmentCallBack());
+                RetrofitServiceSingleton.getInstance(getActivity().getApplication()).getTabTopics(arg).enqueue(getListBaseFragmentCallBack());
                 break;
             case TOPICTYPE_RECENTTOPIC:
-                RetrofitServiceSingleton.getInstance(getContext()).getRecentTopics(getCurrentPage()).enqueue(getListBaseFragmentCallBack());
+                RetrofitServiceSingleton.getInstance(getActivity().getApplication()).getRecentTopics(getCurrentPage()).enqueue(getListBaseFragmentCallBack());
                 break;
             case TOPICTYPE_FAVORITETOPIC:
-                RetrofitServiceSingleton.getInstance(getContext()).getFavoriteTopics(getCurrentPage()).enqueue(getListBaseFragmentCallBack());
+                RetrofitServiceSingleton.getInstance(getActivity().getApplication()).getFavoriteTopics(getCurrentPage()).enqueue(getListBaseFragmentCallBack());
                 break;
             case TOPICTYPE_MEMBERTOPIC:
-                RetrofitServiceSingleton.getInstance(getContext()).getMemberTopics(arg, getCurrentPage()).enqueue(getListBaseFragmentCallBack());
+                RetrofitServiceSingleton.getInstance(getActivity().getApplication()).getMemberTopics(arg, getCurrentPage()).enqueue(getListBaseFragmentCallBack());
                 break;
             case TOPICTYPE_FAVORITEMEMBERSTOPIC:
-                RetrofitServiceSingleton.getInstance(getContext()).getFavoriteMembersTopics(getCurrentPage()).enqueue(getListBaseFragmentCallBack());
+                RetrofitServiceSingleton.getInstance(getActivity().getApplication()).getFavoriteMembersTopics(getCurrentPage()).enqueue(getListBaseFragmentCallBack());
         }
     }
 

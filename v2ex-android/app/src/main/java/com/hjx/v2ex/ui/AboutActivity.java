@@ -56,7 +56,7 @@ public class AboutActivity extends AppCompatActivity {
             e.printStackTrace();
         }
         versionTV.setText("版本号：" + appVersion);
-        RetrofitServiceSingleton.getInstance(this).getV2EXStatistics().enqueue(new Callback<V2EXStatistics>() {
+        RetrofitServiceSingleton.getInstance(getApplication()).getV2EXStatistics().enqueue(new Callback<V2EXStatistics>() {
             @Override
             public void onResponse(Call<V2EXStatistics> call, Response<V2EXStatistics> response) {
                 V2EXStatistics data = response.body();
@@ -71,7 +71,7 @@ public class AboutActivity extends AppCompatActivity {
             }
         });
 
-        RetrofitServiceSingleton.getInstance(this).getV2EXNodesSum().enqueue(new Callback<V2EXStatistics>() {
+        RetrofitServiceSingleton.getInstance(getApplication()).getV2EXNodesSum().enqueue(new Callback<V2EXStatistics>() {
             @Override
             public void onResponse(Call<V2EXStatistics> call, Response<V2EXStatistics> response) {
                 V2EXStatistics data = response.body();
@@ -106,7 +106,7 @@ public class AboutActivity extends AppCompatActivity {
     public void showMore(View view) {
         constraintLayout.setVisibility(View.INVISIBLE);
         scrollView.setVisibility(View.VISIBLE);
-        RetrofitServiceSingleton.getInstance(this).getV2EXIntroduction().enqueue(new Callback<V2EXIntroduction>() {
+        RetrofitServiceSingleton.getInstance(getApplication()).getV2EXIntroduction().enqueue(new Callback<V2EXIntroduction>() {
             @Override
             public void onResponse(Call<V2EXIntroduction> call, Response<V2EXIntroduction> response) {
                 introduction.setText(V2EXUtil.fromHtml(response.body().getIntroduction(), null, null, -1));

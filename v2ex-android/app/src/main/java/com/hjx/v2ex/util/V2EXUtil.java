@@ -15,9 +15,7 @@ import android.view.View;
 import android.view.WindowManager;
 
 import com.hjx.v2ex.bean.SigninResult;
-import com.hjx.v2ex.event.AtMemberEvent;
 import com.hjx.v2ex.event.ShowMemberRepliesEvent;
-import com.hjx.v2ex.network.RetrofitService;
 
 import org.greenrobot.eventbus.EventBus;
 
@@ -38,10 +36,7 @@ public class V2EXUtil {
     }
 
     public static boolean isLogin(Context context) {
-        if(readLoginResult(context) != null) {
-            return true;
-        }
-        return false;
+        return readLoginResult(context) != null;
     }
 
     public static void writeLoginResult(Context context, SigninResult signinResult) {
@@ -128,21 +123,18 @@ public class V2EXUtil {
         DisplayMetrics displayMetrics = new DisplayMetrics();
         WindowManager wm = (WindowManager) context.getSystemService(Context.WINDOW_SERVICE);
         wm.getDefaultDisplay().getMetrics(displayMetrics);
-        int displayHeight = displayMetrics.heightPixels;
-        return displayHeight;
+        return displayMetrics.heightPixels;
     }
 
     public static int getDisplayWidth(Context context) {
         DisplayMetrics displayMetrics = new DisplayMetrics();
         WindowManager wm = (WindowManager) context.getSystemService(Context.WINDOW_SERVICE);
         wm.getDefaultDisplay().getMetrics(displayMetrics);
-        int displayWidth = displayMetrics.widthPixels;
-        return displayWidth;
+        return displayMetrics.widthPixels;
     }
 
     public static int dp(Context context, float dp){
         Resources resources = context.getResources();
-        int px = (int) TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_DIP, dp, resources.getDisplayMetrics());
-        return px;
+        return (int) TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_DIP, dp, resources.getDisplayMetrics());
     }
 }

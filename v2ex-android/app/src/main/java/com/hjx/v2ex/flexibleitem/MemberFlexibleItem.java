@@ -9,7 +9,6 @@ import android.widget.TextView;
 import com.bumptech.glide.Glide;
 import com.hjx.v2ex.R;
 import com.hjx.v2ex.bean.Member;
-import com.hjx.v2ex.bean.Node;
 import com.hjx.v2ex.ui.DataLoadingBaseActivity;
 
 import java.util.List;
@@ -17,9 +16,6 @@ import java.util.List;
 import de.hdodenhof.circleimageview.CircleImageView;
 import eu.davidea.flexibleadapter.FlexibleAdapter;
 import eu.davidea.flexibleadapter.items.AbstractFlexibleItem;
-import eu.davidea.flexibleadapter.items.AbstractSectionableItem;
-import eu.davidea.flexibleadapter.items.IFilterable;
-import eu.davidea.flexibleadapter.items.IHeader;
 import eu.davidea.viewholders.FlexibleViewHolder;
 
 /**

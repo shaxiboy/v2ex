@@ -67,9 +67,9 @@ public class NodeDetailsFragment extends ListBaseFragment<NodePage> {
             FavoriteNodeType type = getFavoriteNodeType(favoriteURL);
             if (type != null) {
                 if (type == FavoriteNodeType.UNFAVORITE) {
-                    favoriteItem.setIcon(R.drawable.ic_menu_favorite);
+                    favoriteItem.setIcon(R.drawable.favorite_red);
                 } else if (type == FavoriteNodeType.FAVORITE) {
-                    favoriteItem.setIcon(R.drawable.ic_menu_unfavorite);
+                    favoriteItem.setIcon(R.drawable.favorite_white);
                 }
                 favoriteItem.setVisible(true);
             } else {
@@ -105,7 +105,7 @@ public class NodeDetailsFragment extends ListBaseFragment<NodePage> {
 
 
     private void loadNodePage() {
-        RetrofitServiceSingleton.getInstance(getContext()).getNodePage(nodeName, getCurrentPage()).enqueue(getListBaseFragmentCallBack());
+        RetrofitServiceSingleton.getInstance(getActivity().getApplication()).getNodePage(nodeName, getCurrentPage()).enqueue(getListBaseFragmentCallBack());
     }
 
     private void favoriteNode() {
@@ -114,7 +114,7 @@ public class NodeDetailsFragment extends ListBaseFragment<NodePage> {
         if (type != null) {
             String referer = RetrofitService.BASE_URL + "go/" + nodeName;
             final ProgressDialog progressDialog = V2EXUtil.showProgressDialog(getContext(), "正在" + type);
-            RetrofitServiceSingleton.getInstance(getContext()).favoriteNode(favoriteURL, referer).enqueue(new Callback<NodeFavoriteResult>() {
+            RetrofitServiceSingleton.getInstance(getActivity().getApplication()).favoriteNode(favoriteURL, referer).enqueue(new Callback<NodeFavoriteResult>() {
                 @Override
                 public void onResponse(Call<NodeFavoriteResult> call, Response<NodeFavoriteResult> response) {
                     progressDialog.dismiss();

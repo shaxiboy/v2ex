@@ -24,7 +24,7 @@ public class FavoriteMembersFragment extends ListBaseFragment<FavoriteMembers> {
 
     @Override
     protected void loadData() {
-        RetrofitServiceSingleton.getInstance(getContext()).getFavoriteMembers().enqueue(getListBaseFragmentCallBack());
+        RetrofitServiceSingleton.getInstance(getActivity().getApplication()).getFavoriteMembers().enqueue(getListBaseFragmentCallBack());
     }
 
     @Override

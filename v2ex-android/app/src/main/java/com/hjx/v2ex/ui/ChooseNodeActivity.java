@@ -7,7 +7,6 @@ import android.os.Bundle;
 import android.support.v7.widget.Toolbar;
 
 import com.hjx.v2ex.R;
-import com.hjx.v2ex.adapter.MyFavoritesPagerAdapter;
 import com.hjx.v2ex.adapter.NodesPagerAdapter;
 
 import butterknife.BindView;

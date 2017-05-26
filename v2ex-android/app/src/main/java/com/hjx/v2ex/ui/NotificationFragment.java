@@ -16,7 +16,7 @@ public class NotificationFragment extends ListBaseFragment<NotificationsPageData
 
     @Override
     protected void loadData() {
-        RetrofitServiceSingleton.getInstance(getContext()).getNotifications(getCurrentPage()).enqueue(getListBaseFragmentCallBack());
+        RetrofitServiceSingleton.getInstance(getActivity().getApplication()).getNotifications(getCurrentPage()).enqueue(getListBaseFragmentCallBack());
     }
 
     @Override

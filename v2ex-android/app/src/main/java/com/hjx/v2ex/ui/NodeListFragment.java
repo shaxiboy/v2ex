@@ -140,13 +140,13 @@ public class NodeListFragment extends ListBaseFragment implements FlexibleAdapte
 
     private void loadNodes() {
         if (tab.equals("最热")) {
-            RetrofitServiceSingleton.getInstance(getContext()).getHottestNodes().enqueue(getListBaseFragmentCallBack());
+            RetrofitServiceSingleton.getInstance(getActivity().getApplication()).getHottestNodes().enqueue(getListBaseFragmentCallBack());
         } else if (tab.equals("导航")) {
-            RetrofitServiceSingleton.getInstance(getContext()).getNavigationNodes().enqueue(getListBaseFragmentCallBack());
+            RetrofitServiceSingleton.getInstance(getActivity().getApplication()).getNavigationNodes().enqueue(getListBaseFragmentCallBack());
         } else if (tab.equals("全部")) {
-            RetrofitServiceSingleton.getInstance(getContext()).getAllNodes().enqueue(getListBaseFragmentCallBack());
+            RetrofitServiceSingleton.getInstance(getActivity().getApplication()).getAllNodes().enqueue(getListBaseFragmentCallBack());
         } else if(tab.equals("收藏")) {
-            RetrofitServiceSingleton.getInstance(getContext()).getFavoriteNodes().enqueue(getListBaseFragmentCallBack());
+            RetrofitServiceSingleton.getInstance(getActivity().getApplication()).getFavoriteNodes().enqueue(getListBaseFragmentCallBack());
         }
     }
 

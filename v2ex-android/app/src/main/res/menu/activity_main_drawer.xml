@@ -1,22 +1,42 @@
 <?xml version="1.0" encoding="utf-8"?>
 <menu xmlns:android="http://schemas.android.com/apk/res/android">
-
-    <group android:checkableBehavior="single">
+    <group
+        android:id="@+id/menu_main"
+        android:checkableBehavior="single">
         <item
             android:id="@+id/topic"
-            android:icon="@drawable/ic_menu_topic"
+            android:icon="@drawable/topic"
             android:title="主题" />
         <item
             android:id="@+id/node"
-            android:icon="@drawable/ic_menu_node"
+            android:icon="@drawable/node"
             android:title="节点" />
+    </group>
+    <group
+        android:id="@+id/menu_member"
+        android:checkableBehavior="single">
+        <item
+            android:id="@+id/favorite"
+            android:icon="@drawable/favorite_gray"
+            android:title="收藏" />
+        <item
+            android:id="@+id/new_topic"
+            android:icon="@drawable/topic_new"
+            android:title="发布" />
+        <item
+            android:id="@+id/signout"
+            android:icon="@drawable/signout"
+            android:title="登出"
+            android:visible="false"/>
+    </group>
+    <group android:id="@+id/menu_app">
         <item
             android:id="@+id/about"
-            android:icon="@drawable/ic_menu_about"
+            android:icon="@drawable/about"
             android:title="关于" />
         <item
             android:id="@+id/feedback"
-            android:icon="@drawable/ic_menu_send"
+            android:icon="@drawable/feedback"
             android:title="反馈" />
     </group>
 
