@@ -163,12 +163,14 @@ public class MainActivity extends AppCompatActivity
                 viewPager.setAdapter(topicsPagerAdapter);
                 if (V2EXUtil.isLogin(this)) notificationContainer.setVisibility(View.VISIBLE);
                 setTitle("V2EX");
-                break;
+                drawer.closeDrawer(GravityCompat.START);
+                return true;
             case R.id.node:
                 viewPager.setAdapter(nodesPagerAdapter);
                 notificationContainer.setVisibility(View.GONE);
                 setTitle("节点");
-                break;
+                drawer.closeDrawer(GravityCompat.START);
+                return true;
             case R.id.favorite:
                 if(V2EXUtil.isLogin(this)) startActivity(new Intent(MainActivity.this, MyFavoritesActivity.class));
                 else startActivityForResult(new Intent(MainActivity.this, LoginActivity.class), 1);
@@ -192,8 +194,7 @@ public class MainActivity extends AppCompatActivity
                 drawer.closeDrawer(GravityCompat.START);
                 return false;
         }
-        drawer.closeDrawer(GravityCompat.START);
-        return true;
+        return false;
     }
 
     private void initDrawer() {
@@ -232,9 +233,11 @@ public class MainActivity extends AppCompatActivity
             Glide.with(this).load(signinResult.getPhoto()).into(photo);
             name.setText(signinResult.getName());
             navigationView.getMenu().findItem(R.id.signout).setVisible(true);
+            setTitle("V2EX");
             viewPager.setAdapter(topicsPagerAdapter);
             navigationView.getMenu().getItem(0).setChecked(true);
             notificationContainer.setVisibility(View.VISIBLE);
+            drawer.closeDrawer(GravityCompat.START);
         }
     }
 
@@ -248,9 +251,11 @@ public class MainActivity extends AppCompatActivity
         Glide.with(this).load(R.drawable.member).into(photo);
         name.setText("点击头像登录");
         navigationView.getMenu().findItem(R.id.signout).setVisible(false);
+        setTitle("V2EX");
         viewPager.setAdapter(topicsPagerAdapter);
         navigationView.getMenu().getItem(0).setChecked(true);
         notificationContainer.setVisibility(View.GONE);
+        drawer.closeDrawer(GravityCompat.START);
     }
 
     private void getUnReadNotifications() {

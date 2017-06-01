@@ -15,8 +15,8 @@ import com.hjx.v2ex.util.V2EXUtil;
 public class TopicsPagerAdapter extends FragmentStatePagerAdapter {
 
     private Context context;
-    private String[] tabs = new String[] {"tech", "creative", "play", "apple", "jobs", "deals", "city", "qna", "hot", "all", "r2", "recent"};
-    private String[] tabnames = new String[] {"技术", "创意", "好玩", "Apple", "酷工作", "交易", "城市", "问与答", "最热", "全部", "R2", "最近"};
+    private String[] tabs = new String[] {"tech", "creative", "play", "apple", "jobs", "deals", "city", "qna", "hot", "all", "r2", "nodes", "members", "recent"};
+    private String[] tabnames = new String[] {"技术", "创意", "好玩", "Apple", "酷工作", "交易", "城市", "问与答", "最热", "全部", "R2", "节点", "关注", "最近"};
 
     public TopicsPagerAdapter(FragmentManager fm, Context context) {
         super(fm);
@@ -32,7 +32,7 @@ public class TopicsPagerAdapter extends FragmentStatePagerAdapter {
     @Override
     public int getCount() {
         if(V2EXUtil.isLogin(context)) return tabs.length;
-        else return tabs.length - 1;
+        else return tabs.length - 3;
     }
 
     @Override
