@@ -29,7 +29,8 @@
         </activity>
         <activity
             android:name=".ui.AboutActivity"
-            android:label="关于V2EX" />
+            android:label="关于V2EX"
+            android:screenOrientation="portrait"/>
         <activity
             android:name=".ui.DataLoadingBaseActivity"
             android:parentActivityName=".ui.MainActivity">

@@ -7,6 +7,7 @@ import android.os.Bundle;
 import android.os.Handler;
 import android.os.Message;
 import android.support.design.widget.TabLayout;
+import android.support.v4.app.FragmentManager;
 import android.support.v4.content.ContextCompat;
 import android.support.v4.view.ViewPager;
 import android.support.design.widget.NavigationView;
@@ -88,7 +89,10 @@ public class MainActivity extends AppCompatActivity
         tabLayout.setupWithViewPager(viewPager, false);
         topicsPagerAdapter = new TopicsPagerAdapter(getSupportFragmentManager(), this);
         nodesPagerAdapter = new NodesPagerAdapter(getSupportFragmentManager(), NodeListFragment.NODEACTIONTYPE_VIEW);
-        viewPager.setAdapter(topicsPagerAdapter);
+        if (savedInstanceState != null && savedInstanceState.getString("title").equals("节点")) {
+            setTitle("节点");
+            viewPager.setAdapter(nodesPagerAdapter);
+        } else viewPager.setAdapter(topicsPagerAdapter);
 
         notificationContainer.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -172,12 +176,14 @@ public class MainActivity extends AppCompatActivity
                 drawer.closeDrawer(GravityCompat.START);
                 return true;
             case R.id.favorite:
-                if(V2EXUtil.isLogin(this)) startActivity(new Intent(MainActivity.this, MyFavoritesActivity.class));
+                if (V2EXUtil.isLogin(this))
+                    startActivity(new Intent(MainActivity.this, MyFavoritesActivity.class));
                 else startActivityForResult(new Intent(MainActivity.this, LoginActivity.class), 1);
                 drawer.closeDrawer(GravityCompat.START);
                 return false;
             case R.id.new_topic:
-                if(V2EXUtil.isLogin(this)) startActivity(new Intent(MainActivity.this, NewTopicActivity.class));
+                if (V2EXUtil.isLogin(this))
+                    startActivity(new Intent(MainActivity.this, NewTopicActivity.class));
                 else startActivityForResult(new Intent(MainActivity.this, LoginActivity.class), 1);
                 drawer.closeDrawer(GravityCompat.START);
                 return false;
@@ -197,6 +203,12 @@ public class MainActivity extends AppCompatActivity
         return false;
     }
 
+    @Override
+    protected void onSaveInstanceState(Bundle outState) {
+        outState.putString("title", getTitle().toString());
+        super.onSaveInstanceState(outState);
+    }
+
     private void initDrawer() {
         ActionBarDrawerToggle toggle = new ActionBarDrawerToggle(
                 this, drawer, toolbar, R.string.navigation_drawer_open, R.string.navigation_drawer_close);
@@ -209,7 +221,8 @@ public class MainActivity extends AppCompatActivity
         photo.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                if(V2EXUtil.isLogin(MainActivity.this)) DataLoadingBaseActivity.gotoMemberDetailsActivity(MainActivity.this, name.getText().toString());
+                if (V2EXUtil.isLogin(MainActivity.this))
+                    DataLoadingBaseActivity.gotoMemberDetailsActivity(MainActivity.this, name.getText().toString());
                 else startActivityForResult(new Intent(MainActivity.this, LoginActivity.class), 1);
             }
         });
@@ -233,10 +246,10 @@ public class MainActivity extends AppCompatActivity
             Glide.with(this).load(signinResult.getPhoto()).into(photo);
             name.setText(signinResult.getName());
             navigationView.getMenu().findItem(R.id.signout).setVisible(true);
-            setTitle("V2EX");
-            viewPager.setAdapter(topicsPagerAdapter);
-            navigationView.getMenu().getItem(0).setChecked(true);
-            notificationContainer.setVisibility(View.VISIBLE);
+            if (viewPager.getAdapter() instanceof TopicsPagerAdapter) {
+                notificationContainer.setVisibility(View.VISIBLE);
+                viewPager.setAdapter(topicsPagerAdapter);
+            }
             drawer.closeDrawer(GravityCompat.START);
         }
     }
@@ -251,9 +264,8 @@ public class MainActivity extends AppCompatActivity
         Glide.with(this).load(R.drawable.member).into(photo);
         name.setText("点击头像登录");
         navigationView.getMenu().findItem(R.id.signout).setVisible(false);
-        setTitle("V2EX");
-        viewPager.setAdapter(topicsPagerAdapter);
-        navigationView.getMenu().getItem(0).setChecked(true);
+        if (viewPager.getAdapter() instanceof TopicsPagerAdapter)
+            viewPager.setAdapter(topicsPagerAdapter);
         notificationContainer.setVisibility(View.GONE);
         drawer.closeDrawer(GravityCompat.START);
     }
