@@ -6,5 +6,5 @@ package com.hjx.v2ex;
 
 public class AppConfig {
 
-    public static final boolean DEBUG = true;
+    public static final boolean DEBUG = false;
 }

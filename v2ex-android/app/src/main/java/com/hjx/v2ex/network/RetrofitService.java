@@ -185,7 +185,7 @@ public interface RetrofitService {
     Call<NotificationsPageData> getNotifications(@Query("p") int page);
 
     //提交反馈
-    @POST("http://23.105.207.244:8080/v2ex/userreply/save")
+    @POST("http://45.78.4.3:8080/v2ex/userreply/save")
     @FormUrlEncoded
     Call<ResponseBody> submitUserReply(@Field("contact") String contact, @Field("reply") String reply, @Field("appversion") String appVersion);
 }
