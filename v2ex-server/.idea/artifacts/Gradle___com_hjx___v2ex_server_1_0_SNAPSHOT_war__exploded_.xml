@@ -18,9 +18,9 @@
         </element>
         <element id="directory" name="lib">
           <element id="library" level="project" name="Gradle: com.jfinal:jfinal:3.1" />
-          <element id="library" level="project" name="Gradle: org.xerial:sqlite-jdbc:3.16.1" />
-          <element id="library" level="project" name="Gradle: com.alibaba:druid:1.0.29" />
           <element id="library" level="project" name="Gradle: cglib:cglib-nodep:3.1" />
+          <element id="file-copy" path="$USER_HOME$/.gradle/caches/modules-2/files-2.1/org.xerial/sqlite-jdbc/3.16.1/72540738ecee65b58ef5a6dbc125e83223716b17/sqlite-jdbc-3.16.1.jar" />
+          <element id="file-copy" path="$USER_HOME$/.gradle/caches/modules-2/files-2.1/com.alibaba/druid/1.0.29/4acf3e5be445b9a6970a5497592e5f69b22c41e3/druid-1.0.29.jar" />
           <element id="file-copy" path="$USER_HOME$/.gradle/caches/modules-2/files-2.1/com.jfinal/jetty-server/8.1.8/f3888ea1cc484e88aba31f3c96ed89bea43d50a4/jetty-server-8.1.8.jar" />
           <element id="file-copy" path="$USER_HOME$/.gradle/caches/modules-2/files-2.1/org.eclipse.jetty/jetty-xml/8.1.8.v20121106/1f03630eea10f58899442af3626ac0aba33d7ea2/jetty-xml-8.1.8.v20121106.jar" />
           <element id="file-copy" path="$USER_HOME$/.gradle/caches/modules-2/files-2.1/org.eclipse.jetty/jetty-servlet/8.1.8.v20121106/285ea47746e9ab988a8291ea9fd6545b537e0ce9/jetty-servlet-8.1.8.v20121106.jar" />
