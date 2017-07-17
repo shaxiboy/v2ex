@@ -17,7 +17,7 @@
         android:checkableBehavior="single">
         <item
             android:id="@+id/favorite"
-            android:icon="@drawable/favorite_gray"
+            android:icon="@drawable/favorite"
             android:title="收藏" />
         <item
             android:id="@+id/new_topic"

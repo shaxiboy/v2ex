@@ -31,7 +31,7 @@
                     android:id="@+id/notification_image"
                     android:layout_width="25dp"
                     android:layout_height="25dp"
-                    android:src="@drawable/notification_white" />
+                    app:srcCompat="@drawable/notification" />
 
                 <TextView
                     android:id="@+id/notification_text"

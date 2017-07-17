@@ -7,8 +7,10 @@ import android.os.Bundle;
 import android.os.Handler;
 import android.os.Message;
 import android.support.design.widget.TabLayout;
+import android.support.graphics.drawable.VectorDrawableCompat;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.content.ContextCompat;
+import android.support.v4.graphics.drawable.DrawableCompat;
 import android.support.v4.view.ViewPager;
 import android.support.design.widget.NavigationView;
 import android.support.v4.view.GravityCompat;
@@ -97,7 +99,7 @@ public class MainActivity extends AppCompatActivity
         notificationContainer.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                notificationImage.setImageDrawable(ContextCompat.getDrawable(MainActivity.this, R.drawable.notification_white));
+                DrawableCompat.setTint(notificationImage.getDrawable(), ContextCompat.getColor(MainActivity.this, R.color.colorWhite));
                 notificationText.setVisibility(View.GONE);
                 DataLoadingBaseActivity.gotoNotificationsActivity(MainActivity.this);
             }
@@ -277,11 +279,11 @@ public class MainActivity extends AppCompatActivity
                 try {
                     int num = response.body().getNum();
                     if (num != 0) {
-                        notificationImage.setImageDrawable(ContextCompat.getDrawable(MainActivity.this, R.drawable.notification_red));
+                        DrawableCompat.setTint(notificationImage.getDrawable(), ContextCompat.getColor(MainActivity.this, R.color.colorAccent));
                         notificationText.setText(num + "");
                         notificationText.setVisibility(View.VISIBLE);
                     } else {
-                        notificationImage.setImageDrawable(ContextCompat.getDrawable(MainActivity.this, R.drawable.notification_white));
+                        DrawableCompat.setTint(notificationImage.getDrawable(), ContextCompat.getColor(MainActivity.this, R.color.colorWhite));
                         notificationText.setVisibility(View.GONE);
                     }
                 } catch (Exception e) {

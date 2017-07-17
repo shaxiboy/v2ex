@@ -11,8 +11,11 @@ V2EX网站第三方安卓客户端
 项目开发过程中参考学习了以下两个项目：[https://github.com/greatyao/v2ex-android](https://github.com/greatyao/v2ex-android)，[https://github.com/CzBiX/v2ex-android](https://github.com/CzBiX/v2ex-android)，在此对这两位开发者表示感谢！
 
 通过模拟网站HTTP请求获取数据。
+
 主要使用了以下开源库：jsoup、Retrofit2、FlexibleAdapter、Glide、Butter Knife、EventBus。
+
 使用腾讯Bugly实现App异常上报和应用更新功能。
+
 针对App使用反馈功能开发了后台服务，该服务使用JFinal极速开发框架开发，针对App使用反馈功能开发了后台服务，该服务使用JFinal极速开发框架开发， 数据存储使用SQLite。
 
 <img src="././Screenshots/1.png" width="400px" />
