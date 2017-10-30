@@ -16,7 +16,7 @@ V2EX网站第三方安卓客户端
 
 使用腾讯Bugly实现App异常上报和应用更新功能。
 
-针对App使用反馈功能开发了后台服务，该服务使用JFinal极速开发框架开发，针对App使用反馈功能开发了后台服务，该服务使用JFinal极速开发框架开发， 数据存储使用SQLite。
+针对App使用反馈功能开发了后台服务，该服务使用JFinal极速开发框架开发， 数据存储使用SQLite。
 
 <img src="././Screenshots/1.png" width="400px" />
 <img src="././Screenshots/2.png" width="400px" />
