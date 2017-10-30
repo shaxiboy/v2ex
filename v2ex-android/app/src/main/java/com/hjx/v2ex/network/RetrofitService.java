@@ -1,5 +1,7 @@
 package com.hjx.v2ex.network;
 
+import android.graphics.Bitmap;
+
 import com.hjx.v2ex.bean.FavoriteMembers;
 import com.hjx.v2ex.bean.FavoriteNodes;
 import com.hjx.v2ex.bean.Member;
@@ -106,11 +108,11 @@ public interface RetrofitService {
     @GET("member/{membername}/replies")
     Call<MemberTopicReplies> getMemberTopicReplies(@Path("membername") String memberName, @Query("p") int page);
 
-    //登陆页面
+    //登录页面
     @GET("signin")
     Call<SigninParams> getSigninParams();
 
-    //登陆
+    //登录
     @Headers({
             "referer: https://www.v2ex.com/signin"
     })
@@ -183,6 +185,10 @@ public interface RetrofitService {
     //获取提醒信息
     @GET("notifications")
     Call<NotificationsPageData> getNotifications(@Query("p") int page);
+
+    //获取图片
+    @GET()
+    Call<Bitmap> getBitmap(@Url String url);
 
     //提交反馈
     @POST("http://45.78.4.3:8080/v2ex/userreply/save")

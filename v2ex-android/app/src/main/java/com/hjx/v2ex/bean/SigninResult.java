@@ -1,5 +1,7 @@
 package com.hjx.v2ex.bean;
 
+import android.graphics.Bitmap;
+
 import java.io.Serializable;
 
 /**
@@ -52,9 +54,5 @@ public class SigninResult implements Serializable{
 
     public void setErrorMsg(String errorMsg) {
         this.errorMsg = errorMsg;
-    }
-
-    public enum SigninResultType {
-        SUCCESS, FAILED
     }
 }

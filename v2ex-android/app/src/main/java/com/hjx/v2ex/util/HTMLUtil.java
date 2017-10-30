@@ -1,5 +1,7 @@
 package com.hjx.v2ex.util;
 
+import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
 import android.text.TextUtils;
 
 import com.hjx.v2ex.bean.FavoriteMembers;
@@ -39,6 +41,7 @@ import org.jsoup.nodes.Element;
 import org.jsoup.nodes.TextNode;
 import org.jsoup.select.Elements;
 
+import java.io.InputStream;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -544,13 +547,22 @@ public class HTMLUtil {
         Element formEle = doc.select("form[action='/signin']").first();
         for (Element inputEle : formEle.getElementsByTag("input")) {
             if (inputEle.attr("type").equals("text")) {
-                signinParams.setName(inputEle.attr("name"));
+                if(inputEle.attr("placeholder").contains("用户名")) signinParams.setName(inputEle.attr("name"));
+                else if(inputEle.attr("placeholder").contains("验证码")) signinParams.setCode(inputEle.attr("name"));
             } else if (inputEle.attr("type").equals("password")) {
                 signinParams.setPassword(inputEle.attr("name"));
             } else if (inputEle.attr("type").equals("hidden")) {
                 if(inputEle.attr("name").equals("once")) {
                     signinParams.setOnce(inputEle.attr("value"));
                 }
+            }
+        }
+        for (Element divEle : formEle.getElementsByTag("div")) {
+            if(divEle.attr("style").contains("background-image")) {
+                String backgroundImage = divEle.attr("style").split(";")[0].split(":")[1];
+                String imgUrl = RetrofitService.BASE_URL + backgroundImage.substring(7, backgroundImage.length() - 2);
+                signinParams.setCodeImg(imgUrl);
+                break;
             }
         }
         return signinParams;
@@ -784,4 +796,7 @@ public class HTMLUtil {
         return notificationsPageData;
     }
 
+    public static Bitmap parseBitmap(InputStream is) {
+        return BitmapFactory.decodeStream(is);
+    }
 }
