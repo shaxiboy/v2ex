@@ -3,13 +3,15 @@ package com.hjx.v2ex.ui;
 import android.app.Activity;
 import android.app.ProgressDialog;
 import android.content.Context;
-import android.support.v7.app.AppCompatActivity;
+import android.graphics.Bitmap;
 import android.os.Bundle;
+import android.support.v7.app.AppCompatActivity;
 import android.text.TextUtils;
 import android.view.View;
 import android.view.inputmethod.InputMethodManager;
 import android.widget.Button;
 import android.widget.EditText;
+import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -36,19 +38,27 @@ public class LoginActivity extends AppCompatActivity {
     EditText name;
     @BindView(R.id.password)
     EditText password;
+    @BindView(R.id.codeImg)
+    ImageView codeImg;
+    @BindView(R.id.code)
+    EditText code;
     @BindView(R.id.login)
     Button loginBtn;
     @BindView(R.id.error_msg)
     TextView errorMsg;
+    private SigninParams signinParams;
+    private ProgressDialog progressDialog;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_login);
         ButterKnife.bind(this);
+        progressDialog = V2EXUtil.showProgressDialog(this, "正在获取登录信息");
+        getSigninParams();
     }
 
-    @OnFocusChange({R.id.name, R.id.password})
+    @OnFocusChange({R.id.name, R.id.password, R.id.code})
     public void handleErrorMsg(View view, boolean b) {
         errorMsg.setText("");
     }
@@ -66,53 +76,83 @@ public class LoginActivity extends AppCompatActivity {
             errorMsg.setText("密码不能为空");
             return;
         }
-        final ProgressDialog progressDialog = V2EXUtil.showProgressDialog(this, "正在登录");
+        if(TextUtils.isEmpty(code.getText())) {
+            errorMsg.setText("验证码不能为空");
+            return;
+        }
+        progressDialog = V2EXUtil.showProgressDialog(this, "正在登录");
+        Map<String, String> params = new HashMap<>();
+        params.put(signinParams.getName(), name.getText().toString());
+        params.put(signinParams.getPassword(), password.getText().toString());
+        params.put(signinParams.getCode(), code.getText().toString());
+        params.put("once", signinParams.getOnce());
+        params.put("next", signinParams.getNext());
+        RetrofitServiceSingleton.getInstance(LoginActivity.this.getApplication()).signin(params).enqueue(new Callback<SigninResult>() {
+            @Override
+            public void onResponse(Call<SigninResult> call, Response<SigninResult> response) {
+                SigninResult result = response.body();
+                if(result != null) {
+                    if(result.isSigin()) {
+                        progressDialog.dismiss();
+                        V2EXUtil.writeLoginResult(LoginActivity.this, result);
+                        Toast.makeText(LoginActivity.this, "登录成功", Toast.LENGTH_SHORT).show();
+                        setResult(Activity.RESULT_OK);
+                        finish();
+                    } else {
+                        loginFailed(result.getErrorMsg());
+                    }
+                } else {
+                    loginFailed("登录失败，请重试");
+                }
+            }
+
+            @Override
+            public void onFailure(Call<SigninResult> call, Throwable throwable) {
+                loginFailed("登录失败，请重试");
+                throwable.printStackTrace();
+            }
+        });
+    }
+
+    private void getSigninParams() {
+        signinParams = null;
         RetrofitServiceSingleton.getInstance(getApplication()).getSigninParams().enqueue(new Callback<SigninParams>() {
             @Override
             public void onResponse(Call<SigninParams> call, Response<SigninParams> response) {
-                SigninParams signinParams = response.body();
+                signinParams = response.body();
                 if(signinParams != null) {
-                    Map<String, String> params = new HashMap<>();
-                    params.put(signinParams.getName(), name.getText().toString());
-                    params.put(signinParams.getPassword(), password.getText().toString());
-                    params.put("once", signinParams.getOnce());
-                    params.put("next", signinParams.getNext());
-                    RetrofitServiceSingleton.getInstance(LoginActivity.this.getApplication()).signin(params).enqueue(new Callback<SigninResult>() {
+                    RetrofitServiceSingleton.getInstance(getApplication()).getBitmap(signinParams.getCodeImg()).enqueue(new Callback<Bitmap>() {
                         @Override
-                        public void onResponse(Call<SigninResult> call, Response<SigninResult> response) {
-                            progressDialog.dismiss();
-                            SigninResult result = response.body();
-                            if(result != null) {
-                                if(result.isSigin()) {
-                                    V2EXUtil.writeLoginResult(LoginActivity.this, result);
-                                    Toast.makeText(LoginActivity.this, "登录成功", Toast.LENGTH_SHORT).show();
-                                    setResult(Activity.RESULT_OK);
-                                    finish();
-                                } else {
-                                    loginFailed(result.getErrorMsg());
-                                }
+                        public void onResponse(Call<Bitmap> call, Response<Bitmap> response) {
+                            Bitmap bitmap = response.body();
+                            if(bitmap != null) {
+                                progressDialog.dismiss();
+                                codeImg.setImageBitmap(bitmap);
+                                codeImg.setVisibility(View.VISIBLE);
+                                code.setVisibility(View.VISIBLE);
+                                loginBtn.setEnabled(true);
                             } else {
-                                loginFailed("登录失败，请重试");
+                                progressDialog.dismiss();
+                                errorMsg.setText("获取登录信息失败");
                             }
                         }
 
                         @Override
-                        public void onFailure(Call<SigninResult> call, Throwable throwable) {
+                        public void onFailure(Call<Bitmap> call, Throwable t) {
                             progressDialog.dismiss();
-                            loginFailed("登录失败，请重试");
-                            throwable.printStackTrace();
+                            errorMsg.setText("获取登录信息失败");
                         }
                     });
                 } else {
                     progressDialog.dismiss();
-                    loginFailed("登录失败，请重试");
+                    errorMsg.setText("获取登录信息失败");
                 }
             }
 
             @Override
             public void onFailure(Call<SigninParams> call, Throwable throwable) {
                 progressDialog.dismiss();
-                loginFailed("登录失败，请重试");
+                errorMsg.setText("获取登录信息失败");
                 throwable.printStackTrace();
             }
         });
@@ -121,6 +161,7 @@ public class LoginActivity extends AppCompatActivity {
     public void loginFailed(String msg) {
         errorMsg.setText(msg);
         Toast.makeText(LoginActivity.this, "登录失败", Toast.LENGTH_SHORT).show();
+        getSigninParams();
     }
 
 

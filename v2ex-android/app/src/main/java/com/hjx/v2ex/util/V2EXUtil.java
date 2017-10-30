@@ -6,6 +6,7 @@ import android.content.res.Resources;
 import android.text.Html;
 import android.text.SpannableStringBuilder;
 import android.text.Spanned;
+import android.text.TextUtils;
 import android.text.style.ClickableSpan;
 import android.text.style.ImageSpan;
 import android.text.style.URLSpan;
@@ -53,9 +54,9 @@ public class V2EXUtil {
             ObjectInputStream ois = new ObjectInputStream(context.openFileInput("signin"));
             return (SigninResult) ois.readObject();
         } catch (IOException e) {
-            e.printStackTrace();
+//            e.printStackTrace();
         } catch (ClassNotFoundException e) {
-            e.printStackTrace();
+//            e.printStackTrace();
         }
         return null;
     }
@@ -69,7 +70,7 @@ public class V2EXUtil {
 
     public static ProgressDialog showProgressDialog(Context context, String msg) {
         ProgressDialog progressDialog = new ProgressDialog(context);
-        progressDialog.setMessage(msg);
+        if(!TextUtils.isEmpty(msg)) progressDialog.setMessage(msg);
         progressDialog.setIndeterminate(true);
         progressDialog.setCancelable(false);
         progressDialog.show();

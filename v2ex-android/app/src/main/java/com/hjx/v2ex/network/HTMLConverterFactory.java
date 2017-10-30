@@ -3,6 +3,7 @@ package com.hjx.v2ex.network;
 import com.hjx.v2ex.util.HTMLUtil;
 
 import java.io.IOException;
+import java.io.InputStream;
 import java.lang.annotation.Annotation;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
@@ -39,8 +40,14 @@ public class HTMLConverterFactory extends Converter.Factory {
         public T convert(ResponseBody responseBody) throws IOException {
             String convertMethodName = "parse" + ((Class) type).getSimpleName();
             try {
-                Method convertMethod = HTMLUtil.class.getMethod(convertMethodName, String.class);
-                return (T) convertMethod.invoke(null, responseBody.string());
+                Method convertMethod = null;
+                if(convertMethodName.equals("parseBitmap")) {
+                    convertMethod = HTMLUtil.class.getMethod(convertMethodName, InputStream.class);
+                    return (T) convertMethod.invoke(null, responseBody.byteStream());
+                } else {
+                    convertMethod = HTMLUtil.class.getMethod(convertMethodName, String.class);
+                    return (T) convertMethod.invoke(null, responseBody.string());
+                }
             } catch (NoSuchMethodException e) {
                 e.printStackTrace();
             } catch (InvocationTargetException e) {
