@@ -1,6 +1,7 @@
 package com.hjx.v2ex.ui;
 
 import android.app.ProgressDialog;
+import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
@@ -13,6 +14,7 @@ import android.widget.Spinner;
 import android.widget.Toast;
 
 import com.hjx.v2ex.R;
+import com.hjx.v2ex.flexibleitem.TopicFlexibleItem;
 import com.hjx.v2ex.network.RetrofitServiceSingleton;
 import com.hjx.v2ex.util.V2EXUtil;
 
@@ -102,5 +104,9 @@ public class UserReplyActivity extends AppCompatActivity {
                 throwable.printStackTrace();
             }
         });
+    }
+
+    public void goToTopic(View view) {
+        DataLoadingBaseActivity.gotoTopicDetailsActivity(view.getContext(), 402055);
     }
 }

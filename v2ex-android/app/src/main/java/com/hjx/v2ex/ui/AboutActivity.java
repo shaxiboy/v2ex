@@ -12,6 +12,7 @@ import android.widget.TextView;
 import com.hjx.v2ex.R;
 import com.hjx.v2ex.bean.V2EXStatistics;
 import com.hjx.v2ex.bean.V2EXIntroduction;
+import com.hjx.v2ex.flexibleitem.TopicFlexibleItem;
 import com.hjx.v2ex.network.RetrofitServiceSingleton;
 import com.hjx.v2ex.util.V2EXUtil;
 import com.tencent.bugly.beta.Beta;
@@ -128,4 +129,7 @@ public class AboutActivity extends AppCompatActivity {
         });
     }
 
+    public void goToAuthor(View view) {
+        DataLoadingBaseActivity.gotoMemberDetailsActivity(view.getContext(), "shaxiboy");
+    }
 }
