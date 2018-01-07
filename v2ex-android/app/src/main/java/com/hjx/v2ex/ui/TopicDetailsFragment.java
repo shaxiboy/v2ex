@@ -288,7 +288,7 @@ public class TopicDetailsFragment extends ListBaseFragment<TopicPage> {
                     onRefresh();
                 } else {
                     String msg = "回复失败";
-                    if(result.getFailedMsg() != null) msg += "：" + result.getFailedMsg();
+                    if(result != null && result.getFailedMsg() != null) msg += "：" + result.getFailedMsg();
                     else msg += "，请重试";
                     Toast.makeText(getContext(), msg, Toast.LENGTH_SHORT).show();
                 }

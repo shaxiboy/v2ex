@@ -65,6 +65,7 @@ public class LoginActivity extends AppCompatActivity {
 
     @OnClick(R.id.login)
     public void login(View view) {
+        if(signinParams == null) return;
         InputMethodManager imm = (InputMethodManager)getSystemService(Context.INPUT_METHOD_SERVICE);
         imm.hideSoftInputFromWindow(view.getWindowToken(), 0);
 

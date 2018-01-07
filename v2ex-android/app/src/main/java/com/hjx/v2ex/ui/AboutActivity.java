@@ -119,7 +119,9 @@ public class AboutActivity extends AppCompatActivity {
         RetrofitServiceSingleton.getInstance(getApplication()).getV2EXIntroduction().enqueue(new Callback<V2EXIntroduction>() {
             @Override
             public void onResponse(Call<V2EXIntroduction> call, Response<V2EXIntroduction> response) {
-                introduction.setText(V2EXUtil.fromHtml(response.body().getIntroduction(), null, null, -1));
+                V2EXIntroduction v2exIntroduction = response.body();
+                if(introduction != null) AboutActivity.this.introduction.setText(V2EXUtil.fromHtml(v2exIntroduction.getIntroduction(), null, null, -1));
+                else introduction.setText("加载失败");
             }
 
             @Override

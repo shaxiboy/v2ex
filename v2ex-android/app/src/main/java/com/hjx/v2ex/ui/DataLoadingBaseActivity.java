@@ -53,15 +53,7 @@ public class DataLoadingBaseActivity extends AppCompatActivity {
             FragmentTransaction transaction = getSupportFragmentManager().beginTransaction();
             transaction.add(android.R.id.content, fragment);
             transaction.commit();
-        } catch (ClassNotFoundException e) {
-            e.printStackTrace();
-        } catch (NoSuchMethodException e) {
-            e.printStackTrace();
-        } catch (InvocationTargetException e) {
-            e.printStackTrace();
-        } catch (IllegalAccessException e) {
-            e.printStackTrace();
-        } catch (InstantiationException e) {
+        } catch (Exception e) {
             e.printStackTrace();
         }
     }

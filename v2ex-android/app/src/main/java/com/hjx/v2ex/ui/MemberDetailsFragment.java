@@ -217,9 +217,12 @@ public class MemberDetailsFragment extends DataLoadingBaseFragment implements Sw
         RetrofitServiceSingleton.getInstance(getActivity().getApplication()).getMemberTopics(memberName, 1).enqueue(new Callback<TopicsPageData>() {
             @Override
             public void onResponse(Call<TopicsPageData> call, Response<TopicsPageData> response) {
-                topics = response.body().getTopics().getCurrentPageItems();
-                if (member != null) {
-                    showMemberTopics();
+                TopicsPageData topicsPageData = response.body();
+                if(topicsPageData != null) {
+                    topics = topicsPageData.getTopics().getCurrentPageItems();
+                    if (member != null) {
+                        showMemberTopics();
+                    }
                 }
             }
 
