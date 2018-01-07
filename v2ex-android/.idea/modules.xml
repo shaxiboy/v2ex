@@ -3,7 +3,9 @@
   <component name="ProjectModuleManager">
     <modules>
       <module fileurl="file://$PROJECT_DIR$/app/app.iml" filepath="$PROJECT_DIR$/app/app.iml" />
+      <module fileurl="file://D:\Workspace\v2ex\v2ex-android\app\app.iml" filepath="D:\Workspace\v2ex\v2ex-android\app\app.iml" />
       <module fileurl="file://$PROJECT_DIR$/v2ex-android.iml" filepath="$PROJECT_DIR$/v2ex-android.iml" />
+      <module fileurl="file://D:\Workspace\v2ex\v2ex-android\v2ex-android.iml" filepath="D:\Workspace\v2ex\v2ex-android\v2ex-android.iml" />
     </modules>
   </component>
 </project>
