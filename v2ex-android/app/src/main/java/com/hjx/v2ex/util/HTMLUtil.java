@@ -99,7 +99,7 @@ public class HTMLUtil {
             Element topicsNodeDiv = mainDiv.getElementById("TopicsNode");
             if(topicsNodeDiv != null) {
                 topicDivs = topicsNodeDiv.children();
-                headerDiv = topicsNodeDiv.parent().getElementsByClass("header").first();
+                headerDiv = topicsNodeDiv.parent().getElementsByClass("node_header").first();
                 Element elementSibling = headerDiv.nextElementSibling();
                 if(elementSibling != null && elementSibling.attr("class").equals("cell")) {
                     if(!elementSibling.getElementsByTag("input").isEmpty()) {
@@ -219,7 +219,7 @@ public class HTMLUtil {
 
     public static Topic parseTopicDetails(Document doc) {
         Topic topic = new Topic();
-        Element headerEle = doc.getElementsByClass("header").first();
+        Element headerEle = doc.getElementById("Main").getElementsByClass("header").first();
 
         Element authorEle = headerEle.getElementsByClass("fr").first();
         Member member = new Member();
@@ -489,7 +489,7 @@ public class HTMLUtil {
 
     public static Node parseNodeDetails(Document doc) {
         Node node = new Node();
-        Element headerEle = doc.getElementById("Main").getElementsByClass("header").first();
+        Element headerEle = doc.getElementById("Main").getElementsByClass("node_header").first();
         node.setTitle(((TextNode) headerEle.getElementsByClass("chevron").first().nextSibling()).text().trim());
         Element photoEle = headerEle.getElementsByTag("img").first();
         if (photoEle != null) {
