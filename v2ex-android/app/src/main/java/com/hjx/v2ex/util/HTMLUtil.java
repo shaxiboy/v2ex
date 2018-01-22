@@ -639,7 +639,7 @@ public class HTMLUtil {
 
     public static NodeFavoriteResult parseNodeFavoriteResult(String html) {
         Document doc = Jsoup.parse(html);
-        Element headerEle = doc.getElementById("Main").getElementsByClass("header").first();
+        Element headerEle = doc.getElementById("Main").getElementsByClass("node_header").first();
         for (Element aEle : headerEle.getElementsByTag("a")) {
             if (aEle.text().equals("加入收藏") || aEle.text().equals("取消收藏")) {
                 return new NodeFavoriteResult("https:" + aEle.attr("href"));
